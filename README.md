@@ -22,25 +22,25 @@ pnpm i
 To run the ui for your app, use:
 
 ```sh
-pnpm nx serve jobie-ui
+pnpm serve jobie-ui
 ```
 
 To run any of the microservices for your app, use:
 
 ```sh
-pnpm nx serve 'microservice-name'
+pnpm serve 'microservice-name'
 ```
 
 To create a production bundle:
 
 ```sh
-pnpm nx build jobie-ui
+pnpm build jobie-ui
 ```
 
 To see all available targets to run for a project, run:
 
 ```sh
-pnpm nx show project jobie-ui
+pnpm show jobie-ui
 ```
 
 These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
@@ -56,13 +56,13 @@ Use the plugin's generator to create new projects.
 To generate a new application, use:
 
 ```sh
-pnpm nx g @nx/react-native:app demo
+pnpm generate @nx/react-native:app demo
 ```
 
 To generate a new library, use:
 
 ```sh
-pnpm nx g @nx/react:lib mylib
+pnpm generate @nx/react:lib mylib
 ```
 
 You can use `pnpm nx list` to get a list of installed plugins. Then, run `pnpm nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
