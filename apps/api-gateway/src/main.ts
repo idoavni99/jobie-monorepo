@@ -4,7 +4,6 @@
  */
 
 import { Logger } from '@nestjs/common';
-import { createProxyMiddleware } from 'http-proxy-middleware';
 import { baseBootstrap } from '@jobie/nestjs-core';
 import { AppModule } from './app/app.module';
 import { gatewayConfig } from './config/gateway.config';

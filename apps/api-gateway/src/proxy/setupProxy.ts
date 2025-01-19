@@ -1,7 +1,6 @@
 import { INestApplication, Logger } from '@nestjs/common';
 import { SwaggerModule } from '@nestjs/swagger';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-
 export const setupProxyToService = async (
   app: INestApplication,
   [serviceName, serviceUrl]: [string, string]
@@ -27,7 +26,9 @@ export const setupProxyToService = async (
     Logger.log(`Routing requests to ${serviceName} at /${serviceName}`);
   } catch (error) {
     Logger.error(
-      `${serviceName} is unavailable at the moment, will not route requests`
+      `${serviceName} is unavailable at the moment, will not route requests`,
+      error.stack,
+      { message: error.message }
     );
   }
 };
