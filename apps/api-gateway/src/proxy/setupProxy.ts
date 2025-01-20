@@ -17,9 +17,11 @@ export const setupProxyToService = async (
     const proxy = createProxyMiddleware({
       target: serviceUrl,
       changeOrigin: true,
-      pathRewrite: {
-        [`^/${serviceName}`]: '',
-      },
+      cookieDomainRewrite: "localhost",
+      secure: false,
+      pathRewrite: (path) => {
+        return path.replace(`/${serviceName}`, '')
+      }
     });
 
     app.use(`/${serviceName}`, proxy);
