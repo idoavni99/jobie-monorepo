@@ -14,9 +14,11 @@ baseBootstrap(AppModule).then(async (app) => {
   const { port, serviceDiscovery } = app.get<ConfigType<typeof gatewayConfig>>(
     gatewayConfig.KEY
   );
-  for (const service of Object.entries(serviceDiscovery)) {
-    await setupProxyToService(app, service);
-  }
+  
+  await Promise.all(
+    Object.entries(serviceDiscovery).map(service => setupProxyToService(app, service)
+  )
+    
   await app.listen(port);
   Logger.log(`🚀 Application is running on: http://localhost:${port}`);
 });
