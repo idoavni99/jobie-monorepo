@@ -8,7 +8,7 @@ import { baseBootstrap } from '@jobie/nestjs-core';
 import { AppModule } from './app/app.module';
 import { gatewayConfig } from './config/gateway.config';
 import { ConfigType } from '@nestjs/config';
-import { setupProxyToService } from './proxy/setupProxy';
+import { setupProxyToService } from './proxy/setup-proxy';
 
 baseBootstrap(AppModule).then(async (app) => {
   const { port, serviceDiscovery, appDomain } = app.get<

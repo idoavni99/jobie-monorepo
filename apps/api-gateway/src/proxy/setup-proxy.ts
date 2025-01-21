@@ -8,7 +8,7 @@ export const setupProxyToService = async (
 ) => {
   try {
     const swaggerJson: OpenAPIObject = await fetch(`${serviceUrl}/api`).then(
-      (res) => res.json()
+      (response) => response.json()
     );
     delete swaggerJson.paths;
     app.use(

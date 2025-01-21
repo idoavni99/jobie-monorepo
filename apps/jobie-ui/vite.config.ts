@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import * as esbuild from 'esbuild';
-import { readFileSync } from 'fs';
+import { readFileSync } from 'node:fs';
 
 const extensions = [
   '.mjs',

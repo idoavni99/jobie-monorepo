@@ -1,9 +1,9 @@
-import { Type, ValidationPipe } from '@nestjs/common';
+import { Type } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { setupSwagger } from './swagger/setupSwagger';
 import { Logger } from 'nestjs-pino';
+import { setupSwagger } from './swagger/setup-swagger';
 
-export const baseBootstrap = async (AppModule: Type<any>) => {
+export const baseBootstrap = async (AppModule: Type) => {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(Logger));
   setupSwagger(app);

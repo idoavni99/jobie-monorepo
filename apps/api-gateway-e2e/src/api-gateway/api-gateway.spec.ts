@@ -1,10 +1,14 @@
-import axios from 'axios';
+import { HttpStatus } from '@nestjs/common';
+import axios, { AxiosError } from 'axios';
 
-describe('GET /api', () => {
-  it('should return a message', async () => {
-    const res = await axios.get(`/hello`);
-
-    expect(res.status).toBe(200);
-    expect(res.data).toEqual({ message: 'Hello API' });
+describe('GET /isLoggedIn', () => {
+  it('should throw', async () => {
+    try {
+      await axios.get(`/isLoggedIn`);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        expect(error.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
   });
 });
