@@ -1,14 +1,16 @@
 import { INestApplication, Logger } from '@nestjs/common';
-import { SwaggerModule } from '@nestjs/swagger';
+import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 export const setupProxyToService = async (
   app: INestApplication,
-  [serviceName, serviceUrl]: [string, string]
+  [serviceName, serviceUrl]: [string, string],
+  domain: string
 ) => {
   try {
-    const swaggerJson = await fetch(`${serviceUrl}/api`).then((res) =>
-      res.json()
+    const swaggerJson: OpenAPIObject = await fetch(`${serviceUrl}/api`).then(
+      (res) => res.json()
     );
+    delete swaggerJson.paths;
     app.use(
       `/api/${serviceName}`,
       SwaggerModule.createDocument(app, swaggerJson)
@@ -17,11 +19,11 @@ export const setupProxyToService = async (
     const proxy = createProxyMiddleware({
       target: serviceUrl,
       changeOrigin: true,
-      cookieDomainRewrite: "localhost",
+      cookieDomainRewrite: domain,
       secure: false,
       pathRewrite: (path) => {
-        return path.replace(`/${serviceName}`, '')
-      }
+        return path.replace(`/${serviceName}`, '');
+      },
     });
 
     app.use(`/${serviceName}`, proxy);

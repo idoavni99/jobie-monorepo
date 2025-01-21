@@ -6,4 +6,5 @@ export const gatewayConfig = registerAs('gateway', () => ({
     : {
         'registration-service': 'http://localhost:3001',
       }) as Record<string, string>,
+  appDomain: process.env.APP_DOMAIN ?? 'localhost',
 }));
