@@ -10,11 +10,11 @@ export const setupProxyToService = async (
     const swaggerJson: OpenAPIObject = await fetch(`${serviceUrl}/api`).then(
       (response) => response.json()
     );
-    delete swaggerJson.paths;
-    app.use(
-      `/api/${serviceName}`,
-      SwaggerModule.createDocument(app, swaggerJson)
-    );
+    const modifiedPaths = Object.fromEntries(
+      Object.entries(swaggerJson.paths).map(([currentPathPrefix, path]) => [`${serviceName}${currentPathPrefix}` ,path])
+    )
+    swaggerJson.paths = modifiedPaths
+    SwaggerModule.setup(`api/${serviceName}`, app, swaggerJson)
 
     const proxy = createProxyMiddleware({
       target: serviceUrl,
