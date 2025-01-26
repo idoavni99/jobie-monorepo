@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { randomUUID } from 'node:crypto';
 import { DeleteResult, Model } from 'mongoose';
+import { randomUUID } from 'node:crypto';
 import { User, UserDto } from './users.schema';
 
 @Injectable()
@@ -10,6 +10,10 @@ export class UsersRepository {
 
   async findAll(): Promise<User[]> {
     return this.model.find().exec();
+  }
+
+  async findById(id: string): Promise<User | null> {
+    return this.model.findById(id).exec();
   }
 
   async findByUsername(username: string): Promise<User | null> {

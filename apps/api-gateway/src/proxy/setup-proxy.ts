@@ -1,8 +1,9 @@
-import { INestApplication, Logger } from '@nestjs/common';
+import { INestApplication, Logger, NestMiddleware } from '@nestjs/common';
 import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 export const setupProxyToService = async (
   app: INestApplication,
+  authMiddleware: NestMiddleware,
   [serviceName, serviceUrl]: [string, string],
   domain: string
 ) => {
@@ -27,9 +28,16 @@ export const setupProxyToService = async (
       pathRewrite: (path) => {
         return path.replace(`/${serviceName}`, '');
       },
+      on: {
+        proxyReq: (proxyRequest, request) => {
+          if ('authUser' in request && request.authUser) {
+            proxyRequest.setHeader('Authorization', JSON.stringify(request.authUser));
+          }
+        },
+      },
     });
 
-    app.use(`/${serviceName}`, proxy);
+    app.use(`/${serviceName}`, authMiddleware.use, proxy);
     Logger.log(`Routing requests to ${serviceName} at /${serviceName}`);
   } catch (error) {
     Logger.error(

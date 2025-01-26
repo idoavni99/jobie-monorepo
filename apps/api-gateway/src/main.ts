@@ -4,23 +4,23 @@
  */
 
 import { baseBootstrap } from '@jobie/nestjs-core';
-import { Logger } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app/app.module';
-import { gatewayConfig } from './config/gateway.config';
+import { AuthMiddleware } from './app/auth/middleware/auth.middleware';
+import { authConfigKey, AuthConfigType } from './config/auth.config';
+import { gatewayConfigKey, GatewayConfigType } from './config/gateway.config';
 import { setupProxyToService } from './proxy/setup-proxy';
 
-baseBootstrap(AppModule).then(async (app) => {
-  const { port, serviceDiscovery, appDomain } = app.get<
-    ConfigType<typeof gatewayConfig>
-  >(gatewayConfig.KEY);
+baseBootstrap(AppModule, async (app) => {
+  const { authCookiesSecret } = app.get<AuthConfigType>(authConfigKey);
+  const { serviceDiscovery, appDomain } =
+    app.get<GatewayConfigType>(gatewayConfigKey);
+  const authMiddleware = app.get(AuthMiddleware);
+  app.use(cookieParser(authCookiesSecret));
 
   await Promise.all(
     Object.entries(serviceDiscovery).map((service) =>
-      setupProxyToService(app, service, appDomain)
+      setupProxyToService(app, authMiddleware, service, appDomain)
     )
   );
-
-  await app.listen(port);
-  Logger.log(`🚀 Application is running on: http://localhost:${port}`);
 });
