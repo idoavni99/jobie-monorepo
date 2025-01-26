@@ -15,7 +15,7 @@ import { LoginPayloadDto } from './dtos/login.payload.dto';
 
 @Controller('')
 export class AuthController {
-  constructor(private readonly loginService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @ApiResponse({
     status: HttpStatus.OK,
@@ -24,7 +24,7 @@ export class AuthController {
   })
   @Get('isLoggedIn')
   isLoggedIn(@Req() { signedCookies }: Request) {
-    return this.loginService.isLoggedIn(
+    return this.authService.isLoggedIn(
       signedCookies.accessToken,
       signedCookies.refreshToken
     );
@@ -46,7 +46,7 @@ export class AuthController {
       accessTokenLifetime,
       refreshToken,
       refreshTokenLifetime,
-    } = await this.loginService.login(username, password);
+    } = await this.authService.login(username, password);
 
     response.cookie('accessToken', accessToken, {
       httpOnly: true,
@@ -60,6 +60,6 @@ export class AuthController {
 
   @Post('register')
   register(@Body() user: UserDto) {
-    return this.loginService.register(user);
+    return this.authService.register(user);
   }
 }

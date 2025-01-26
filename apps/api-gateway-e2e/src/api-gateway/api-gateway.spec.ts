@@ -7,7 +7,7 @@ describe('GET /isLoggedIn', () => {
       await axios.get(`/isLoggedIn`);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        expect(error.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(error.status).toEqual(HttpStatus.UNAUTHORIZED);
       }
     }
   });
