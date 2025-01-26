@@ -1,8 +1,13 @@
+import { AuthGuard } from '@jobie/auth-core';
 import { DynamicModule, Module, ValidationPipe } from '@nestjs/common';
 import { ConfigFactory, ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { LoggerModule } from 'nestjs-pino';
-import { commonConfig } from './config/common.config';
+import {
+  commonConfig,
+  commonConfigKey,
+  CommonConfigType,
+} from './config/common.config';
 import { CrashPreventionExceptionFilter } from './crash-prevention-exception-filter';
 @Module({
   providers: [
@@ -18,6 +23,13 @@ import { CrashPreventionExceptionFilter } from './crash-prevention-exception-fil
           excludeExtraneousValues: true,
         },
       }),
+    },
+    {
+      provide: APP_GUARD,
+      useFactory: (config: CommonConfigType) => {
+        return new AuthGuard(config.useAuth);
+      },
+      inject: [commonConfigKey],
     },
   ],
 })

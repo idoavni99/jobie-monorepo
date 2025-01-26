@@ -1,4 +1,4 @@
-import { UserDto } from '@jobie/users/nestjs';
+import { CreateUserDto } from '@jobie/users/nestjs';
 import {
   Body,
   Controller,
@@ -31,9 +31,10 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Res() response: Response) {
-    response.clearCookie('accessToken');
-    response.clearCookie('refreshToken');
+  logout(@Res() response: Response) {
+    response.clearCookie('accessToken', { signed: true });
+    response.clearCookie('refreshToken', { signed: true });
+    response.sendStatus(HttpStatus.OK);
   }
 
   @Post('login')
@@ -46,20 +47,25 @@ export class AuthController {
       accessTokenLifetime,
       refreshToken,
       refreshTokenLifetime,
+      user,
     } = await this.authService.login(username, password);
 
-    response.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      maxAge: accessTokenLifetime,
-    });
-    response.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      maxAge: refreshTokenLifetime,
-    });
+    response
+      .cookie('accessToken', accessToken, {
+        httpOnly: true,
+        maxAge: accessTokenLifetime,
+        signed: true,
+      })
+      .cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        maxAge: refreshTokenLifetime,
+        signed: true,
+      });
+    response.status(HttpStatus.CREATED).json(user);
   }
 
   @Post('register')
-  register(@Body() user: UserDto) {
+  register(@Body() user: CreateUserDto) {
     return this.authService.register(user);
   }
 }

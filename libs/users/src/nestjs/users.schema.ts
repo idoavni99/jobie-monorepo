@@ -32,7 +32,6 @@ export class User implements TUser {
     minLength: 6,
   })
   @MinLength(6)
-  @Expose()
   password: string;
 
   @Prop()
@@ -69,5 +68,8 @@ export class User implements TUser {
   email: string;
 }
 
-export class UserDto extends OmitType(User, ['_id']) {}
+export class CreateUserDto extends OmitType(User, ['_id']) {
+  @Expose()
+  override password: string;
+}
 export const UserSchema = SchemaFactory.createForClass(User);

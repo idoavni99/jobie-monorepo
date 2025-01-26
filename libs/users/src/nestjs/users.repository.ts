@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DeleteResult, Model } from 'mongoose';
 import { randomUUID } from 'node:crypto';
-import { User, UserDto } from './users.schema';
+import { CreateUserDto, User } from './users.schema';
 
 @Injectable()
 export class UsersRepository {
@@ -12,15 +12,17 @@ export class UsersRepository {
     return this.model.find().exec();
   }
 
-  async findById(id: string): Promise<User | null> {
-    return this.model.findById(id).exec();
+  async findById(id: string): Promise<User | undefined> {
+    const user = await this.model.findById(id, { password: 0 }).exec();
+    return user?.toObject();
   }
 
-  async findByUsername(username: string): Promise<User | null> {
-    return this.model.findOne({ username }).exec();
+  async findByUsername(username: string): Promise<User | undefined> {
+    const user = await this.model.findOne({ username }, { password: 0 }).exec();
+    return user?.toObject();
   }
 
-  async create(dto: UserDto): Promise<User> {
+  async create(dto: CreateUserDto): Promise<User> {
     return new this.model(Object.assign(dto, { _id: randomUUID() })).save();
   }
 
@@ -28,7 +30,7 @@ export class UsersRepository {
     return this.model.updateOne({ _id: id }, { refreshToken }).exec();
   }
 
-  async update(id: string, dto: UserDto): Promise<User | null> {
+  async update(id: string, dto: CreateUserDto): Promise<User | null> {
     return this.model.findOneAndUpdate({ _id: id }, dto, { new: true }).exec();
   }
 

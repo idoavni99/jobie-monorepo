@@ -3,7 +3,8 @@ import { hoursToMilliseconds } from 'date-fns/hoursToMilliseconds';
 import { minutesToMilliseconds } from 'date-fns/minutesToMilliseconds';
 
 export const authConfig = registerAs('auth', () => ({
-  passwordHashSalt: process.env.AUTH_PASSWORD_HASH_SALT ?? 'Avnizzz',
+  passwordHashSaltRound:
+    Number(process.env.AUTH_PASSWORD_HASH_SALT_ROUNDS) || 8,
   accessTokenSecret: process.env.AUTH_ACCESS_TOKEN_SECRET ?? 'Avnizzz',
   refreshTokenSecret: process.env.AUTH_REFRESH_TOKEN_SECRET ?? 'Avnizzz',
   accessTokenLifetime: minutesToMilliseconds(

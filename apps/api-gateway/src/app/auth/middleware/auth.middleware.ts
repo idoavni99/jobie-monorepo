@@ -1,18 +1,12 @@
-import { TUser } from '@jobie/users/types/user.type';
+import { type AuthorizedRequest } from '@jobie/auth-core';
 import { NestMiddleware, UnauthorizedException } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { AuthService } from '../auth.service';
-
-declare module 'express' {
-  interface Request {
-    authUser?: TUser;
-  }
-}
 
 export class AuthMiddleware implements NestMiddleware {
   constructor(private readonly authService: AuthService) {}
   async use(
-    request: Request,
+    request: AuthorizedRequest,
     response: Response,
     next: (error?: Error) => void
   ) {
@@ -29,7 +23,10 @@ export class AuthMiddleware implements NestMiddleware {
         httpOnly: true,
         maxAge: accessTokenLifetime,
       });
-      request.authUser = await this.authService.parseAccessToken(newToken);
+      const user = await this.authService.parseAccessToken(newToken);
+      if (user) {
+        request.authUser = user;
+      }
       return;
     }
 

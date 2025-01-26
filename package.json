@@ -10,7 +10,8 @@
     "test-affected": "nx affected -t test e2e",
     "lint-affected": "nx affected -t lint --fix",
     "show": "nx show project",
-    "generate": "nx g",
+    "generate-microservice": "nx g @nx/nest:application",
+    "generate-nest-lib": "nx g @nx/nest:lib",
     "prepare": "husky"
   },
   "private": true,

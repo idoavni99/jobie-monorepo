@@ -1,4 +1,4 @@
-import { UserDto, UsersRepository } from '@jobie/users/nestjs';
+import { CreateUserDto, UsersRepository } from '@jobie/users/nestjs';
 import { TUser } from '@jobie/users/types/user.type';
 import {
   Inject,
@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { authConfigKey, type AuthConfigType } from '../../config/auth.config';
 
 @Injectable()
@@ -18,16 +18,23 @@ export class AuthService {
     @Inject(authConfigKey) private readonly authConfig: AuthConfigType
   ) {}
   async isLoggedIn(accessToken?: string, refreshToken?: string) {
-    return (
-      accessToken &&
-      refreshToken &&
-      ((await this.parseAccessToken(accessToken)) &&
-        (await this.parseRefreshToken(refreshToken))) !== undefined
+    const result = Boolean(
+      (accessToken && (await this.parseAccessToken(accessToken))) ||
+        (refreshToken && (await this.parseRefreshToken(refreshToken)))
     );
+    if (!result) {
+      throw new UnauthorizedException();
+    }
+
+    return result;
   }
 
-  register(user: UserDto) {
-    return this.usersRepository.create(user);
+  async register(user: CreateUserDto) {
+    return this.usersRepository.create(
+      Object.assign(user, {
+        password: await this.hashPassword(user.password),
+      })
+    );
   }
 
   async login(username: string, password: string) {
@@ -35,16 +42,15 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException();
 
-    const hashedPassword = await this.hashPassword(password);
-
-    if (hashedPassword !== user.password) throw new UnauthorizedException();
+    if (!(await compare(password, user.password)))
+      throw new UnauthorizedException();
 
     const [access, refresh] = await Promise.all([
       this.signAccessToken(user),
       this.signRefreshToken(user),
     ]);
 
-    return { ...access, ...refresh };
+    return { ...access, ...refresh, user };
   }
 
   async refreshAccess(refreshToken: string) {
@@ -101,6 +107,6 @@ export class AuthService {
   }
 
   private hashPassword(password: string) {
-    return hash(password, this.authConfig.passwordHashSalt);
+    return hash(password, this.authConfig.passwordHashSaltRound);
   }
 }
