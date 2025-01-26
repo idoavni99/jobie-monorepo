@@ -11,10 +11,13 @@ export const setupProxyToService = async (
       (response) => response.json()
     );
     const modifiedPaths = Object.fromEntries(
-      Object.entries(swaggerJson.paths).map(([currentPathPrefix, path]) => [`${serviceName}${currentPathPrefix}` ,path])
-    )
-    swaggerJson.paths = modifiedPaths
-    SwaggerModule.setup(`api/${serviceName}`, app, swaggerJson)
+      Object.entries(swaggerJson.paths).map(([currentPathPrefix, path]) => [
+        `${serviceName}${currentPathPrefix}`,
+        path,
+      ])
+    );
+    swaggerJson.paths = modifiedPaths;
+    SwaggerModule.setup(`api/${serviceName}`, app, swaggerJson);
 
     const proxy = createProxyMiddleware({
       target: serviceUrl,

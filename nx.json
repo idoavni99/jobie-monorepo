@@ -14,7 +14,7 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
-  "nxCloudId": "678bb6b55d737121402c1698",
+  "neverConnectToCloud": true,
   "plugins": [
     {
       "plugin": "@nx/react-native/plugin",

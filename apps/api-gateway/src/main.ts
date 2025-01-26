@@ -3,11 +3,11 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from '@nestjs/common';
 import { baseBootstrap } from '@jobie/nestjs-core';
+import { Logger } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import { AppModule } from './app/app.module';
 import { gatewayConfig } from './config/gateway.config';
-import { ConfigType } from '@nestjs/config';
 import { setupProxyToService } from './proxy/setup-proxy';
 
 baseBootstrap(AppModule).then(async (app) => {
