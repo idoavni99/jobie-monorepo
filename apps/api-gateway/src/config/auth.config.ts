@@ -5,7 +5,6 @@ import { minutesToMilliseconds } from 'date-fns/minutesToMilliseconds';
 export const authConfig = registerAs('auth', () => ({
   passwordHashSaltRound:
     Number(process.env.AUTH_PASSWORD_HASH_SALT_ROUNDS) || 8,
-  accessTokenSecret: process.env.AUTH_ACCESS_TOKEN_SECRET ?? 'Avnizzz',
   refreshTokenSecret: process.env.AUTH_REFRESH_TOKEN_SECRET ?? 'Avnizzz',
   accessTokenLifetime: minutesToMilliseconds(
     Number(process.env.AUTH_ACCESS_TOKEN_LIFETIME_MINUTES) || 60

@@ -23,14 +23,11 @@ export class AuthMiddleware implements NestMiddleware {
         httpOnly: true,
         maxAge: accessTokenLifetime,
       });
-      const user = await this.authService.parseAccessToken(newToken);
-      if (user) {
-        request.authUser = user;
-      }
-      return;
+      request.authToken = newToken;
+      return next();
     }
 
-    request.authUser = authenticatedUser;
+    request.authToken = accessToken;
 
     next();
   }

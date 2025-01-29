@@ -22,6 +22,20 @@ export class UsersRepository {
     return user?.toObject();
   }
 
+  async findPasswordByUsernameOrEmail({
+    username,
+    email,
+  }: {
+    username?: string;
+    email?: string;
+  }) {
+    const { password } =
+      (await this.model
+        .findOne({ $or: [{ username }, { email }] }, { password: 1 })
+        .exec()) ?? {};
+    return password;
+  }
+
   async create(dto: CreateUserDto): Promise<User> {
     return new this.model(Object.assign(dto, { _id: randomUUID() })).save();
   }

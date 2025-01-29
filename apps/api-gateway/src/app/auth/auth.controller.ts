@@ -47,7 +47,7 @@ export class AuthController {
       accessTokenLifetime,
       refreshToken,
       refreshTokenLifetime,
-      user,
+      ...userData
     } = await this.authService.login(username, password);
 
     response
@@ -61,7 +61,7 @@ export class AuthController {
         maxAge: refreshTokenLifetime,
         signed: true,
       });
-    response.status(HttpStatus.CREATED).json(user);
+    response.status(HttpStatus.CREATED).json(userData);
   }
 
   @Post('register')

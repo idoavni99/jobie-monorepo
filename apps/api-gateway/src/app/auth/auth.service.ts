@@ -1,8 +1,10 @@
+import { commonConfigKey, type CommonConfigType } from '@jobie/nestjs-core';
 import { CreateUserDto, UsersRepository } from '@jobie/users/nestjs';
 import { TUser } from '@jobie/users/types/user.type';
 import {
   Inject,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -15,7 +17,8 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersRepository: UsersRepository,
-    @Inject(authConfigKey) private readonly authConfig: AuthConfigType
+    @Inject(authConfigKey) private readonly authConfig: AuthConfigType,
+    @Inject(commonConfigKey) private readonly commonConfig: CommonConfigType
   ) {}
   async isLoggedIn(accessToken?: string, refreshToken?: string) {
     const result = Boolean(
@@ -38,19 +41,24 @@ export class AuthService {
   }
 
   async login(username: string, password: string) {
+    const hashedPassword =
+      await this.usersRepository.findPasswordByUsernameOrEmail({ username });
+
+    if (!hashedPassword) throw new UnauthorizedException();
+
+    if (!(await compare(password, hashedPassword)))
+      throw new UnauthorizedException();
+
     const user = await this.usersRepository.findByUsername(username);
 
-    if (!user) throw new UnauthorizedException();
-
-    if (!(await compare(password, user.password)))
-      throw new UnauthorizedException();
+    if (!user) throw new InternalServerErrorException();
 
     const [access, refresh] = await Promise.all([
       this.signAccessToken(user),
       this.signRefreshToken(user),
     ]);
 
-    return { ...access, ...refresh, user };
+    return { id: user._id, ...access, ...refresh };
   }
 
   async refreshAccess(refreshToken: string) {
@@ -64,7 +72,7 @@ export class AuthService {
   async parseAccessToken(accessToken: string): Promise<TUser | undefined> {
     try {
       return this.jwtService.verifyAsync<TUser>(accessToken, {
-        secret: this.authConfig.accessTokenSecret,
+        secret: this.commonConfig.accessTokenSecret,
       });
     } catch {
       return undefined;
@@ -83,7 +91,7 @@ export class AuthService {
 
   private async signAccessToken(user: TUser) {
     const accessToken = await this.jwtService.signAsync(user, {
-      secret: this.authConfig.accessTokenSecret,
+      secret: this.commonConfig.accessTokenSecret,
       expiresIn: this.authConfig.accessTokenLifetime,
     });
     return {
