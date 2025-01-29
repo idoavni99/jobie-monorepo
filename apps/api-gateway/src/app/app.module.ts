@@ -1,16 +1,23 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { BaseAppModule } from '@jobie/nestjs-core';
-import { ConfigModule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { authConfig } from '../config/auth.config';
 import { gatewayConfig } from '../config/gateway.config';
+import { mongoConfig, MongoConfigType } from '../config/mongo.config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    BaseAppModule,
-    ConfigModule.forRoot({ isGlobal: true, load: [gatewayConfig] }),
+    BaseAppModule.forRoot({
+      rootConfigs: [gatewayConfig, authConfig, mongoConfig],
+    }),
+    MongooseModule.forRootAsync({
+      useFactory: (config: MongoConfigType) => {
+        return config;
+      },
+      inject: [mongoConfig.KEY],
+    }),
+    AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

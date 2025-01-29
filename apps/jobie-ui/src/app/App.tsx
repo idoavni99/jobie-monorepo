@@ -14,7 +14,7 @@ import Svg, { G, Path } from 'react-native-svg';
 
 export const App = () => {
   const [whatsNextYCoord, setWhatsNextYCoord] = useState<number>(0);
-  const scrollViewRef = useRef<null | ScrollView>(null);
+  const scrollViewReference = useRef<null | ScrollView>(null);
 
   return (
     <>
@@ -25,8 +25,8 @@ export const App = () => {
         }}
       >
         <ScrollView
-          ref={(ref) => {
-            scrollViewRef.current = ref;
+          ref={(reference) => {
+            scrollViewReference.current = reference;
           }}
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}
@@ -65,7 +65,7 @@ export const App = () => {
               <TouchableOpacity
                 style={styles.whatsNextButton}
                 onPress={() => {
-                  scrollViewRef.current?.scrollTo({
+                  scrollViewReference.current?.scrollTo({
                     x: 0,
                     y: whatsNextYCoord,
                   });

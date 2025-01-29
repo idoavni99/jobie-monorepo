@@ -5,8 +5,11 @@
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "strictNullChecks": true,
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
@@ -15,7 +18,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@jobie/nestjs-core": ["libs/nestjs-core/src/index.ts"]
+      "@jobie/auth-core": ["libs/auth-core/src/index.ts"],
+      "@jobie/nestjs-core": ["libs/nestjs-core/src/index.ts"],
+      "@jobie/users/*": ["libs/users/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
