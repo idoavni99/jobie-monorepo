@@ -1,3 +1,4 @@
+import { AuthorizedRequest } from '@jobie/auth-core';
 import { INestApplication, Logger, NestMiddleware } from '@nestjs/common';
 import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { createProxyMiddleware } from 'http-proxy-middleware';
@@ -20,7 +21,7 @@ export const setupProxyToService = async (
     swaggerJson.paths = modifiedPaths;
     SwaggerModule.setup(`api/${serviceName}`, app, swaggerJson);
 
-    const proxy = createProxyMiddleware({
+    const proxy = createProxyMiddleware<AuthorizedRequest>({
       target: serviceUrl,
       changeOrigin: true,
       cookieDomainRewrite: domain,
@@ -30,8 +31,8 @@ export const setupProxyToService = async (
       },
       on: {
         proxyReq: (proxyRequest, request) => {
-          if ('authUser' in request && request.authUser) {
-            proxyRequest.setHeader('Authorization', JSON.stringify(request.authUser));
+          if (request.authToken) {
+            proxyRequest.setHeader('Authorization', request.authToken);
           }
         },
       },
