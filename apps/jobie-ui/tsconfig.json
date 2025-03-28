@@ -1,13 +1,11 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "allowJs": false,
+    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
-    "jsx": "react-native",
-    "lib": ["dom", "esnext"],
-    "moduleResolution": "node",
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "declaration": true
+    "strict": true,
+    "types": ["vite/client"]
   },
   "files": [],
   "include": [],
@@ -15,5 +13,6 @@
     {
       "path": "./tsconfig.app.json"
     }
-  ]
+  ],
+  "extends": "../../tsconfig.base.json"
 }

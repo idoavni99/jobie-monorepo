@@ -1,6 +1,9 @@
 import { commonConfigKey, type CommonConfigType } from '@jobie/nestjs-core';
-import { CreateUserDto, UsersRepository } from '@jobie/users/nestjs';
-import { TUser } from '@jobie/users/types/user.type';
+import {
+  CreateUserDto,
+  UserEntity,
+  UsersRepository,
+} from '@jobie/users/nestjs';
 import {
   Inject,
   Injectable,
@@ -20,16 +23,10 @@ export class AuthService {
     @Inject(authConfigKey) private readonly authConfig: AuthConfigType,
     @Inject(commonConfigKey) private readonly commonConfig: CommonConfigType
   ) {}
-  async isLoggedIn(accessToken?: string, refreshToken?: string) {
-    const result = Boolean(
-      (accessToken && (await this.parseAccessToken(accessToken))) ||
-        (refreshToken && (await this.parseRefreshToken(refreshToken)))
-    );
-    if (!result) {
-      throw new UnauthorizedException();
-    }
+  async getMyIdentity(accessToken: string) {
+    const user = await this.parseAccessToken(accessToken);
 
-    return result;
+    return user;
   }
 
   async register(user: CreateUserDto) {
@@ -40,16 +37,18 @@ export class AuthService {
     );
   }
 
-  async login(username: string, password: string) {
+  async login(email: string, password: string) {
     const hashedPassword =
-      await this.usersRepository.findPasswordByUsernameOrEmail({ username });
+      await this.usersRepository.findPasswordByUsernameOrEmail({
+        email,
+      });
 
     if (!hashedPassword) throw new UnauthorizedException();
 
     if (!(await compare(password, hashedPassword)))
       throw new UnauthorizedException();
 
-    const user = await this.usersRepository.findByUsername(username);
+    const user = await this.usersRepository.findByEmail(email);
 
     if (!user) throw new InternalServerErrorException();
 
@@ -58,7 +57,7 @@ export class AuthService {
       this.signRefreshToken(user),
     ]);
 
-    return { id: user._id, ...access, ...refresh };
+    return { ...user, accessTokenData: access, refreshTokenData: refresh };
   }
 
   async refreshAccess(refreshToken: string) {
@@ -69,9 +68,9 @@ export class AuthService {
     return this.signAccessToken(user);
   }
 
-  async parseAccessToken(accessToken: string): Promise<TUser | undefined> {
+  async parseAccessToken(accessToken: string): Promise<UserEntity | undefined> {
     try {
-      return this.jwtService.verifyAsync<TUser>(accessToken, {
+      return this.jwtService.verifyAsync<UserEntity>(accessToken, {
         secret: this.commonConfig.accessTokenSecret,
       });
     } catch {
@@ -79,17 +78,22 @@ export class AuthService {
     }
   }
 
-  async parseRefreshToken(refreshToken: string): Promise<Pick<TUser, '_id'>> {
+  async parseRefreshToken(
+    refreshToken: string
+  ): Promise<Pick<UserEntity, '_id'>> {
     try {
-      return this.jwtService.verifyAsync<Pick<TUser, '_id'>>(refreshToken, {
-        secret: this.authConfig.refreshTokenSecret,
-      });
+      return this.jwtService.verifyAsync<Pick<UserEntity, '_id'>>(
+        refreshToken,
+        {
+          secret: this.authConfig.refreshTokenSecret,
+        }
+      );
     } catch {
       throw new UnauthorizedException('Refresh Token missing');
     }
   }
 
-  private async signAccessToken(user: TUser) {
+  private async signAccessToken(user: UserEntity) {
     const accessToken = await this.jwtService.signAsync(user, {
       secret: this.commonConfig.accessTokenSecret,
       expiresIn: this.authConfig.accessTokenLifetime,
@@ -100,7 +104,7 @@ export class AuthService {
     };
   }
 
-  private async signRefreshToken(user: TUser) {
+  private async signRefreshToken(user: UserEntity) {
     const refreshToken = await this.jwtService.signAsync(
       { _id: user._id },
       {

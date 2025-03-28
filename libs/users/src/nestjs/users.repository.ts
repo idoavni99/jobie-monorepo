@@ -17,8 +17,8 @@ export class UsersRepository {
     return user?.toObject();
   }
 
-  async findByUsername(username: string): Promise<User | undefined> {
-    const user = await this.model.findOne({ username }, { password: 0 }).exec();
+  async findByEmail(email: string): Promise<User | undefined> {
+    const user = await this.model.findOne({ email }, { password: 0 }).exec();
     return user?.toObject();
   }
 
@@ -44,8 +44,12 @@ export class UsersRepository {
     return this.model.updateOne({ _id: id }, { refreshToken }).exec();
   }
 
-  async update(id: string, dto: CreateUserDto): Promise<User | null> {
-    return this.model.findOneAndUpdate({ _id: id }, dto, { new: true }).exec();
+  async update(id: string, dto: CreateUserDto): Promise<User | undefined> {
+    return (
+      (await this.model
+        .findOneAndUpdate({ _id: id }, dto, { new: true })
+        .exec()) ?? undefined
+    );
   }
 
   async delete(id: string): Promise<DeleteResult> {

@@ -19,6 +19,7 @@
     "baseUrl": ".",
     "paths": {
       "@jobie/auth-core": ["libs/auth-core/src/index.ts"],
+      "@jobie/data-entities-core": ["libs/data-entities-core/src/index.ts"],
       "@jobie/nestjs-core": ["libs/nestjs-core/src/index.ts"],
       "@jobie/users/*": ["libs/users/src/*"]
     }

@@ -1,42 +1,30 @@
+import { DataEntity } from '@jobie/data-entities-core';
 import { Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 import { HydratedDocument } from 'mongoose';
 import { TUser } from '../types/user.type';
 
 export type UserDocument = HydratedDocument<User>;
+export type UserEntity = TUser & DataEntity;
 @Schema()
-export class User implements TUser {
+export class User implements UserEntity {
   @Prop()
-  @ApiProperty({ type: String, name: '_id' })
+  _createdAt: Date;
+
+  @Prop()
+  _updatedAt: Date;
+
+  @Prop()
   @Expose()
   _id: string;
 
   @Prop()
-  @ApiProperty({
-    type: String,
-    name: 'username',
-    example: 'avni',
-    required: true,
-  })
-  @IsNotEmpty()
-  @Expose()
-  username: string;
-
-  @Prop()
-  @ApiProperty({
-    type: String,
-    name: 'password',
-    example: 'Aa515151',
-    minLength: 6,
-  })
   @MinLength(6)
   password: string;
 
   @Prop()
-  @ApiProperty({ type: String, name: 'fullName', required: true })
-  @IsNotEmpty()
   @Expose()
   fullName: string;
 
@@ -45,7 +33,6 @@ export class User implements TUser {
       return this.fullName.split(' ').shift();
     },
   })
-  @Expose()
   firstName: string;
 
   @Virtual({
@@ -53,23 +40,44 @@ export class User implements TUser {
       return this.fullName.split(' ').pop();
     },
   })
-  @Expose()
   lastName: string;
 
   @Prop()
-  @ApiProperty({
-    type: String,
-    name: 'email',
-    required: true,
-    example: 'savyon@gmail.com',
-  })
-  @IsEmail()
-  @Expose()
   email: string;
 }
 
-export class CreateUserDto extends OmitType(User, ['_id']) {
+export class CreateUserDto extends OmitType(User, [
+  '_id',
+  'firstName',
+  'lastName',
+  '_createdAt',
+  '_updatedAt',
+]) {
+  @ApiProperty({
+    name: 'password',
+    type: String,
+    minLength: 6,
+  })
   @Expose()
+  @IsString()
+  @MinLength(6)
   override password: string;
+
+  @ApiProperty({
+    name: 'email',
+    type: String,
+  })
+  @Expose()
+  @IsEmail()
+  override email: string;
+
+  @ApiProperty({
+    name: 'fullName',
+    type: String,
+  })
+  @IsString()
+  @Expose()
+  override fullName: string;
 }
+
 export const UserSchema = SchemaFactory.createForClass(User);

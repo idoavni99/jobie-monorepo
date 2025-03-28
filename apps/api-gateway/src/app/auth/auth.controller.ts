@@ -7,27 +7,21 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginPayloadDto } from './dtos/login.payload.dto';
 
-@Controller('')
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'is the user logged in',
-    type: Boolean,
-  })
-  @Get('isLoggedIn')
+  @Get('me')
   isLoggedIn(@Req() { signedCookies }: Request) {
-    return this.authService.isLoggedIn(
-      signedCookies.accessToken,
-      signedCookies.refreshToken
-    );
+    if (!signedCookies.accessToken)
+      throw new UnauthorizedException('User is not authorized');
+    return this.authService.getMyIdentity(signedCookies.accessToken);
   }
 
   @Post('logout')
@@ -39,26 +33,21 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Body() { username, password }: LoginPayloadDto,
+    @Body() { password, email }: LoginPayloadDto,
     @Res() response: Response
   ) {
-    const {
-      accessToken,
-      accessTokenLifetime,
-      refreshToken,
-      refreshTokenLifetime,
-      ...userData
-    } = await this.authService.login(username, password);
+    const { accessTokenData, refreshTokenData, ...userData } =
+      await this.authService.login(email, password);
 
     response
-      .cookie('accessToken', accessToken, {
+      .cookie('accessToken', accessTokenData.accessToken, {
         httpOnly: true,
-        maxAge: accessTokenLifetime,
+        maxAge: accessTokenData.accessTokenLifetime,
         signed: true,
       })
-      .cookie('refreshToken', refreshToken, {
+      .cookie('refreshToken', refreshTokenData.refreshToken, {
         httpOnly: true,
-        maxAge: refreshTokenLifetime,
+        maxAge: refreshTokenData.refreshTokenLifetime,
         signed: true,
       });
     response.status(HttpStatus.CREATED).json(userData);
