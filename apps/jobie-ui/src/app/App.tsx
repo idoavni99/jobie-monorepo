@@ -13,6 +13,7 @@ import { Layout } from './components/Layout';
 import { RoutesPaths } from './enums/routes.enum';
 import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
+import { SetupProfile } from './views/SetupProfile';
 import { SignIn } from './views/SignIn';
 
 export const App = () => {
@@ -37,6 +38,10 @@ export const App = () => {
                   <Route
                     path={RoutesPaths.HOME}
                     element={<div>אבניזזזז</div>}
+                  />
+                  <Route
+                    path={RoutesPaths.SETUP_PROFILE}
+                    element={<SetupProfile />}
                   />
                 </Route>
               </Route>

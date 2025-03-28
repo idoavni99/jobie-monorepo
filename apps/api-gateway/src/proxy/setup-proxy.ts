@@ -9,9 +9,9 @@ export const setupProxyToService = async (
   domain: string
 ) => {
   try {
-    const swaggerJson: OpenAPIObject = await fetch(`${serviceUrl}/api`).then(
-      (response) => response.json()
-    );
+    const swaggerJson: OpenAPIObject = await fetch(
+      `${serviceUrl}/api-json`
+    ).then((response) => response.json());
     const modifiedPaths = Object.fromEntries(
       Object.entries(swaggerJson.paths).map(([currentPathPrefix, path]) => [
         `${serviceName}${currentPathPrefix}`,

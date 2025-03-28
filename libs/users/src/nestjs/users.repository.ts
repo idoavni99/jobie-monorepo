@@ -44,7 +44,7 @@ export class UsersRepository {
     return this.model.updateOne({ _id: id }, { refreshToken }).exec();
   }
 
-  async update(id: string, dto: CreateUserDto): Promise<User | undefined> {
+  async update(id: string, dto: Partial<User>): Promise<User | undefined> {
     return (
       (await this.model
         .findOneAndUpdate({ _id: id }, dto, { new: true })

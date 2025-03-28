@@ -52,7 +52,10 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/api-gateway-e2e/**/*"]
+      "exclude": [
+        "apps/api-gateway-e2e/**/*",
+        "user-profile-enrichment-e2e/**/*"
+      ]
     }
   ],
   "targetDefaults": {
