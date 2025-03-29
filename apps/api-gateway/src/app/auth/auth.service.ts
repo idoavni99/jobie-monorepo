@@ -26,7 +26,7 @@ export class AuthService {
   async getMyIdentity(accessToken: string) {
     const user = await this.parseAccessToken(accessToken);
 
-    return user;
+    return user?._id ? this.usersRepository.findById(user._id) : user;
   }
 
   async register(user: CreateUserDto) {

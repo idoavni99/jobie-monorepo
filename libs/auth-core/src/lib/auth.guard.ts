@@ -1,7 +1,7 @@
 import {
   Injectable,
   type CanActivate,
-  type ExecutionContext
+  type ExecutionContext,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { type AuthorizedRequest } from './types/authorized.request.type';
@@ -23,6 +23,8 @@ export class AuthGuard implements CanActivate {
     const authUser = await this.jwtService.verifyAsync(accessToken, {
       secret: this.jwtSecret,
     });
+
+    console.log(authUser);
 
     request.user = authUser;
     return true;

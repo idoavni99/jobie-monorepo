@@ -1,7 +1,8 @@
 import { EnrichedProfileData } from '@jobie/users/types';
-import { Button, Input, Stack } from '@mui/material';
+import { Button, Stack, TextField } from '@mui/material';
+import { use } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { profileEnrichmentApi } from '../../api/profile-enrichment.api';
+import { AuthContext } from '../auth/providers/AuthProvider';
 
 export const SetupProfile = () => {
   const { control, handleSubmit } = useForm<EnrichedProfileData>({
@@ -13,11 +14,11 @@ export const SetupProfile = () => {
     },
   });
 
-  const onSubmit = handleSubmit((data) => profileEnrichmentApi.post('/', data));
+  const { setupProfile } = use(AuthContext);
   return (
     <Stack
       component="form"
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit(setupProfile)}
       gap={3}
       my={4}
       alignItems={'center'}
@@ -25,8 +26,11 @@ export const SetupProfile = () => {
       <Controller
         control={control}
         name="goalJob"
+        rules={{ required: true }}
         render={({ field, fieldState }) => (
-          <Input
+          <TextField
+            helperText={fieldState.error?.message}
+            label={'Goal Job or Specialty'}
             type="text"
             {...field}
             placeholder="E.g. Software Engineer, Marketing Manager"
@@ -39,8 +43,11 @@ export const SetupProfile = () => {
       <Controller
         control={control}
         name="location"
+        rules={{ required: true }}
         render={({ field, fieldState }) => (
-          <Input
+          <TextField
+            helperText={fieldState.error?.message}
+            label={'Location'}
             type="text"
             {...field}
             placeholder="E.g. New York"
@@ -53,8 +60,11 @@ export const SetupProfile = () => {
       <Controller
         control={control}
         name="education"
+        rules={{ required: true }}
         render={({ field, fieldState }) => (
-          <Input
+          <TextField
+            helperText={fieldState.error?.message}
+            label={'Educaiton'}
             type="text"
             {...field}
             placeholder="E.g. Masters in Computer Science"
@@ -67,8 +77,11 @@ export const SetupProfile = () => {
       <Controller
         control={control}
         name="bio"
+        rules={{ required: true, maxLength: 150 }}
         render={({ field, fieldState }) => (
-          <Input
+          <TextField
+            helperText={fieldState.error?.message}
+            label={'Tell us about yourself (Max 150 characters)'}
             type="text"
             multiline
             {...field}

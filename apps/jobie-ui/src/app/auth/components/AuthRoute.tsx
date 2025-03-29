@@ -20,6 +20,7 @@ export const ProtectedRoute = () => {
 
   useEffect(() => {
     if (
+      user &&
       !user?.isProfileSetUp &&
       !globalThis.location.href.includes('/setup-profile')
     ) {

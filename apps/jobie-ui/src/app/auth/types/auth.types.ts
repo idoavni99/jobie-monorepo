@@ -1,4 +1,4 @@
-import { TUser } from '@jobie/users/types';
+import { EnrichedProfileData, TUser } from '@jobie/users/types';
 
 export type AuthContextValue = {
   user?: TUser;
@@ -10,6 +10,7 @@ export type AuthContextValue = {
       fullName: string;
     }
   ) => Promise<void>;
+  setupProfile: (data: EnrichedProfileData) => Promise<void>;
   logout: () => Promise<void>;
   getUserMe: () => Promise<void>;
 };

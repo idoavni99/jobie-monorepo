@@ -44,11 +44,15 @@ export class AuthController {
         httpOnly: true,
         maxAge: accessTokenData.accessTokenLifetime,
         signed: true,
+        secure: true,
+        sameSite: 'strict',
       })
       .cookie('refreshToken', refreshTokenData.refreshToken, {
         httpOnly: true,
         maxAge: refreshTokenData.refreshTokenLifetime,
         signed: true,
+        secure: true,
+        sameSite: 'strict',
       });
     response.status(HttpStatus.CREATED).json(userData);
   }

@@ -1,4 +1,4 @@
-import { TUser } from '@jobie/users/types';
+import { EnrichedProfileData, TUser } from '@jobie/users/types';
 import {
   createContext,
   PropsWithChildren,
@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authApi } from '../../../api/auth.api';
+import { gatewayApi } from '../../../api/gateway.api';
 import { AuthContextValue } from '../types/auth.types';
 
 export const AuthContext = createContext<AuthContextValue>(
@@ -32,11 +32,13 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     setUser(rawUser);
   }, []);
 
-  const getUserMe = useCallback(async () => {
+  const getUserMe = async () => {
     try {
       setIsLoadingUserAuth(true);
 
-      const { data: user } = await authApi.get<TUser | undefined>('/me');
+      const { data: user } = await gatewayApi.get<TUser | undefined>(
+        '/auth/me'
+      );
 
       saveUser(user);
     } catch (error) {
@@ -44,7 +46,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     } finally {
       setIsLoadingUserAuth(false);
     }
-  }, [saveUser]);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -52,50 +54,49 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   }, [getUserMe, user]);
 
-  const onAuthenticationSuccess = useCallback(
-    (rawUser: TUser) => {
-      saveUser(rawUser);
-      navigate('/');
-    },
-    [navigate, saveUser]
-  );
-
-  const login = useCallback(
-    async (userLoginData: Pick<TUser, 'email' | 'password'>) => {
-      setIsLoadingAuthFormResponse(true);
-
-      await authApi
-        .post<TUser>('/login', userLoginData)
-        .then(({ data }) => {
-          onAuthenticationSuccess(data);
-        })
-        .finally(() => setIsLoadingAuthFormResponse(false));
-    },
-    [onAuthenticationSuccess]
-  );
-
-  const register = useCallback(
-    async (
-      registrationDTO: Pick<TUser, 'email' | 'password'> & {
-        fullName: string;
-      }
-    ) => {
-      setIsLoadingAuthFormResponse(true);
-
-      await authApi
-        .post<TUser>('/register', registrationDTO)
-        .then(({ data }) => {
-          onAuthenticationSuccess(data);
-        })
-        .finally(() => setIsLoadingAuthFormResponse(false));
-    },
-    [onAuthenticationSuccess]
-  );
-
-  const logout = useCallback(async () => {
-    await authApi.post('/logout');
+  const onAuthenticationSuccess = (rawUser: TUser) => {
+    saveUser(rawUser);
     navigate('/');
-  }, []);
+  };
+
+  const login = async (userLoginData: Pick<TUser, 'email' | 'password'>) => {
+    setIsLoadingAuthFormResponse(true);
+
+    await gatewayApi
+      .post<TUser>('/auth/login', userLoginData)
+      .then(({ data }) => {
+        onAuthenticationSuccess(data);
+      })
+      .finally(() => setIsLoadingAuthFormResponse(false));
+  };
+
+  const register = async (
+    registrationDTO: Pick<TUser, 'email' | 'password'> & {
+      fullName: string;
+    }
+  ) => {
+    setIsLoadingAuthFormResponse(true);
+
+    await gatewayApi
+      .post<TUser>('/auth/register', registrationDTO)
+      .then(({ data }) => {
+        onAuthenticationSuccess(data);
+      })
+      .finally(() => setIsLoadingAuthFormResponse(false));
+  };
+
+  const setupProfile = async (data: EnrichedProfileData) => {
+    const { data: updatedUser } = await gatewayApi.post<TUser>(
+      '/user-profile-enrichment',
+      data
+    );
+    onAuthenticationSuccess(updatedUser);
+  };
+
+  const logout = async () => {
+    await gatewayApi.post('/auth/logout');
+    navigate('/');
+  };
 
   return (
     <AuthContext.Provider
@@ -106,6 +107,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         logout,
         isLoadingUserAuth,
         getUserMe,
+        setupProfile,
         isLoadingAuthFormResponse,
       }}
     >

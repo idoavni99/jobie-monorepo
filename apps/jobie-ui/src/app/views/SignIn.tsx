@@ -1,9 +1,9 @@
 import {
   Button,
   CircularProgress,
-  Input,
   Link,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material';
 import { use } from 'react';
@@ -37,7 +37,9 @@ export const SignIn = () => {
         control={control}
         name="email"
         render={({ field, fieldState }) => (
-          <Input
+          <TextField
+            helperText={fieldState.error?.message}
+            label="Email:"
             type="email"
             {...field}
             error={fieldState.invalid}
@@ -49,7 +51,9 @@ export const SignIn = () => {
         control={control}
         name="password"
         render={({ field, fieldState }) => (
-          <Input
+          <TextField
+            helperText={fieldState.error?.message}
+            label="Password:"
             type="password"
             {...field}
             error={fieldState.invalid}

@@ -4,7 +4,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { EnrichUserProfileDto } from '../dto/enrich-user-profile.dto';
 import { ProfileService } from './profile.service';
 
-@Controller('ProfileController')
+@Controller('')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 

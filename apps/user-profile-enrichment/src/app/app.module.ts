@@ -1,7 +1,8 @@
 import { mongoConfig, MongoConfigType } from '@jobie/data-entities-core';
+import { BaseAppModule } from '@jobie/nestjs-core';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { BaseAppModule } from '@jobie/nestjs-core';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { BaseAppModule } from '@jobie/nestjs-core';
       },
       inject: [mongoConfig.KEY],
     }),
+    ProfileModule,
   ],
 })
 export class AppModule {}

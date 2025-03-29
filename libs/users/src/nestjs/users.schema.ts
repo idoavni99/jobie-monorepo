@@ -8,7 +8,16 @@ import { TUser } from '../types/user.type';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserEntity = TUser & DataEntity;
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true,
+    getters: true,
+  },
+  toObject: {
+    getters: true,
+    virtuals: true,
+  },
+})
 export class User implements UserEntity {
   @Prop()
   _createdAt: Date;

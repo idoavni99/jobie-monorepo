@@ -13,7 +13,7 @@ export const baseBootstrap = async (
     bufferLogs: true,
     cors: isDevelopment
       ? {
-          allowedHeaders: ['content-type'],
+          allowedHeaders: ['Authorization', 'content-type'],
           origin: 'http://localhost:4200',
           credentials: true,
         }
