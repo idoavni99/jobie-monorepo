@@ -11,6 +11,7 @@ export const SetupProfile = () => {
       education: '',
       location: '',
       goalJob: '',
+      linkedinProfileUrl: '',
     },
   });
 
@@ -42,11 +43,34 @@ export const SetupProfile = () => {
 
       <Controller
         control={control}
+        name="linkedinProfileUrl"
+        rules={{
+          required: true,
+          pattern:
+            /^https?:\/\/(www\.)?linkedin\.com\/(in|pub)\/[a-zA-Z0-9-_%]+\/?$/,
+        }}
+        render={({ field, fieldState }) => (
+          <TextField
+            helperText={
+              fieldState.error?.type && 'Must be a valid LinkedIn URL'
+            }
+            label="Linkedin Profile"
+            type="text"
+            {...field}
+            placeholder="Copy it from the app"
+            error={fieldState.invalid}
+            required
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
         name="location"
         rules={{ required: true }}
         render={({ field, fieldState }) => (
           <TextField
-            helperText={fieldState.error?.message}
+            helperText={fieldState.error && 'This field is required'}
             label={'Location'}
             type="text"
             {...field}
@@ -63,7 +87,7 @@ export const SetupProfile = () => {
         rules={{ required: true }}
         render={({ field, fieldState }) => (
           <TextField
-            helperText={fieldState.error?.message}
+            helperText={fieldState.error && 'This field is required'}
             label={'Educaiton'}
             type="text"
             {...field}
@@ -80,7 +104,11 @@ export const SetupProfile = () => {
         rules={{ required: true, maxLength: 150 }}
         render={({ field, fieldState }) => (
           <TextField
-            helperText={fieldState.error?.message}
+            helperText={
+              fieldState.error?.type
+                ? 'Shorten it a bit (Should be 150 characters)'
+                : `${field.value.length} characters`
+            }
             label={'Tell us about yourself (Max 150 characters)'}
             type="text"
             multiline

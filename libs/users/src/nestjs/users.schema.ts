@@ -37,7 +37,11 @@ export class User implements UserEntity {
   @Virtual({
     get: function (this: User) {
       return Boolean(
-        this.goalJob && this.education && this.location && this.bio
+        this.goalJob &&
+          this.education &&
+          this.location &&
+          this.bio &&
+          this.linkedinProfileUrl
       );
     },
   })
@@ -59,6 +63,9 @@ export class User implements UserEntity {
 
   @Prop({ unique: true })
   email: string;
+
+  @Prop({ unique: true })
+  linkedinProfileUrl?: string;
 
   @Prop()
   goalJob?: string;

@@ -11,6 +11,7 @@ import { AuthRoute, ProtectedRoute } from './auth/components/AuthRoute';
 import { AuthProvider } from './auth/providers/AuthProvider';
 import { Layout } from './components/Layout';
 import { RoutesPaths } from './enums/routes.enum';
+import { HomeScreen } from './views/Home';
 import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
 import { SetupProfile } from './views/SetupProfile';
@@ -35,10 +36,7 @@ export const App = () => {
 
               <Route element={<ProtectedRoute />}>
                 <Route element={<Layout />}>
-                  <Route
-                    path={RoutesPaths.HOME}
-                    element={<div>אבניזזזז</div>}
-                  />
+                  <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
                   <Route
                     path={RoutesPaths.SETUP_PROFILE}
                     element={<SetupProfile />}

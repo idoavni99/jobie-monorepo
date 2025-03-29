@@ -1,6 +1,6 @@
 import { CircularProgress } from '@mui/material';
 import { use, useEffect } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../providers/AuthProvider';
 
 export const AuthRoute = () => {
@@ -16,17 +16,18 @@ export const AuthRoute = () => {
 };
 
 export const ProtectedRoute = () => {
+  const navigate = useNavigate();
   const { user, isLoadingUserAuth } = use(AuthContext);
 
   useEffect(() => {
     if (
-      user &&
+      user?._id &&
       !user?.isProfileSetUp &&
       !globalThis.location.href.includes('/setup-profile')
     ) {
-      globalThis.location.href = '/setup-profile';
+      navigate('/setup-profile');
     }
-  }, [user?.isProfileSetUp]);
+  }, [user?._id, user?.isProfileSetUp, navigate]);
 
   return isLoadingUserAuth ? (
     <CircularProgress />

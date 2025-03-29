@@ -1,4 +1,4 @@
-import { Button, Stack, TextField } from '@mui/material';
+import { Button, CircularProgress, Stack, TextField } from '@mui/material';
 import { use } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthContext } from '../auth/providers/AuthProvider';
@@ -26,10 +26,15 @@ export const Register = () => {
       <Controller
         control={control}
         name="email"
-        rules={{ required: true }}
+        rules={{
+          required: true,
+          pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/,
+        }}
         render={({ field, fieldState }) => (
           <TextField
-            helperText={fieldState.error?.message}
+            helperText={
+              fieldState.error && 'This must be a valid email address'
+            }
             label="Email:"
             type="email"
             {...field}
@@ -47,7 +52,9 @@ export const Register = () => {
         render={({ field, fieldState }) => (
           <TextField
             type="text"
-            helperText={fieldState.error?.message}
+            helperText={
+              fieldState.error?.type && 'This must be a valid full name'
+            }
             label="Full Name:"
             {...field}
             placeholder="Enter your full name"
@@ -68,7 +75,10 @@ export const Register = () => {
         render={({ field, fieldState }) => (
           <TextField
             type="password"
-            helperText={fieldState.error?.message}
+            helperText={
+              fieldState.error?.type &&
+              'The password should be longer than 6 characters and include a letter, number and sign'
+            }
             label="Password:"
             {...field}
             placeholder="Enter a strong password"
@@ -78,7 +88,9 @@ export const Register = () => {
         )}
       />
 
-      <Button type="submit">Sign Up</Button>
+      <Button type="submit" variant="contained">
+        {formState.isLoading ? <CircularProgress /> : 'Sign Up'}
+      </Button>
     </Stack>
   );
 };

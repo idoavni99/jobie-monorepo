@@ -27,6 +27,7 @@ export const setupProxyToService = async (
       target: serviceUrl,
       changeOrigin: true,
       secure: false,
+      cookieDomainRewrite: domain,
       pathRewrite: (path) => {
         return path.replace(`/${serviceName}`, '');
       },

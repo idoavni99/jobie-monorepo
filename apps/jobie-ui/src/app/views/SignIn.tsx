@@ -1,16 +1,17 @@
 import {
   Button,
   CircularProgress,
-  Link,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import { use } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../auth/providers/AuthProvider';
 import { RoutesPaths } from '../enums/routes.enum';
 export const SignIn = () => {
+  const navigate = useNavigate();
   const { login } = use(AuthContext);
 
   const { control, handleSubmit, formState } = useForm({
@@ -62,15 +63,15 @@ export const SignIn = () => {
         )}
       />
 
-      <Button type="submit" disabled={formState.isLoading}>
+      <Button type="submit" variant="contained" disabled={formState.isLoading}>
         {formState.isLoading ? <CircularProgress /> : 'Sign In'}
       </Button>
 
       <Stack direction={'row'} alignItems={'center'} gap={0.5}>
         <Typography>Don't have an account yet?</Typography>
-        <Link underline="hover" href={RoutesPaths.REGISTER}>
-          <Typography>Sign up</Typography>
-        </Link>
+        <Button onClick={() => navigate(RoutesPaths.REGISTER)} size={'small'}>
+          {formState.isLoading ? <CircularProgress /> : 'Sign Up'}
+        </Button>
       </Stack>
     </Stack>
   );

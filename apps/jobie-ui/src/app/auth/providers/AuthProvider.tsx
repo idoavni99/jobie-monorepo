@@ -22,17 +22,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const navigate = useNavigate();
 
-  const saveUser = useCallback((rawUser?: TUser) => {
-    if (!rawUser) {
-      setUser(undefined);
-
-      return;
-    }
-
-    setUser(rawUser);
-  }, []);
-
-  const getUserMe = async () => {
+  const getUserMe = useCallback(async () => {
     try {
       setIsLoadingUserAuth(true);
 
@@ -40,22 +30,22 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         '/auth/me'
       );
 
-      saveUser(user);
+      setUser(user);
     } catch (error) {
       console.error('Get User Me went wrong', error);
     } finally {
       setIsLoadingUserAuth(false);
     }
-  };
+  }, [setUser, setIsLoadingUserAuth]);
 
   useEffect(() => {
-    if (!user) {
+    if (!user?._id) {
       getUserMe();
     }
-  }, [getUserMe, user]);
+  }, [user?._id, getUserMe]);
 
   const onAuthenticationSuccess = (rawUser: TUser) => {
-    saveUser(rawUser);
+    setUser(rawUser);
     navigate('/');
   };
 
@@ -77,12 +67,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   ) => {
     setIsLoadingAuthFormResponse(true);
 
-    await gatewayApi
-      .post<TUser>('/auth/register', registrationDTO)
-      .then(({ data }) => {
-        onAuthenticationSuccess(data);
-      })
-      .finally(() => setIsLoadingAuthFormResponse(false));
+    await gatewayApi.post<TUser>('/auth/register', registrationDTO);
+    await login({
+      email: registrationDTO.email,
+      password: registrationDTO.password,
+    });
   };
 
   const setupProfile = async (data: EnrichedProfileData) => {
@@ -95,7 +84,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const logout = async () => {
     await gatewayApi.post('/auth/logout');
-    navigate('/');
+    setUser(undefined);
   };
 
   return (

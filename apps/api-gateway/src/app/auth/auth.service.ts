@@ -52,12 +52,12 @@ export class AuthService {
 
     if (!user) throw new InternalServerErrorException();
 
-    const [access, refresh] = await Promise.all([
+    const [accessToken, refreshToken] = await Promise.all([
       this.signAccessToken(user),
       this.signRefreshToken(user),
     ]);
 
-    return { ...user, accessTokenData: access, refreshTokenData: refresh };
+    return { ...user, accessToken, refreshToken };
   }
 
   async refreshAccess(refreshToken: string) {
@@ -98,10 +98,7 @@ export class AuthService {
       secret: this.commonConfig.accessTokenSecret,
       expiresIn: this.authConfig.accessTokenLifetime,
     });
-    return {
-      accessToken,
-      accessTokenLifetime: this.authConfig.accessTokenLifetime,
-    };
+    return accessToken;
   }
 
   private async signRefreshToken(user: UserEntity) {
@@ -112,10 +109,7 @@ export class AuthService {
         expiresIn: this.authConfig.refreshTokenLifetime,
       }
     );
-    return {
-      refreshToken,
-      refreshTokenLifetime: this.authConfig.refreshTokenLifetime,
-    };
+    return refreshToken;
   }
 
   private hashPassword(password: string) {
