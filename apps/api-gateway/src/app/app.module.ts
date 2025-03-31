@@ -1,9 +1,9 @@
+import { mongoConfig, MongoConfigType } from '@jobie/data-entities-core';
 import { BaseAppModule } from '@jobie/nestjs-core';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { authConfig } from '../config/auth.config';
 import { gatewayConfig } from '../config/gateway.config';
-import { mongoConfig, MongoConfigType } from '../config/mongo.config';
 import { AuthModule } from './auth/auth.module';
 
 @Module({

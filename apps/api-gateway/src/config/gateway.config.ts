@@ -3,7 +3,7 @@ export const gatewayConfig = registerAs('gateway', () => ({
   serviceDiscovery: (process.env.SERVICE_DISCOVERY
     ? JSON.parse(process.env.SERVICE_DISCOVERY)
     : {
-        'registration-service': 'http://localhost:3001',
+        'user-profile-enrichment': 'http://localhost:3001',
       }) as Record<string, string>,
   appDomain: process.env.APP_DOMAIN ?? 'localhost',
 }));

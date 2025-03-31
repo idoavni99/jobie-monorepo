@@ -4,30 +4,42 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Inject,
   Post,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { AuthConfigType, authConfigKey } from '../../config/auth.config';
 import { AuthService } from './auth.service';
 import { LoginPayloadDto } from './dtos/login.payload.dto';
 
-@Controller('')
+@Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    @Inject(authConfigKey) private readonly authConfig: AuthConfigType
+  ) {}
 
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'is the user logged in',
-    type: Boolean,
-  })
-  @Get('isLoggedIn')
-  isLoggedIn(@Req() { signedCookies }: Request) {
-    return this.authService.isLoggedIn(
-      signedCookies.accessToken,
-      signedCookies.refreshToken
-    );
+  @Get('me')
+  async isLoggedIn(
+    @Req() { signedCookies }: Request,
+    @Res({ passthrough: true }) response: Response
+  ) {
+    if (!signedCookies.accessToken && !signedCookies.refreshToken)
+      throw new UnauthorizedException('User is not authorized');
+
+    if (signedCookies.accessToken)
+      return this.authService.getMyIdentity(signedCookies.accessToken);
+
+    if (signedCookies.refreshToken) {
+      const accessToken = await this.authService.refreshAccess(
+        signedCookies.refreshToken
+      );
+      this.setTokenCookies(response, accessToken, signedCookies.refreshToken);
+      return this.authService.getMyIdentity(accessToken);
+    }
   }
 
   @Post('logout')
@@ -39,33 +51,39 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Body() { username, password }: LoginPayloadDto,
+    @Body() { password, email }: LoginPayloadDto,
     @Res() response: Response
   ) {
-    const {
-      accessToken,
-      accessTokenLifetime,
-      refreshToken,
-      refreshTokenLifetime,
-      ...userData
-    } = await this.authService.login(username, password);
+    const { accessToken, refreshToken, ...userData } =
+      await this.authService.login(email, password);
 
-    response
-      .cookie('accessToken', accessToken, {
-        httpOnly: true,
-        maxAge: accessTokenLifetime,
-        signed: true,
-      })
-      .cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        maxAge: refreshTokenLifetime,
-        signed: true,
-      });
+    this.setTokenCookies(response, accessToken, refreshToken);
     response.status(HttpStatus.CREATED).json(userData);
   }
 
   @Post('register')
   register(@Body() user: CreateUserDto) {
     return this.authService.register(user);
+  }
+
+  private setTokenCookies(
+    response: Response,
+    accessToken: string,
+    refreshToken: string
+  ) {
+    response.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      maxAge: this.authConfig.accessTokenLifetime,
+      signed: true,
+      secure: true,
+      sameSite: 'strict',
+    });
+    response.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      maxAge: this.authConfig.refreshTokenLifetime,
+      signed: true,
+      secure: true,
+      sameSite: 'strict',
+    });
   }
 }
