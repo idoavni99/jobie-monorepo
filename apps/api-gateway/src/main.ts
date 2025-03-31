@@ -6,21 +6,20 @@
 import { baseBootstrap } from '@jobie/nestjs-core';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app/app.module';
-import { AuthMiddleware } from './app/auth/middleware/auth.middleware';
 import { authConfigKey, AuthConfigType } from './config/auth.config';
 import { gatewayConfigKey, GatewayConfigType } from './config/gateway.config';
 import { setupProxyToService } from './proxy/setup-proxy';
 
 baseBootstrap(AppModule, async (app) => {
   const { authCookiesSecret } = app.get<AuthConfigType>(authConfigKey);
+
   const { serviceDiscovery, appDomain } =
     app.get<GatewayConfigType>(gatewayConfigKey);
-  const authMiddleware = app.get(AuthMiddleware);
-  app.use(cookieParser(authCookiesSecret));
 
+  app.use(cookieParser(authCookiesSecret));
   await Promise.all(
     Object.entries(serviceDiscovery).map((service) =>
-      setupProxyToService(app, authMiddleware, service, appDomain)
+      setupProxyToService(app, service, appDomain)
     )
   );
 });
