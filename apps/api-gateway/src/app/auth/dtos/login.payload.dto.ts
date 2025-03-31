@@ -1,6 +1,13 @@
-import { CreateUserDto } from '@jobie/users/nestjs';
+import { User } from '@jobie/users/nestjs';
 import { PickType } from '@nestjs/swagger';
-export class LoginPayloadDto extends PickType(CreateUserDto, [
-  'username',
-  'password',
-]) {}
+import { Expose } from 'class-transformer';
+import { IsEmail, IsString } from 'class-validator';
+export class LoginPayloadDto extends PickType(User, ['password', 'email']) {
+  @IsEmail()
+  @Expose()
+  override email: string;
+
+  @IsString()
+  @Expose()
+  override password: string;
+}

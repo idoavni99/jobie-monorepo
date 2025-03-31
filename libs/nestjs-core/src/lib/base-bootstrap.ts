@@ -8,7 +8,18 @@ export const baseBootstrap = async (
   AppModule: Type,
   beforeListen?: (app: INestApplication) => Promise<void>
 ) => {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const isDevelopment = process.env['NODE_ENV'] !== 'production';
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+    cors: isDevelopment
+      ? {
+          allowedHeaders: ['Authorization', 'content-type'],
+          origin: 'http://localhost:4200',
+          credentials: true,
+        }
+      : undefined,
+  });
+
   const logger = app.get(Logger);
   app.useLogger(logger);
   setupSwagger(app);

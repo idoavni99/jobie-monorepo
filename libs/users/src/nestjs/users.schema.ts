@@ -1,51 +1,57 @@
+import { DataEntity } from '@jobie/data-entities-core';
 import { Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 import { HydratedDocument } from 'mongoose';
 import { TUser } from '../types/user.type';
 
 export type UserDocument = HydratedDocument<User>;
-@Schema()
-export class User implements TUser {
+export type UserEntity = TUser & DataEntity;
+@Schema({
+  toJSON: {
+    virtuals: true,
+    getters: true,
+  },
+  toObject: {
+    getters: true,
+    virtuals: true,
+  },
+})
+export class User implements UserEntity {
   @Prop()
-  @ApiProperty({ type: String, name: '_id' })
-  @Expose()
+  _createdAt: Date;
+
+  @Prop()
+  _updatedAt: Date;
+
+  @Prop()
   _id: string;
 
   @Prop()
-  @ApiProperty({
-    type: String,
-    name: 'username',
-    example: 'avni',
-    required: true,
-  })
-  @IsNotEmpty()
-  @Expose()
-  username: string;
-
-  @Prop()
-  @ApiProperty({
-    type: String,
-    name: 'password',
-    example: 'Aa515151',
-    minLength: 6,
-  })
-  @MinLength(6)
   password: string;
 
   @Prop()
-  @ApiProperty({ type: String, name: 'fullName', required: true })
-  @IsNotEmpty()
-  @Expose()
   fullName: string;
+
+  @Virtual({
+    get: function (this: User) {
+      return Boolean(
+        this.goalJob &&
+          this.education &&
+          this.location &&
+          this.bio &&
+          this.linkedinProfileUrl
+      );
+    },
+  })
+  isProfileSetUp: boolean;
 
   @Virtual({
     get: function (this: User) {
       return this.fullName.split(' ').shift();
     },
   })
-  @Expose()
   firstName: string;
 
   @Virtual({
@@ -53,23 +59,53 @@ export class User implements TUser {
       return this.fullName.split(' ').pop();
     },
   })
-  @Expose()
   lastName: string;
 
-  @Prop()
-  @ApiProperty({
-    type: String,
-    name: 'email',
-    required: true,
-    example: 'savyon@gmail.com',
-  })
-  @IsEmail()
-  @Expose()
+  @Prop({ unique: true })
   email: string;
+
+  @Prop({ unique: true })
+  linkedinProfileUrl?: string;
+
+  @Prop()
+  goalJob?: string;
+
+  @Prop()
+  location?: string;
+
+  @Prop()
+  education?: string;
+
+  @Prop()
+  bio?: string;
 }
 
-export class CreateUserDto extends OmitType(User, ['_id']) {
+export class CreateUserDto {
+  @ApiProperty({
+    name: 'password',
+    type: String,
+    minLength: 6,
+  })
   @Expose()
-  override password: string;
+  @IsString()
+  @MinLength(6)
+  password: string;
+
+  @ApiProperty({
+    name: 'email',
+    type: String,
+  })
+  @Expose()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({
+    name: 'fullName',
+    type: String,
+  })
+  @IsString()
+  @Expose()
+  fullName: string;
 }
+
 export const UserSchema = SchemaFactory.createForClass(User);
