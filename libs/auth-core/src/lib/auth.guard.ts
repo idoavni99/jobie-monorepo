@@ -24,8 +24,6 @@ export class AuthGuard implements CanActivate {
       secret: this.jwtSecret,
     });
 
-    console.log(authUser);
-
     request.user = authUser;
     return true;
   }
