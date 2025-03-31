@@ -1,7 +1,7 @@
 import {
   Injectable,
   type CanActivate,
-  type ExecutionContext
+  type ExecutionContext,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { type AuthorizedRequest } from './types/authorized.request.type';
