@@ -3,6 +3,7 @@ import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   root: __dirname,
@@ -22,6 +23,7 @@ export default defineConfig({
       },
     }),
     nxViteTsPaths(),
+    VitePWA({ registerType: 'autoUpdate' }),
     nxCopyAssetsPlugin(['*.md']),
   ],
   // Uncomment this if you are using workers.

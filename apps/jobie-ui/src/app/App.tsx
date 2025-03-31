@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom';
 import { AuthRoute, ProtectedRoute } from './auth/components/AuthRoute';
 import { AuthProvider } from './auth/providers/AuthProvider';
-import { Layout } from './components/Layout';
+import { SetupLayout } from './components/SetupLayout';
 import { RoutesPaths } from './enums/routes.enum';
 import { HomeScreen } from './views/Home';
 import { NotFound } from './views/NotFound';
@@ -30,12 +30,14 @@ export const App = () => {
           <AuthProvider>
             <Routes>
               <Route element={<AuthRoute />}>
-                <Route path={RoutesPaths.REGISTER} element={<Register />} />
-                <Route path={RoutesPaths.LOGIN} element={<SignIn />} />
+                <Route element={<SetupLayout />}>
+                  <Route path={RoutesPaths.REGISTER} element={<Register />} />
+                  <Route path={RoutesPaths.LOGIN} element={<SignIn />} />
+                </Route>
               </Route>
 
               <Route element={<ProtectedRoute />}>
-                <Route element={<Layout />}>
+                <Route element={<SetupLayout />}>
                   <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
                   <Route
                     path={RoutesPaths.SETUP_PROFILE}

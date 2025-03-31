@@ -3,8 +3,12 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   cssVariables: true,
   palette: {
+    mode: 'light',
+    background: {
+      default: 'linear-gradient(180deg, #5961f0, #682ddb)',
+    },
     primary: {
-      main: '#1976d2',
+      main: '#3f02b6',
     },
     secondary: {
       main: '#4caf50',

@@ -120,7 +120,9 @@ export const SetupProfile = () => {
         )}
       />
 
-      <Button type="submit">Setup Profile</Button>
+      <Button type="submit" variant="contained">
+        Setup Profile
+      </Button>
     </Stack>
   );
 };
