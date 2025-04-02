@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   CircularProgress,
   Stack,
@@ -10,6 +11,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../auth/providers/AuthProvider';
 import { RoutesPaths } from '../enums/routes.enum';
+
 export const SignIn = () => {
   const navigate = useNavigate();
   const { login } = use(AuthContext);
@@ -26,53 +28,164 @@ export const SignIn = () => {
   });
 
   return (
-    <Stack
-      component="form"
-      gap={3}
-      my={4}
-      direction="column"
-      alignItems={'center'}
-      onSubmit={onSubmit}
+    <Box
+      className="glass-card"
+      sx={{
+        padding: '2.618rem',
+        maxWidth: '420px',
+        width: '100%',
+        borderRadius: '21px',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+      }}
     >
-      <Controller
-        control={control}
-        name="email"
-        render={({ field, fieldState }) => (
-          <TextField
-            helperText={fieldState.error?.message}
-            label="Email:"
-            type="email"
-            {...field}
-            error={fieldState.invalid}
-            placeholder="Enter your email"
-          />
-        )}
-      />
-      <Controller
-        control={control}
-        name="password"
-        render={({ field, fieldState }) => (
-          <TextField
-            helperText={fieldState.error?.message}
-            label="Password:"
-            type="password"
-            {...field}
-            error={fieldState.invalid}
-            placeholder="Enter a strong password"
-          />
-        )}
-      />
+      <Stack
+        gap="1.618rem"
+        component="form"
+        onSubmit={onSubmit}
+        alignItems="center"
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            color: 'rgba(255,255,255,0.85)',
+            fontWeight: 500,
+            fontSize: '1.25rem',
+            mb: '0.5rem',
+          }}
+        >
+          Sign In
+        </Typography>
 
-      <Button type="submit" variant="contained" disabled={formState.isLoading}>
-        {formState.isLoading ? <CircularProgress /> : 'Sign In'}
-      </Button>
+        <Controller
+          control={control}
+          name="email"
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              label="Email"
+              fullWidth
+              variant="outlined"
+              error={fieldState.invalid}
+              helperText={fieldState.error?.message}
+              sx={{
+                '& input': {
+                  padding: '0.75rem 1rem',
+                  color: '#ffffff',
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(255,255,255,0.3)',
+                  fontSize: '0.875rem',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255,255,255,0.2)',
+                },
+                '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#6D8CFF',
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '13px',
+                },
+              }}
+              InputLabelProps={{ shrink: true }}
+              FormHelperTextProps={{ sx: { color: 'lightpink' } }}
+            />
+          )}
+        />
 
-      <Stack direction={'row'} alignItems={'center'} gap={0.5}>
-        <Typography>Don't have an account yet?</Typography>
-        <Button onClick={() => navigate(RoutesPaths.REGISTER)} size={'small'}>
-          {formState.isLoading ? <CircularProgress /> : 'Sign Up'}
-        </Button>
+        <Controller
+          control={control}
+          name="password"
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              label="Password"
+              type="password"
+              fullWidth
+              variant="outlined"
+              error={fieldState.invalid}
+              helperText={fieldState.error?.message}
+              sx={{
+                '& input': {
+                  padding: '0.75rem 1rem',
+                  color: '#ffffff',
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(255,255,255,0.3)',
+                  fontSize: '0.875rem',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255,255,255,0.2)',
+                },
+                '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#6D8CFF',
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '13px',
+                },
+              }}
+              InputLabelProps={{ shrink: true }}
+              FormHelperTextProps={{ sx: { color: 'lightpink' } }}
+            />
+          )}
+        />
+
+        <Box width="62%">
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{
+              backgroundColor: '#6D8CFF',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '0.95rem',
+              borderRadius: '34px',
+              padding: '0.618rem 1.2rem',
+              boxShadow: '0 6px 16px rgba(0, 0, 0, 0.2)',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                backgroundColor: '#5C7DE6',
+                transform: 'translateY(-1px)',
+                boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
+              },
+            }}
+          >
+            {formState.isLoading ? <CircularProgress size={20} /> : 'Sign In'}
+          </Button>
+        </Box>
+
+        <Stack
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+          spacing={1}
+        >
+          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
+            Don’t have an account?
+          </Typography>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => navigate(RoutesPaths.REGISTER)}
+            sx={{
+              textTransform: 'none',
+              fontSize: '0.75rem',
+              fontWeight: 500,
+              borderRadius: '34px',
+              padding: '0.4rem 1rem',
+              backgroundColor: '#6D8CFF',
+              color: '#fff',
+              minWidth: 'auto',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
+              '&:hover': {
+                backgroundColor: '#5C7DE6',
+              },
+            }}
+          >
+            Sign Up
+          </Button>
+        </Stack>
       </Stack>
-    </Stack>
+    </Box>
   );
 };

@@ -12,7 +12,9 @@ if (root) {
     <StrictMode>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <App />
+        <div id="app-wrapper">
+          <App />
+        </div>
       </ThemeProvider>
     </StrictMode>
   );

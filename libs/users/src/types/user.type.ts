@@ -4,6 +4,7 @@ export type EnrichedProfileData = {
   education: string;
   bio: string;
   linkedinProfileUrl: string;
+  aspirationalLinkedinUrl: string;
 };
 export type UserData = {
   _id: string;

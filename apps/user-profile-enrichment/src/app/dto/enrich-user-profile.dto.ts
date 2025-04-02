@@ -49,4 +49,15 @@ export class EnrichUserProfileDto implements EnrichedProfileData {
   @IsUrl()
   @MaxLength(150)
   linkedinProfileUrl: string;
+
+  @ApiProperty({
+    name: 'aspirationalLinkedinUrl',
+    type: String,
+    required: true,
+  })
+  @Expose()
+  @IsUrl()
+  @MaxLength(150)
+  aspirationalLinkedinUrl: string;
+
 }

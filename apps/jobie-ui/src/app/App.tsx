@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material';
+import { Box } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -20,11 +20,14 @@ import { SignIn } from './views/SignIn';
 export const App = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Stack
-        width={'inherit'}
-        height={'inherit'}
-        alignItems={'center'}
-        justifyContent={'center'}
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+        width="100vw"
+        px={2}
       >
         <Router>
           <AuthProvider>
@@ -55,7 +58,7 @@ export const App = () => {
             </Routes>
           </AuthProvider>
         </Router>
-      </Stack>
+      </Box>
     </LocalizationProvider>
   );
 };
