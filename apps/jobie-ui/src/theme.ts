@@ -1,20 +1,46 @@
 import { createTheme } from '@mui/material/styles';
 
+export const GRADIENT = 'linear-gradient(to right, #7D63F5 33%, #6E6BF5 66%, #5581F1)';
+
 export const theme = createTheme({
-  cssVariables: true,
   palette: {
     mode: 'light',
-    background: {
-      default: 'linear-gradient(180deg, #5961f0, #682ddb)',
-    },
     primary: {
-      main: '#3f02b6',
+      main: '#7D63F5',
     },
     secondary: {
-      main: '#4caf50',
+      main: '#5581F1',
     },
-    gradient: {
-      main: 'linear-gradient(90deg, #1976d2, #4caf50)',
+    background: {
+      default: '#ffffff',
+    },
+  },
+  shape: {
+    borderRadius: 14,
+  },
+  typography: {
+    fontFamily: `'Poppins', sans-serif`,
+    h1: {
+      fontWeight: 700,
+      fontSize: '3rem',
+      letterSpacing: '-0.5px',
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 600,
+          borderRadius: '12px',
+          boxShadow: '0 8px 20px rgba(0, 0, 0, 0.15)',
+          transition: 'all 0.3s ease-in-out',
+          '&:hover': {
+            boxShadow: '0 6px 18px rgba(0, 0, 0, 0.2)',
+            transform: 'translateY(-2px)',
+          },
+        },
+      },
     },
   },
 });

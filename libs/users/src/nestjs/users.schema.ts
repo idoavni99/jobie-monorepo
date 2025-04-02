@@ -38,10 +38,11 @@ export class User implements UserEntity {
     get: function (this: User) {
       return Boolean(
         this.goalJob &&
-          this.education &&
-          this.location &&
-          this.bio &&
-          this.linkedinProfileUrl
+        this.education &&
+        this.location &&
+        this.bio &&
+        this.linkedinProfileUrl &&
+        this.aspirationalLinkedinUrl
       );
     },
   })
@@ -66,6 +67,9 @@ export class User implements UserEntity {
 
   @Prop({ unique: true })
   linkedinProfileUrl?: string;
+
+  @Prop()
+  aspirationalLinkedinUrl?: string;
 
   @Prop()
   goalJob?: string;
