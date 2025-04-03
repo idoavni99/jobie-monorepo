@@ -5,6 +5,9 @@ export type EnrichedProfileData = {
   bio: string;
   linkedinProfileUrl: string;
   aspirationalLinkedinUrl: string;
+  skills: string[];
+  experienceSummary: { title: string; companyName: string }[];
+  linkedinHeadline: string;
 };
 export type UserData = {
   _id: string;

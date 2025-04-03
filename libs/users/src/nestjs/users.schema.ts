@@ -38,11 +38,11 @@ export class User implements UserEntity {
     get: function (this: User) {
       return Boolean(
         this.goalJob &&
-        this.education &&
-        this.location &&
-        this.bio &&
-        this.linkedinProfileUrl &&
-        this.aspirationalLinkedinUrl
+          this.education &&
+          this.location &&
+          this.bio &&
+          this.linkedinProfileUrl &&
+          this.aspirationalLinkedinUrl
       );
     },
   })
@@ -84,24 +84,24 @@ export class User implements UserEntity {
   bio?: string;
 
   @Prop({ type: [String], default: [] })
-skills?: string[];
+  skills?: string[];
 
-@Prop({
-  type: [
-    {
-      title: String,
-      companyName: String,
-    },
-  ],
-  default: [],
-})
-experienceSummary?: {
-  title: string;
-  companyName: string;
-}[];
+  @Prop({
+    type: [
+      {
+        title: String,
+        companyName: String,
+      },
+    ],
+    default: [],
+  })
+  experienceSummary?: {
+    title: string;
+    companyName: string;
+  }[];
 
-@Prop()
-linkedinHeadline?: string;
+  @Prop()
+  linkedinHeadline?: string;
 }
 
 export class CreateUserDto {
