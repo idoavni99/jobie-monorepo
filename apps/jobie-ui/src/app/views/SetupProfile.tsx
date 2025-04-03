@@ -1,6 +1,5 @@
 import { EnrichedProfileData } from '@jobie/users/types';
 import {
-  Box,
   Button,
   CircularProgress,
   Stack,
@@ -10,6 +9,7 @@ import {
 import { use } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthContext } from '../auth/providers/AuthProvider';
+import { GlassCard } from '../components/GlassCard';
 
 export const SetupProfile = () => {
   const { setupProfile } = use(AuthContext);
@@ -30,13 +30,8 @@ export const SetupProfile = () => {
   });
 
   return (
-    <Stack
-      justifyContent="center"
-      alignItems="center"
-      height="100vh"
-      px={3}
-    >
-      <Box className="glass-card" sx={{ maxWidth: 418, width: '100%' }}>
+    <Stack justifyContent="center" alignItems="center" height="100vh" px={3}>
+      <GlassCard>
         <Stack
           component="form"
           onSubmit={handleSubmit(setupProfile)}
@@ -169,7 +164,8 @@ export const SetupProfile = () => {
                 placeholder="Paste your role model’s LinkedIn URL"
                 error={fieldState.invalid}
                 helperText={
-                  fieldState.error?.type && 'Must be a valid LinkedIn profile URL'
+                  fieldState.error?.type &&
+                  'Must be a valid LinkedIn profile URL'
                 }
                 fullWidth
                 InputLabelProps={{ shrink: true }}
@@ -191,10 +187,14 @@ export const SetupProfile = () => {
               '&:hover': { backgroundColor: '#4A66DA' },
             }}
           >
-            {isSubmitting ? <CircularProgress size={21} color="inherit" /> : 'Save'}
+            {isSubmitting ? (
+              <CircularProgress size={21} color="inherit" />
+            ) : (
+              'Save'
+            )}
           </Button>
         </Stack>
-      </Box>
+      </GlassCard>
     </Stack>
   );
 };
