@@ -82,6 +82,26 @@ export class User implements UserEntity {
 
   @Prop()
   bio?: string;
+
+  @Prop({ type: [String], default: [] })
+skills?: string[];
+
+@Prop({
+  type: [
+    {
+      title: String,
+      companyName: String,
+    },
+  ],
+  default: [],
+})
+experienceSummary?: {
+  title: string;
+  companyName: string;
+}[];
+
+@Prop()
+linkedinHeadline?: string;
 }
 
 export class CreateUserDto {

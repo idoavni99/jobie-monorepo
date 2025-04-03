@@ -14,8 +14,10 @@ import { RoutesPaths } from './enums/routes.enum';
 import { HomeScreen } from './views/Home';
 import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
+import { Roadmap } from './views/Roadmap';
 import { SetupProfile } from './views/SetupProfile';
 import { SignIn } from './views/SignIn';
+
 
 export const App = () => {
   return (
@@ -36,6 +38,7 @@ export const App = () => {
                 <Route element={<SetupLayout />}>
                   <Route path={RoutesPaths.REGISTER} element={<Register />} />
                   <Route path={RoutesPaths.LOGIN} element={<SignIn />} />
+                  <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
                 </Route>
               </Route>
 

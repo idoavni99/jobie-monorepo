@@ -1,0 +1,21 @@
+{
+    "name": "roadmap-calibration",
+    "projectType": "library",
+    "sourceRoot": "libs/roadmap-calibration/src",
+    "root": "libs/roadmap-calibration",
+    "targets": {
+        "build": {
+            "executor": "@nrwl/node:build",
+            "outputs": [
+                "{options.outputPath}"
+            ],
+            "options": {
+                "outputPath": "dist/libs/roadmap-calibration",
+                "main": "libs/roadmap-calibration/src/index.ts",
+                "tsConfig": "libs/roadmap-calibration/tsconfig.lib.json",
+                "assets": []
+            }
+        }
+    },
+    "tags": []
+}
