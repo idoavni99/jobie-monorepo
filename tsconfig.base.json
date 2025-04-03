@@ -13,36 +13,17 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@jobie/auth-core": [
-        "libs/auth-core/src/index.ts"
-      ],
-      "@jobie/data-entities-core": [
-        "libs/data-entities-core/src/index.ts"
-      ],
-      "@jobie/nestjs-core": [
-        "libs/nestjs-core/src/index.ts"
-      ],
-      "@jobie/users/*": [
-        "libs/users/src/*"
-      ],
-      "@jobie/roadmap-calibration": [
-        "libs/roadmap-calibration/src/nestjs/index.ts"
-      ],
-      "@jobie/roadmap-calibration/*": [
-        "libs/roadmap-calibration/src/*"
-      ]
+      "@jobie/auth-core": ["libs/auth-core/src/index.ts"],
+      "@jobie/data-entities-core": ["libs/data-entities-core/src/index.ts"],
+      "@jobie/nestjs-core": ["libs/nestjs-core/src/index.ts"],
+      "@jobie/users/*": ["libs/users/src/*"],
+      "@jobie/roadmap-calibration/*": ["libs/roadmap-calibration/src/*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }
