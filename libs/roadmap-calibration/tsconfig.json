@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "types": [
+      "node"
+    ],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*",
+    "../../apps/user-profile-enrichment/src/app/roadmap/roadmap.controller.ts",
+    "../../apps/user-profile-enrichment/src/app/roadmap/roadmap.service.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

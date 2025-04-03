@@ -80,6 +80,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       data
     );
     onAuthenticationSuccess(updatedUser);
+    try {
+      await gatewayApi.post('/roadmap/generate');
+    } catch (error) {
+      console.error('Failed to generate roadmap:', error);
+    }
+    navigate('/roadmap');
   };
 
   const logout = async () => {
