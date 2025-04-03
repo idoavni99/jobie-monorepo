@@ -3,6 +3,11 @@ import mongoose, { HydratedDocument } from 'mongoose';
 
 export type RoadmapDocument = HydratedDocument<Roadmap>;
 
+export type MilestoneWithSkills = {
+  milestone_name: string;
+  skills: string[];
+};
+
 @Schema({
   toJSON: {
     virtuals: true,
@@ -20,8 +25,21 @@ export class Roadmap {
   @Prop()
   goalJob: string;
 
+  // רק שמות של milestones – לשימושים פשוטים
   @Prop({ type: [String], default: [] })
   summarizedMilestones: string[];
+
+  // כל milestone עם הסקילס שלו
+  @Prop({
+    type: [
+      {
+        milestone_name: { type: String, required: true },
+        skills: [{ type: String }],
+      },
+    ],
+    default: [],
+  })
+  milestonesWithSkills: MilestoneWithSkills[];
 
   @Prop({
     type: [mongoose.Schema.Types.ObjectId],
