@@ -3,23 +3,21 @@ import {
   Roadmap,
   RoadmapGenerationService,
 } from '@jobie/roadmap-calibration/nestjs';
+import { UsersRepository } from '@jobie/users/nestjs';
 import { TUser } from '@jobie/users/types';
-import { Controller, Get, Post, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { RoadmapService } from './roadmap.service';
 
 @Controller('roadmap')
 export class RoadmapController {
   constructor(
     private readonly roadmapService: RoadmapService,
-    private readonly roadmapGenerationService: RoadmapGenerationService
+    private readonly roadmapGenerationService: RoadmapGenerationService,
+    private readonly usersRepository: UsersRepository
   ) {}
 
   @Post('generate')
   async generate(@AuthUser() user: TUser): Promise<Roadmap> {
-    if (!user.linkedinProfileUrl || !user.aspirationalLinkedinUrl) {
-      throw new UnauthorizedException('Missing user profile data');
-    }
-
     const roadmapTitles =
       await this.roadmapGenerationService.generateSummarizedRoadmap(user._id);
 
@@ -33,7 +31,6 @@ export class RoadmapController {
 
   @Get()
   async get(@AuthUser() user: TUser): Promise<Roadmap | null> {
-    if (user?._id) throw new UnauthorizedException('User not found in request');
     return this.roadmapService.getRoadmapByUserId(user._id);
   }
 }

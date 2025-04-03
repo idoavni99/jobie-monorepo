@@ -18,7 +18,6 @@ import { Roadmap } from './views/Roadmap';
 import { SetupProfile } from './views/SetupProfile';
 import { SignIn } from './views/SignIn';
 
-
 export const App = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -38,12 +37,12 @@ export const App = () => {
                 <Route element={<SetupLayout />}>
                   <Route path={RoutesPaths.REGISTER} element={<Register />} />
                   <Route path={RoutesPaths.LOGIN} element={<SignIn />} />
-                  <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
                 </Route>
               </Route>
 
               <Route element={<ProtectedRoute />}>
                 <Route element={<SetupLayout />}>
+                  <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
                   <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
                   <Route
                     path={RoutesPaths.SETUP_PROFILE}

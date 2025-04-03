@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gatewayApi } from '../../../api/gateway.api';
+import { profileEnrichmentApi } from '../../../api/profile-enrichment.api';
 import { AuthContextValue } from '../types/auth.types';
 
 export const AuthContext = createContext<AuthContextValue>(
@@ -26,9 +27,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     try {
       setIsLoadingUserAuth(true);
 
-      const { data: user } = await gatewayApi.get<TUser | undefined>(
-        '/auth/me'
-      );
+      const { data: user } = await gatewayApi.get<TUser | undefined>('/me');
 
       setUser(user);
     } catch (error) {
@@ -53,7 +52,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     setIsLoadingAuthFormResponse(true);
 
     await gatewayApi
-      .post<TUser>('/auth/login', userLoginData)
+      .post<TUser>('/login', userLoginData)
       .then(({ data }) => {
         onAuthenticationSuccess(data);
       })
@@ -67,7 +66,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   ) => {
     setIsLoadingAuthFormResponse(true);
 
-    await gatewayApi.post<TUser>('/auth/register', registrationDTO);
+    await gatewayApi.post<TUser>('/register', registrationDTO);
     await login({
       email: registrationDTO.email,
       password: registrationDTO.password,
@@ -75,21 +74,16 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   const setupProfile = async (data: EnrichedProfileData) => {
-    const { data: updatedUser } = await gatewayApi.post<TUser>(
-      '/user-profile-enrichment',
+    const { data: updatedUser } = await profileEnrichmentApi.post<TUser>(
+      '/',
       data
     );
+    await profileEnrichmentApi.post('/roadmap/generate');
     onAuthenticationSuccess(updatedUser);
-    try {
-      await gatewayApi.post('/roadmap/generate');
-    } catch (error) {
-      console.error('Failed to generate roadmap:', error);
-    }
-    navigate('/roadmap');
   };
 
   const logout = async () => {
-    await gatewayApi.post('/auth/logout');
+    await gatewayApi.post('/logout');
     setUser(undefined);
   };
 
