@@ -1,61 +1,7 @@
 html,
 body,
-#root,
-#app-wrapper {
+#root {
   height: 100%;
   margin: 0;
   font-family: 'Poppins', sans-serif;
-
-  background: linear-gradient(135deg,
-      #7D63F5,
-      #6E6BF5,
-      #657BF2,
-      #5C73F0,
-      #5581F1,
-      #7D63F5);
-  background-size: 1000% 1000%;
-  animation: smoothGradientFlow 18s ease-in-out infinite;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@keyframes smoothGradientFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.glass-card {
-  backdrop-filter: blur(20px);
-  background-color: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 21px;
-  padding: 2.618rem;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-  color: rgba(255, 255, 255, 0.85);
-  animation: fadeIn 0.8s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }

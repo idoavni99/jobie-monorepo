@@ -1,6 +1,12 @@
 import { createTheme } from '@mui/material/styles';
 
-export const GRADIENT = 'linear-gradient(to right, #7D63F5 33%, #6E6BF5 66%, #5581F1)';
+export const GRADIENT = `linear-gradient(135deg,
+      #7D63F5,
+      #6E6BF5,
+      #657BF2,
+      #5C73F0,
+      #5581F1,
+      #7D63F5)`;
 
 export const theme = createTheme({
   palette: {

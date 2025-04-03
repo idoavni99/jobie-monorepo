@@ -10,8 +10,8 @@ import { use } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../auth/providers/AuthProvider';
+import { GlassCard } from '../components/GlassCard';
 import { RoutesPaths } from '../enums/routes.enum';
-
 export const SignIn = () => {
   const navigate = useNavigate();
   const { login } = use(AuthContext);
@@ -28,16 +28,7 @@ export const SignIn = () => {
   });
 
   return (
-    <Box
-      className="glass-card"
-      sx={{
-        padding: '2.618rem',
-        maxWidth: '420px',
-        width: '100%',
-        borderRadius: '21px',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
-      }}
-    >
+    <GlassCard>
       <Stack
         gap="1.618rem"
         component="form"
@@ -79,9 +70,10 @@ export const SignIn = () => {
                 '& .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'rgba(255,255,255,0.2)',
                 },
-                '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#6D8CFF',
-                },
+                '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline':
+                  {
+                    borderColor: '#6D8CFF',
+                  },
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '13px',
                 },
@@ -116,9 +108,10 @@ export const SignIn = () => {
                 '& .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'rgba(255,255,255,0.2)',
                 },
-                '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#6D8CFF',
-                },
+                '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline':
+                  {
+                    borderColor: '#6D8CFF',
+                  },
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '13px',
                 },
@@ -186,6 +179,6 @@ export const SignIn = () => {
           </Button>
         </Stack>
       </Stack>
-    </Box>
+    </GlassCard>
   );
 };

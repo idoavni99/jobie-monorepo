@@ -1,4 +1,3 @@
-import { Box } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -9,6 +8,7 @@ import {
 } from 'react-router-dom';
 import { AuthRoute, ProtectedRoute } from './auth/components/AuthRoute';
 import { AuthProvider } from './auth/providers/AuthProvider';
+import { AppBackground } from './components/AppBackground';
 import { SetupLayout } from './components/SetupLayout';
 import { RoutesPaths } from './enums/routes.enum';
 import { HomeScreen } from './views/Home';
@@ -21,15 +21,7 @@ import { SignIn } from './views/SignIn';
 export const App = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-        width="100vw"
-        px={2}
-      >
+      <AppBackground>
         <Router>
           <AuthProvider>
             <Routes>
@@ -60,7 +52,7 @@ export const App = () => {
             </Routes>
           </AuthProvider>
         </Router>
-      </Box>
+      </AppBackground>
     </LocalizationProvider>
   );
 };

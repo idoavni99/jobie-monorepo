@@ -6,5 +6,4 @@
 import { baseBootstrap } from '@jobie/nestjs-core';
 import { AppModule } from './app/app.module';
 
-
 baseBootstrap(AppModule);
