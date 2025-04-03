@@ -18,6 +18,10 @@ export class RoadmapRepository {
         return this.roadmapModel.findOne({ userId }).exec();
     }
 
+    async deleteByUserId(userId: string): Promise<void> {
+        await this.roadmapModel.deleteMany({ userId });
+    }
+
     async approveRoadmap(userId: string): Promise<Roadmap | null> {
         return this.roadmapModel
             .findOneAndUpdate({ userId }, { isApproved: true }, { new: true })

@@ -126,18 +126,16 @@ export class RoadmapGenerationService {
     });
 
     const prompt = `
-The user is currently working as "${
-      userVector.headline
-    }" and aims to transition to "${targetVector.headline}".
-They are based in ${user.location} and have the following background: "${
-      user.bio
-    }". Their career goal is: "${user.goalJob}".
+The user is currently working as "${userVector.headline
+      }" and aims to transition to "${targetVector.headline}".
+They are based in ${user.location} and have the following background: "${user.bio
+      }". Their career goal is: "${user.goalJob}".
 
 Currently, they possess these skills: ${userVector.skills.join(', ')}.
 Their unique skills compared to the target: ${gap.unique_skills.join(', ')}.
 However, they are missing the following skills to achieve their target: ${gap.missing_skills.join(
-      ', '
-    )}.
+        ', '
+      )}.
 
 Generate a summarized career roadmap to help them transition.
 Each milestone should have a short name (3–5 words max) and include a small list of skills
@@ -180,11 +178,19 @@ Format response as JSON with:
     const steps = parsed.roadmap_steps ?? [];
 
     const milestoneTitles = steps.map((step: any) => step.milestone_name);
+    const milestonesWithSkills = steps.map((step: any) => ({
+      milestone_name: step.milestone_name,
+      skills: step.skills ?? [],
+    }));
+
+    // Clear old roadmap before saving new one
+    await this.roadmapRepository.deleteByUserId(userId);
 
     await this.roadmapRepository.create({
       userId,
       goalJob: user.goalJob,
       summarizedMilestones: milestoneTitles,
+      milestonesWithSkills,
       milestoneIds: [],
       isApproved: false,
     });
