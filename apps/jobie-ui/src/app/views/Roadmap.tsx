@@ -30,7 +30,7 @@ const fadeInUp = keyframes`
 export const Roadmap = () => {
     const [milestones, setMilestones] = useState<RoadmapStep[]>([]);
     const [loading, setLoading] = useState(true);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const containerReference = useRef<HTMLDivElement>(null);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -60,8 +60,8 @@ export const Roadmap = () => {
     }, []);
 
     const getTransform = (index: number) => {
-        if (!containerRef.current) return {};
-        const container = containerRef.current;
+        if (!containerReference.current) return {};
+        const container = containerReference.current;
         const child = container.children[index] as HTMLElement;
         const containerMid = container.offsetWidth / 2;
         const childMid =
@@ -106,7 +106,7 @@ export const Roadmap = () => {
 
                     {/* Scrollable container */}
                     <Box
-                        ref={containerRef}
+                        ref={containerReference}
                         display="flex"
                         flexDirection="row"
                         overflow="auto"
@@ -182,9 +182,9 @@ export const Roadmap = () => {
                                         px={2}
                                         maxWidth="90%"
                                     >
-                                        {step.skills.map((skill, i) => (
+                                        {step.skills.map((skill, index_) => (
                                             <Box
-                                                key={i}
+                                                key={index_}
                                                 px={1.2}
                                                 py={0.3}
                                                 fontSize="0.65rem"
