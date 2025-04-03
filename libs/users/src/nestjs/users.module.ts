@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersRepository } from './users.repository';
 import { User, UserSchema } from './users.schema';
@@ -10,4 +10,16 @@ import { User, UserSchema } from './users.schema';
   providers: [UsersRepository],
   exports: [UsersRepository],
 })
-export class UsersModule {}
+export class UsersModule {
+  static forRoot(): DynamicModule {
+    return {
+      module: UsersModule,
+      exports: [UsersModule],
+      providers: [UsersRepository],
+      imports: [
+        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+      ],
+      global: true,
+    };
+  }
+}

@@ -18,7 +18,7 @@ import { Roadmap, RoadmapSchema } from './roadmap.schema';
     HttpModule.registerAsync({
       imports: [ConfigModule.forFeature(roadmapCalibrationConfig)],
       useFactory: (config: RoadmapCalibartionConfig) => ({
-        baseURL: config.linkedinRapidApiHost,
+        baseURL: `https://${config.linkedinRapidApiHost}`,
         headers: {
           'x-rapidapi-host': config.linkedinRapidApiHost,
           'x-rapidapi-key': config.rapidApiKey,

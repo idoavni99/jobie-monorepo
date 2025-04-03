@@ -106,19 +106,17 @@ export class RoadmapGenerationService {
       throw new NotFoundException('User or LinkedIn URLs not available');
     }
 
-    const userProfileRaw = await this.fetchLinkedInProfile(
-      user.linkedinProfileUrl
-    );
-    const targetProfileRaw = await this.fetchLinkedInProfile(
-      user.aspirationalLinkedinUrl
-    );
+    const [userProfileRaw, targetProfileRaw] = await Promise.all([
+      this.fetchLinkedInProfile(user.linkedinProfileUrl),
+      this.fetchLinkedInProfile(user.aspirationalLinkedinUrl),
+    ]);
 
     const userVector = this.buildCareerVector(userProfileRaw);
     const targetVector = this.buildCareerVector(targetProfileRaw);
     const gap = this.compareVectors(userVector, targetVector);
 
-    // Save extracted info to user
-    await this.usersRepository.update(userId, {
+    // Save extracted info to user asyncronously
+    this.usersRepository.update(userId, {
       skills: userVector.skills,
       linkedinHeadline: userVector.headline,
       experienceSummary: userVector.positions.map((p) => ({
@@ -182,6 +180,7 @@ Format response as JSON with:
     const steps = parsed.roadmap_steps ?? [];
 
     const milestoneTitles = steps.map((step: any) => step.milestone_name);
+
     await this.roadmapRepository.create({
       userId,
       goalJob: user.goalJob,
