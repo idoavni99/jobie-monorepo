@@ -3,6 +3,8 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import fuzzball from 'fuzzball';
 import { OpenAI } from 'openai';
+import { safeJSON } from 'openai/core';
+import { MilestoneWithSkills } from '../types';
 import { CareerVector } from '../types/career-vector.type';
 import { LinkedInProfile } from '../types/linkedin-profile.type';
 import {
@@ -78,14 +80,14 @@ export class RoadmapGenerationService {
     const targetSkills = [...new Set(targetVector.skills)];
 
     const missingSkills = targetSkills.filter((skill) => {
-      const [match, score] =
+      const [, score] =
         fuzzball.extract(skill, userSkills, { scorer: fuzzball.ratio })[0] ??
         [];
       return score < threshold;
     });
 
     const uniqueSkills = userSkills.filter((skill) => {
-      const [match, score] =
+      const [, score] =
         fuzzball.extract(skill, targetSkills, { scorer: fuzzball.ratio })[0] ??
         [];
       return score < threshold;
@@ -115,27 +117,19 @@ export class RoadmapGenerationService {
     const targetVector = this.buildCareerVector(targetProfileRaw);
     const gap = this.compareVectors(userVector, targetVector);
 
-    // Save extracted info to user asyncronously
-    this.usersRepository.update(userId, {
-      skills: userVector.skills,
-      linkedinHeadline: userVector.headline,
-      experienceSummary: userVector.positions.map((p) => ({
-        title: p.title,
-        companyName: p.companyName,
-      })),
-    });
-
     const prompt = `
-The user is currently working as "${userVector.headline
-      }" and aims to transition to "${targetVector.headline}".
-They are based in ${user.location} and have the following background: "${user.bio
-      }". Their career goal is: "${user.goalJob}".
+The user is currently working as "${
+      userVector.headline
+    }" and aims to transition to "${targetVector.headline}".
+They are based in ${user.location} and have the following background: "${
+      user.bio
+    }". Their career goal is: "${user.goalJob}".
 
 Currently, they possess these skills: ${userVector.skills.join(', ')}.
 Their unique skills compared to the target: ${gap.unique_skills.join(', ')}.
 However, they are missing the following skills to achieve their target: ${gap.missing_skills.join(
-        ', '
-      )}.
+      ', '
+    )}.
 
 Generate a summarized career roadmap to help them transition.
 Each milestone should have a short name (3–5 words max) and include a small list of skills
@@ -167,18 +161,12 @@ Format response as JSON with:
     if (content.startsWith('```json')) content = content.slice(7);
     if (content.endsWith('```')) content = content.slice(0, -3);
 
-    let parsed;
-    try {
-      parsed = JSON.parse(content);
-    } catch (error) {
-      this.logger.error('Failed to parse roadmap JSON', error);
-      throw new Error('Invalid roadmap JSON');
-    }
+    const { roadmap_steps: steps } = (safeJSON(content) ?? {
+      roadmap_steps: [],
+    }) as { roadmap_steps: MilestoneWithSkills[] };
 
-    const steps = parsed.roadmap_steps ?? [];
-
-    const milestoneTitles = steps.map((step: any) => step.milestone_name);
-    const milestonesWithSkills = steps.map((step: any) => ({
+    const milestoneTitles = steps.map((step) => step.milestone_name);
+    const milestonesWithSkills = steps.map((step) => ({
       milestone_name: step.milestone_name,
       skills: step.skills ?? [],
     }));

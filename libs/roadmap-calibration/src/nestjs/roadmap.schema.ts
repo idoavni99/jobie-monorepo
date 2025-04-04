@@ -1,12 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { MilestoneWithSkills } from '../types/roadmap.type';
 
 export type RoadmapDocument = HydratedDocument<Roadmap>;
-
-export type MilestoneWithSkills = {
-  milestone_name: string;
-  skills: string[];
-};
 
 @Schema({
   toJSON: {
