@@ -1,5 +1,5 @@
 {
-  "name": "roadmap-calibration",
+  "name": "roadmap-calibration-lib",
   "projectType": "library",
   "sourceRoot": "libs/roadmap-calibration/src",
   "tags": [],

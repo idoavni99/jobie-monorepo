@@ -1,15 +1,10 @@
 import { EnrichedProfileData } from '@jobie/users/types';
-import {
-  Button,
-  CircularProgress,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Button, CircularProgress, Stack, Typography } from '@mui/material';
 import { use } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthContext } from '../auth/providers/AuthProvider';
 import { GlassCard } from '../components/GlassCard';
+import { TransparentTextField } from '../components/TransparentTextField';
 
 export const SetupProfile = () => {
   const { setupProfile } = use(AuthContext);
@@ -54,15 +49,13 @@ export const SetupProfile = () => {
             name="goalJob"
             rules={{ required: true }}
             render={({ field, fieldState }) => (
-              <TextField
+              <TransparentTextField
                 {...field}
                 label="Goal Job or Specialty"
                 placeholder="e.g. Software Engineer"
                 error={fieldState.invalid}
                 helperText={fieldState.error && 'Required field'}
                 fullWidth
-                InputLabelProps={{ shrink: true }}
-                sx={{ input: { color: '#fff' } }}
               />
             )}
           />
@@ -76,7 +69,7 @@ export const SetupProfile = () => {
                 /^https?:\/\/(www\.)?linkedin\.com\/(in|pub)\/[a-zA-Z0-9-_%]+\/?$/,
             }}
             render={({ field, fieldState }) => (
-              <TextField
+              <TransparentTextField
                 {...field}
                 label="LinkedIn Profile"
                 placeholder="Paste your LinkedIn URL"
@@ -85,8 +78,6 @@ export const SetupProfile = () => {
                   fieldState.error?.type && 'Enter a valid LinkedIn profile URL'
                 }
                 fullWidth
-                InputLabelProps={{ shrink: true }}
-                sx={{ input: { color: '#fff' } }}
               />
             )}
           />
@@ -96,15 +87,13 @@ export const SetupProfile = () => {
             name="location"
             rules={{ required: true }}
             render={({ field, fieldState }) => (
-              <TextField
+              <TransparentTextField
                 {...field}
                 label="Location"
                 placeholder="e.g. Tel Aviv"
                 error={fieldState.invalid}
                 helperText={fieldState.error && 'Required field'}
                 fullWidth
-                InputLabelProps={{ shrink: true }}
-                sx={{ input: { color: '#fff' } }}
               />
             )}
           />
@@ -114,15 +103,13 @@ export const SetupProfile = () => {
             name="education"
             rules={{ required: true }}
             render={({ field, fieldState }) => (
-              <TextField
+              <TransparentTextField
                 {...field}
                 label="Education"
                 placeholder="e.g. BSc in Computer Science"
                 error={fieldState.invalid}
                 helperText={fieldState.error && 'Required field'}
                 fullWidth
-                InputLabelProps={{ shrink: true }}
-                sx={{ input: { color: '#fff' } }}
               />
             )}
           />
@@ -132,7 +119,7 @@ export const SetupProfile = () => {
             name="bio"
             rules={{ required: true, maxLength: 150 }}
             render={({ field, fieldState }) => (
-              <TextField
+              <TransparentTextField
                 {...field}
                 label="About You"
                 placeholder="Tell us something short (max 150 chars)"
@@ -142,10 +129,13 @@ export const SetupProfile = () => {
                     ? 'Shorten it to 150 characters'
                     : `${field.value.length} characters`
                 }
+                sx={{
+                  '& .MuiFormHelperText-root': {
+                    color: fieldState.error ? 'lightpink' : 'lightblue',
+                  },
+                }}
                 fullWidth
                 multiline
-                InputLabelProps={{ shrink: true }}
-                sx={{ textarea: { color: '#fff' } }}
               />
             )}
           />
@@ -158,7 +148,7 @@ export const SetupProfile = () => {
                 /^https?:\/\/(www\.)?linkedin\.com\/(in|pub)\/[a-zA-Z0-9-_%]+\/?$/,
             }}
             render={({ field, fieldState }) => (
-              <TextField
+              <TransparentTextField
                 {...field}
                 label="Aspirational LinkedIn Profile"
                 placeholder="Paste your role model’s LinkedIn URL"
@@ -168,8 +158,6 @@ export const SetupProfile = () => {
                   'Must be a valid LinkedIn profile URL'
                 }
                 fullWidth
-                InputLabelProps={{ shrink: true }}
-                sx={{ input: { color: '#fff' } }}
               />
             )}
           />
@@ -179,12 +167,8 @@ export const SetupProfile = () => {
             disabled={isSubmitting}
             sx={{
               mt: 2,
-              borderRadius: 21,
               px: 5,
               py: 1.5,
-              fontWeight: 500,
-              backgroundColor: '#5F79ED',
-              '&:hover': { backgroundColor: '#4A66DA' },
             }}
           >
             {isSubmitting ? (

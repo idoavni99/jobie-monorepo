@@ -8,7 +8,7 @@ import { TUser } from '@jobie/users/types';
 import { Controller, Get, Post } from '@nestjs/common';
 import { RoadmapService } from './roadmap.service';
 
-@Controller('roadmap')
+@Controller()
 export class RoadmapController {
   constructor(
     private readonly roadmapService: RoadmapService,

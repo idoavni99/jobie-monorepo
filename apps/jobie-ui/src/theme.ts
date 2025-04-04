@@ -12,7 +12,7 @@ export const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#7D63F5',
+      main: '#6D8CFF',
     },
     secondary: {
       main: '#5581F1',
@@ -36,16 +36,30 @@ export const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
+          minWidth: 'auto',
           textTransform: 'none',
           fontWeight: 600,
-          borderRadius: '12px',
+          borderRadius: '24px',
           boxShadow: '0 8px 20px rgba(0, 0, 0, 0.15)',
           transition: 'all 0.3s ease-in-out',
           '&:hover': {
             boxShadow: '0 6px 18px rgba(0, 0, 0, 0.2)',
             transform: 'translateY(-2px)',
+            backgroundColor: '#5C7DE6',
           },
         },
+      },
+    },
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          color: 'lightpink',
+        },
+      },
+    },
+    MuiInputLabel: {
+      defaultProps: {
+        shrink: true,
       },
     },
   },

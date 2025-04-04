@@ -9,6 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { gatewayApi } from '../../../api/gateway.api';
 import { profileEnrichmentApi } from '../../../api/profile-enrichment.api';
+import { roadmapCalibrationApi } from '../../../api/roadmap-calibration.api';
 import { AuthContextValue } from '../types/auth.types';
 
 export const AuthContext = createContext<AuthContextValue>(
@@ -78,7 +79,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       '/',
       data
     );
-    await profileEnrichmentApi.post('/roadmap/generate');
+    await roadmapCalibrationApi.post('/generate');
     onAuthenticationSuccess(updatedUser);
   };
 
