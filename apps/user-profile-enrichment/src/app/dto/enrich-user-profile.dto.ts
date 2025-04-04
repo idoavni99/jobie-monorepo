@@ -2,7 +2,14 @@ import { EnrichedProfileData } from '@jobie/users/types';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsString, IsUrl, MaxLength } from 'class-validator';
-export class EnrichUserProfileDto implements EnrichedProfileData {
+export class EnrichUserProfileDto
+  implements
+    Omit<
+      EnrichedProfileData,
+      'skills' | 'experienceSummary' | 'linkedinHeadline'
+    >
+{
+  linkedinHeadline: string;
   @ApiProperty({
     name: 'goalJob',
     type: String,
@@ -49,4 +56,14 @@ export class EnrichUserProfileDto implements EnrichedProfileData {
   @IsUrl()
   @MaxLength(150)
   linkedinProfileUrl: string;
+
+  @ApiProperty({
+    name: 'aspirationalLinkedinUrl',
+    type: String,
+    required: true,
+  })
+  @Expose()
+  @IsUrl()
+  @MaxLength(150)
+  aspirationalLinkedinUrl: string;
 }

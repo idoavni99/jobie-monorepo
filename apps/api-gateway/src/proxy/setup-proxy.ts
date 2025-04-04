@@ -14,45 +14,45 @@ export const setupProxyToService = async (
     ).then((response) => response.json());
     const modifiedPaths = Object.fromEntries(
       Object.entries(swaggerJson.paths).map(([currentPathPrefix, path]) => [
-        `${serviceName}${currentPathPrefix}`,
+        `/${serviceName}${currentPathPrefix}`,
         path,
       ])
     );
     swaggerJson.paths = modifiedPaths;
     SwaggerModule.setup(`api/${serviceName}`, app, swaggerJson);
-
-    const authMiddleware = await app.resolve(AuthMiddleware);
-
-    const proxy = createProxyMiddleware<AuthorizedRequest>({
-      target: serviceUrl,
-      changeOrigin: true,
-      secure: false,
-      cookieDomainRewrite: domain,
-      pathRewrite: (path) => {
-        return path.replace(`/${serviceName}`, '');
-      },
-      logger: {
-        info: Logger.log,
-        warn: Logger.warn,
-        debug: Logger.debug,
-        error: Logger.error,
-      },
-      on: {
-        proxyReq: (proxyRequest, request) => {
-          if (request.authToken) {
-            proxyRequest.setHeader('authorization', request.authToken);
-          }
-        },
-      },
-    });
-
-    app.use(`/${serviceName}`, authMiddleware.use, proxy);
-    Logger.log(`Routing requests to ${serviceName} at /${serviceName}`);
   } catch (error) {
     Logger.error(
-      `${serviceName} is unavailable at the moment, will not route requests`,
+      `${serviceName} is unavailable at the moment, Swagger will not be available but requests will route when it's up`,
       error.stack,
       { message: error.message }
     );
   }
+
+  const authMiddleware = await app.resolve(AuthMiddleware);
+
+  const proxy = createProxyMiddleware<AuthorizedRequest>({
+    target: serviceUrl,
+    changeOrigin: true,
+    secure: false,
+    cookieDomainRewrite: domain,
+    pathRewrite: (path) => {
+      return path.replace(`/${serviceName}`, '');
+    },
+    logger: {
+      info: Logger.log,
+      warn: Logger.warn,
+      debug: Logger.debug,
+      error: Logger.error,
+    },
+    on: {
+      proxyReq: (proxyRequest, request) => {
+        if (request.authToken) {
+          proxyRequest.setHeader('authorization', request.authToken);
+        }
+      },
+    },
+  });
+
+  app.use(`/${serviceName}`, authMiddleware.use, proxy);
+  Logger.log(`Routing requests to ${serviceName} at /${serviceName}`);
 };

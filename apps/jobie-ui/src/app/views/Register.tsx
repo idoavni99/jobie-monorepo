@@ -1,7 +1,15 @@
-import { Button, CircularProgress, Stack, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { use } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthContext } from '../auth/providers/AuthProvider';
+import { GlassCard } from '../components/GlassCard';
+import { TransparentTextField } from '../components/TransparentTextField';
 
 export const Register = () => {
   const { register } = use(AuthContext);
@@ -15,82 +23,97 @@ export const Register = () => {
   });
 
   const onSubmit = handleSubmit(register);
+
   return (
-    <Stack
-      component="form"
-      onSubmit={onSubmit}
-      gap={3}
-      my={4}
-      alignItems={'center'}
-    >
-      <Controller
-        control={control}
-        name="email"
-        rules={{
-          required: true,
-          pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,3}$/,
-        }}
-        render={({ field, fieldState }) => (
-          <TextField
-            helperText={
-              fieldState.error && 'This must be a valid email address'
-            }
-            label="Email:"
-            type="email"
-            {...field}
-            placeholder="Enter your email"
-            error={fieldState.invalid}
-            required
-          />
-        )}
-      />
+    <GlassCard>
+      <Stack component="form" onSubmit={onSubmit} gap={3} alignItems="center">
+        <Typography
+          variant="h6"
+          sx={{
+            color: 'rgba(255,255,255,0.85)',
+            fontWeight: 500,
+            fontSize: '1.25rem',
+            mb: '0.5rem',
+          }}
+        >
+          Create Your Account
+        </Typography>
 
-      <Controller
-        control={control}
-        name="fullName"
-        rules={{ required: true, pattern: /^[A-Z][a-z]+(?:\s[A-Z][a-z]+)+$/ }}
-        render={({ field, fieldState }) => (
-          <TextField
-            type="text"
-            helperText={
-              fieldState.error?.type && 'This must be a valid full name'
-            }
-            label="Full Name:"
-            {...field}
-            placeholder="Enter your full name"
-            error={fieldState.invalid}
-            required
-          />
-        )}
-      />
+        <Controller
+          control={control}
+          name="email"
+          rules={{
+            required: true,
+            pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,3}$/,
+          }}
+          render={({ field, fieldState }) => (
+            <TransparentTextField
+              {...field}
+              label="Email"
+              fullWidth
+              variant="outlined"
+              placeholder="Enter your email"
+              error={fieldState.invalid}
+              helperText={
+                fieldState.error && 'This must be a valid email address'
+              }
+            />
+          )}
+        />
 
-      <Controller
-        control={control}
-        name="password"
-        rules={{
-          required: true,
-          pattern:
-            /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
-        }}
-        render={({ field, fieldState }) => (
-          <TextField
-            type="password"
-            helperText={
-              fieldState.error?.type &&
-              'The password should be longer than 6 characters and include a letter, number and sign'
-            }
-            label="Password:"
-            {...field}
-            placeholder="Enter a strong password"
-            error={fieldState.invalid}
-            required
-          />
-        )}
-      />
+        <Controller
+          control={control}
+          name="fullName"
+          rules={{
+            required: true,
+            pattern: /^[A-Z][a-z]+(?:\s[A-Z][a-z]+)+$/,
+          }}
+          render={({ field, fieldState }) => (
+            <TransparentTextField
+              {...field}
+              label="Full Name"
+              fullWidth
+              variant="outlined"
+              placeholder="Enter your full name"
+              error={fieldState.invalid}
+              helperText={
+                fieldState.error?.type && 'This must be a valid full name'
+              }
+            />
+          )}
+        />
 
-      <Button type="submit" variant="contained">
-        {formState.isLoading ? <CircularProgress /> : 'Sign Up'}
-      </Button>
-    </Stack>
+        <Controller
+          control={control}
+          name="password"
+          rules={{
+            required: true,
+            pattern:
+              /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+          }}
+          render={({ field, fieldState }) => (
+            <TransparentTextField
+              {...field}
+              label="Password"
+              fullWidth
+              variant="outlined"
+              type="password"
+              placeholder="Enter a strong password"
+              error={fieldState.invalid}
+              helperText={
+                fieldState.error?.type &&
+                'Must include small and capital letters, numbers, symbols (min 6 chars)'
+              }
+            />
+          )}
+        />
+
+        <Box width="62%">
+          <Button type="submit" fullWidth variant="contained">
+            {formState.isLoading ? <CircularProgress size={20} /> : 'Sign Up'}
+          </Button>
+        </Box>
+      </Stack>
+    </GlassCard>
   );
 };

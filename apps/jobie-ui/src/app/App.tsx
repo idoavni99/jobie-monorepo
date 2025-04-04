@@ -1,4 +1,3 @@
-import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
@@ -9,23 +8,20 @@ import {
 } from 'react-router-dom';
 import { AuthRoute, ProtectedRoute } from './auth/components/AuthRoute';
 import { AuthProvider } from './auth/providers/AuthProvider';
+import { AppBackground } from './components/AppBackground';
 import { SetupLayout } from './components/SetupLayout';
 import { RoutesPaths } from './enums/routes.enum';
 import { HomeScreen } from './views/Home';
 import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
+import { Roadmap } from './views/Roadmap';
 import { SetupProfile } from './views/SetupProfile';
 import { SignIn } from './views/SignIn';
 
 export const App = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Stack
-        width={'inherit'}
-        height={'inherit'}
-        alignItems={'center'}
-        justifyContent={'center'}
-      >
+      <AppBackground>
         <Router>
           <AuthProvider>
             <Routes>
@@ -38,6 +34,7 @@ export const App = () => {
 
               <Route element={<ProtectedRoute />}>
                 <Route element={<SetupLayout />}>
+                  <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
                   <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
                   <Route
                     path={RoutesPaths.SETUP_PROFILE}
@@ -55,7 +52,7 @@ export const App = () => {
             </Routes>
           </AuthProvider>
         </Router>
-      </Stack>
+      </AppBackground>
     </LocalizationProvider>
   );
 };

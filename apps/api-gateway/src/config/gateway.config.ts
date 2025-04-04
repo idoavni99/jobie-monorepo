@@ -4,6 +4,7 @@ export const gatewayConfig = registerAs('gateway', () => ({
     ? JSON.parse(process.env.SERVICE_DISCOVERY)
     : {
         'user-profile-enrichment': 'http://localhost:3001',
+        'roadmap-calibration': 'http://localhost:3002',
       }) as Record<string, string>,
   appDomain: process.env.APP_DOMAIN ?? 'localhost',
 }));
