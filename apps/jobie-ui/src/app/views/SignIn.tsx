@@ -1,14 +1,16 @@
 import {
+  Box,
   Button,
   CircularProgress,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
 import { use } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../auth/providers/AuthProvider';
+import { GlassCard } from '../components/GlassCard';
+import { TransparentTextField } from '../components/TransparentTextField';
 import { RoutesPaths } from '../enums/routes.enum';
 export const SignIn = () => {
   const navigate = useNavigate();
@@ -26,53 +28,91 @@ export const SignIn = () => {
   });
 
   return (
-    <Stack
-      component="form"
-      gap={3}
-      my={4}
-      direction="column"
-      alignItems={'center'}
-      onSubmit={onSubmit}
-    >
-      <Controller
-        control={control}
-        name="email"
-        render={({ field, fieldState }) => (
-          <TextField
-            helperText={fieldState.error?.message}
-            label="Email:"
-            type="email"
-            {...field}
-            error={fieldState.invalid}
-            placeholder="Enter your email"
-          />
-        )}
-      />
-      <Controller
-        control={control}
-        name="password"
-        render={({ field, fieldState }) => (
-          <TextField
-            helperText={fieldState.error?.message}
-            label="Password:"
-            type="password"
-            {...field}
-            error={fieldState.invalid}
-            placeholder="Enter a strong password"
-          />
-        )}
-      />
+    <GlassCard>
+      <Stack
+        gap="1.618rem"
+        component="form"
+        onSubmit={onSubmit}
+        alignItems="center"
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            color: 'rgba(255,255,255,0.85)',
+            fontWeight: 500,
+            fontSize: '1.25rem',
+            mb: '0.5rem',
+          }}
+        >
+          Sign In
+        </Typography>
 
-      <Button type="submit" variant="contained" disabled={formState.isLoading}>
-        {formState.isLoading ? <CircularProgress /> : 'Sign In'}
-      </Button>
+        <Controller
+          control={control}
+          name="email"
+          render={({ field, fieldState }) => (
+            <TransparentTextField
+              {...field}
+              label="Email"
+              fullWidth
+              variant="outlined"
+              error={fieldState.invalid}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
 
-      <Stack direction={'row'} alignItems={'center'} gap={0.5}>
-        <Typography>Don't have an account yet?</Typography>
-        <Button onClick={() => navigate(RoutesPaths.REGISTER)} size={'small'}>
-          {formState.isLoading ? <CircularProgress /> : 'Sign Up'}
-        </Button>
+        <Controller
+          control={control}
+          name="password"
+          render={({ field, fieldState }) => (
+            <TransparentTextField
+              {...field}
+              label="Password"
+              type="password"
+              fullWidth
+              variant="outlined"
+              error={fieldState.invalid}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
+
+        <Box width="62%">
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{
+              padding: '0.618rem 1.2rem',
+              boxShadow: '0 6px 16px rgba(0, 0, 0, 0.2)',
+            }}
+          >
+            {formState.isLoading ? <CircularProgress size={20} /> : 'Sign In'}
+          </Button>
+        </Box>
+
+        <Stack
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+          spacing={1}
+        >
+          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
+            Don’t have an account?
+          </Typography>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => navigate(RoutesPaths.REGISTER)}
+            sx={{
+              boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
+            }}
+          >
+            Sign Up
+          </Button>
+        </Stack>
       </Stack>
-    </Stack>
+    </GlassCard>
   );
 };
