@@ -1,5 +1,6 @@
 import { mongoConfig, MongoConfigType } from '@jobie/data-entities-core';
 import { BaseAppModule } from '@jobie/nestjs-core';
+import { UsersModule } from '@jobie/users/nestjs';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProfileModule } from './profile/profile.module';
@@ -15,6 +16,7 @@ import { ProfileModule } from './profile/profile.module';
       },
       inject: [mongoConfig.KEY],
     }),
+    UsersModule.forRoot(),
     ProfileModule,
   ],
 })
