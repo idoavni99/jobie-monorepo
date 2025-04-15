@@ -7,8 +7,8 @@ import { RoadmapGenerationService } from './roadmap-generation.service';
 @Controller()
 export class RoadmapController {
   constructor(
-    private readonly roadmapService: RoadmapService,
-    private readonly roadmapGenerationService: RoadmapGenerationService
+    private readonly roadmapGenerationService: RoadmapGenerationService,
+    private readonly roadmapService: RoadmapService
   ) {}
 
   @Post('generate')

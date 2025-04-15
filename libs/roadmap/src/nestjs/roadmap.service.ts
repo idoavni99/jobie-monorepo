@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Roadmap, RoadmapRepository } from './index';
-
+import { RoadmapRepository } from './roadmap.repository';
+import { Roadmap } from './roadmap.schema';
 @Injectable()
 export class RoadmapService {
   constructor(private readonly roadmapRepository: RoadmapRepository) {}

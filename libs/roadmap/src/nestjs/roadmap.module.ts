@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { RoadmapRepository } from './roadmap.repository';
 import { Roadmap, RoadmapSchema } from './roadmap.schema';
 import { RoadmapService } from './roadmap.service';
 
@@ -7,7 +8,7 @@ import { RoadmapService } from './roadmap.service';
   imports: [
     MongooseModule.forFeature([{ name: Roadmap.name, schema: RoadmapSchema }]),
   ],
-  providers: [RoadmapService],
+  providers: [RoadmapRepository, RoadmapService],
   exports: [RoadmapService],
 })
 export class RoadmapModule {}

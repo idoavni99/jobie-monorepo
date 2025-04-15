@@ -6,7 +6,7 @@ import { RoadmapGenerationService } from './roadmap-generation.service';
 import { RoadmapController } from './roadmap.controller';
 
 @Module({
-  imports: [OpenAIModule.register(), LinkedinModule.register(), RoadmapModule],
+  imports: [RoadmapModule, OpenAIModule.register(), LinkedinModule.register()],
   controllers: [RoadmapController],
   providers: [RoadmapGenerationService],
 })
