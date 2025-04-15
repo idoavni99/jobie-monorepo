@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { randomUUID } from 'node:crypto';
 import { Roadmap, RoadmapDocument } from './roadmap.schema';
 
 @Injectable()
@@ -10,9 +11,11 @@ export class RoadmapRepository {
     private readonly roadmapModel: Model<RoadmapDocument>
   ) {}
 
-  async upsert(roadmap: Partial<Roadmap>): Promise<Roadmap> {
-    const created = new this.roadmapModel(roadmap);
-    return created.save();
+  async create(roadmap: Partial<Roadmap>): Promise<Roadmap> {
+    const createdRoadmap = await this.roadmapModel.create(
+      Object.assign(roadmap, { _id: randomUUID() })
+    );
+    return createdRoadmap?.toObject();
   }
 
   async findByUserId(userId: string): Promise<Roadmap | null> {

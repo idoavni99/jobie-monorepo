@@ -112,10 +112,10 @@ Format response as JSON with:
 `;
 
     const { roadmap_steps: steps } =
-      (await this.openAiRepository.requestPromptJSON(
+      ((await this.openAiRepository.requestPromptJSON(
         'You are a career coach helping users plan career transitions',
         prompt
-      )) as {
+      )) ?? {}) as {
         roadmap_steps: MilestoneWithSkills[];
       };
 

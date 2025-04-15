@@ -30,9 +30,7 @@ export class OpenAIRepository {
     });
 
     const content = result.choices?.[0]?.message?.content?.trim() ?? '';
-
-    if (content.startsWith('```json')) return content.slice(7);
-    if (content.endsWith('```')) return content.slice(0, -3);
+    if (content.startsWith('```json')) return content.slice(7, -3);
     return content;
   }
 
@@ -40,8 +38,11 @@ export class OpenAIRepository {
     initializationPrompt: string,
     contentPrompt: string
   ) {
-    return safeJSON(
-      await this.requestPrompt(initializationPrompt, contentPrompt)
-    ) as T;
+    const textResult = await this.requestPrompt(
+      initializationPrompt,
+      contentPrompt
+    );
+    const parsedResult = safeJSON(textResult) as T;
+    return parsedResult;
   }
 }
