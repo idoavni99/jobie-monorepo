@@ -1,5 +1,5 @@
 export type DataEntity = {
   _id: string;
-  _createdAt: Date;
-  _updatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 };
