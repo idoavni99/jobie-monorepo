@@ -20,9 +20,12 @@
     "paths": {
       "@jobie/auth-core": ["libs/auth-core/src/index.ts"],
       "@jobie/data-entities-core": ["libs/data-entities-core/src/index.ts"],
+      "@jobie/linkedin": ["libs/linkedin/src/index.ts"],
+      "@jobie/milestones/*": ["libs/linkedin/src/*"],
       "@jobie/nestjs-core": ["libs/nestjs-core/src/index.ts"],
-      "@jobie/users/*": ["libs/users/src/*"],
-      "@jobie/roadmap-calibration/*": ["libs/roadmap-calibration/src/*"]
+      "@jobie/openai": ["libs/openai/src/index.ts"],
+      "@jobie/roadmap/*": ["libs/roadmap/src/*"],
+      "@jobie/users/*": ["libs/users/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

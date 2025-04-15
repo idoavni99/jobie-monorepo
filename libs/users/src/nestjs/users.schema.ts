@@ -1,4 +1,4 @@
-import { DataEntity } from '@jobie/data-entities-core';
+import { DataEntity, defaultSchemaOptions } from '@jobie/data-entities-core';
 import { Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
@@ -8,22 +8,13 @@ import { TUser } from '../types/user.type';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserEntity = TUser & DataEntity;
-@Schema({
-  toJSON: {
-    virtuals: true,
-    getters: true,
-  },
-  toObject: {
-    getters: true,
-    virtuals: true,
-  },
-})
+@Schema(defaultSchemaOptions)
 export class User implements UserEntity {
   @Prop()
-  _createdAt: Date;
+  createdAt: Date;
 
   @Prop()
-  _updatedAt: Date;
+  updatedAt: Date;
 
   @Prop()
   _id: string;

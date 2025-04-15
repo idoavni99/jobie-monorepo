@@ -3,7 +3,7 @@ import { BaseAppModule } from '@jobie/nestjs-core';
 import { UsersModule } from '@jobie/users/nestjs';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { RoadmapModule } from './roadmap/roadmap.module';
+import { RoadmapCalibrationModule } from './roadmap/roadmap.module';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { RoadmapModule } from './roadmap/roadmap.module';
       inject: [mongoConfig.KEY],
     }),
     UsersModule.forRoot(),
-    RoadmapModule,
+    RoadmapCalibrationModule,
   ],
 })
 export class AppModule {}
