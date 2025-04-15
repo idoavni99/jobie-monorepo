@@ -5,8 +5,8 @@ import { Roadmap } from './roadmap.schema';
 export class RoadmapService {
   constructor(private readonly roadmapRepository: RoadmapRepository) {}
 
-  async saveRoadmap(roadmap: Partial<Roadmap>): Promise<Roadmap> {
-    return this.roadmapRepository.upsert(roadmap);
+  async createRoadmap(roadmap: Partial<Roadmap>): Promise<Roadmap> {
+    return this.roadmapRepository.create(roadmap);
   }
 
   async deleteUserRoadmap(userId: string) {

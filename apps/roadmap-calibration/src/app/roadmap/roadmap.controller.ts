@@ -16,7 +16,7 @@ export class RoadmapController {
     const roadmap =
       await this.roadmapGenerationService.generateSummarizedRoadmap(user._id);
 
-    return this.roadmapService.saveRoadmap(roadmap);
+    return this.roadmapService.createRoadmap(roadmap);
   }
 
   @Post('approve')
