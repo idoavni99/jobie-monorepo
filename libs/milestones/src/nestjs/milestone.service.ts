@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Milestone, MilestoneRepository } from './index';
+import { MilestoneRepository } from './milestone.repository';
+import { Milestone } from './milestone.schema';
 
 @Injectable()
 export class MilestoneService {

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { MilestoneRepository } from './milestone.repository';
 import { Milestone, MilestoneSchema } from './milestone.schema';
 import { MilestoneService } from './milestone.service';
 
@@ -9,7 +10,7 @@ import { MilestoneService } from './milestone.service';
       { name: Milestone.name, schema: MilestoneSchema },
     ]),
   ],
-  providers: [MilestoneService],
+  providers: [MilestoneRepository, MilestoneService],
   exports: [MilestoneService],
 })
 export class MilestoneModule {}
