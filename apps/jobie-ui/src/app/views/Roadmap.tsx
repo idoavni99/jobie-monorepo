@@ -1,5 +1,5 @@
 import { keyframes } from '@emotion/react';
-import { TRoadmap } from '@jobie/roadmap-calibration/types';
+import { TRoadmap } from '@jobie/roadmap/types';
 import {
   Box,
   Button,
