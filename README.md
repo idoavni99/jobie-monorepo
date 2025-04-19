@@ -22,19 +22,19 @@ pnpm i
 To run the ui for your app, use:
 
 ```sh
-pnpm serve jobie-ui
+pnpm start jobie-ui
 ```
 
 To run any of the microservices for your app, use:
 
 ```sh
-pnpm serve 'microservice-name'
+pnpm start 'microservice-name'
 ```
 
 To create a production bundle:
 
 ```sh
-pnpm build jobie-ui
+pnpm start jobie-ui
 ```
 
 To see all available targets to run for a project, run:

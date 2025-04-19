@@ -14,11 +14,6 @@ export class UsersModule {
   static forRoot(): DynamicModule {
     return {
       module: UsersModule,
-      exports: [UsersModule],
-      providers: [UsersRepository],
-      imports: [
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-      ],
       global: true,
     };
   }

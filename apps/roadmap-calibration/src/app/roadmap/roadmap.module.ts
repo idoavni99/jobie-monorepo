@@ -1,11 +1,13 @@
-import { RoadmapCalibrationModule } from '@jobie/roadmap-calibration/nestjs';
+import { LinkedinModule } from '@jobie/linkedin';
+import { OpenAIModule } from '@jobie/openai';
+import { RoadmapModule } from '@jobie/roadmap/nestjs';
 import { Module } from '@nestjs/common';
+import { RoadmapGenerationService } from './roadmap-generation.service';
 import { RoadmapController } from './roadmap.controller';
-import { RoadmapService } from './roadmap.service';
 
 @Module({
+  imports: [RoadmapModule, OpenAIModule.register(), LinkedinModule.register()],
   controllers: [RoadmapController],
-  imports: [RoadmapCalibrationModule],
-  providers: [RoadmapService],
+  providers: [RoadmapGenerationService],
 })
-export class RoadmapModule {}
+export class RoadmapCalibrationModule {}
