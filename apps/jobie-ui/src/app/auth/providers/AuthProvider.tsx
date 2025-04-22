@@ -1,4 +1,4 @@
-import { EnrichedProfileData, TUser } from '@jobie/users/types';
+import { EnrichedProfileData, EnrichedProfileUpdateData, TUser } from '@jobie/users/types';
 import {
   createContext,
   PropsWithChildren,
@@ -82,6 +82,14 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     await roadmapCalibrationApi.post('/generate');
     onAuthenticationSuccess(updatedUser);
   };
+  const updateProfile = async (data: EnrichedProfileUpdateData) => {
+    const { data: updatedUser } = await profileEnrichmentApi.put<TUser>(
+      '/',
+      data
+    );
+    await roadmapCalibrationApi.post('/generate');
+    onAuthenticationSuccess(updatedUser);
+  };
 
   const logout = async () => {
     await gatewayApi.post('/logout');
@@ -98,6 +106,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         isLoadingUserAuth,
         getUserMe,
         setupProfile,
+        updateProfile,
         isLoadingAuthFormResponse,
       }}
     >

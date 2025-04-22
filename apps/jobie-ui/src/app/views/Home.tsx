@@ -12,6 +12,9 @@ export const HomeScreen = () => {
       <Button variant="contained" type="a" href="/roadmap">
         See your roadmap
       </Button>
+      <Button variant="contained" type="a" href="/edit-profile">
+        Edit your profile
+      </Button>
       <Button variant="contained" onClick={logout}>
         Sign Out
       </Button>

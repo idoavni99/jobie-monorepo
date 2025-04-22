@@ -16,6 +16,7 @@ import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
 import { Roadmap } from './views/Roadmap';
 import { SetupProfile } from './views/SetupProfile';
+import { EditProfile } from './views/EditProfile';
 import { SignIn } from './views/SignIn';
 
 export const App = () => {
@@ -39,6 +40,10 @@ export const App = () => {
                   <Route
                     path={RoutesPaths.SETUP_PROFILE}
                     element={<SetupProfile />}
+                  />
+                  <Route
+                    path={RoutesPaths.EDIT_PROFILE}
+                    element={<EditProfile />}
                   />
                 </Route>
               </Route>
