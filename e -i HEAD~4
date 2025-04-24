@@ -1,0 +1,37 @@
+[33m83a746a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mFixRoadmapIssue[m[33m)[m done
+[33m2700473[m fixed roadmap issue
+[33m40c3235[m fixed roadmap issue
+[33m65884b0[m fixed roadmap issue
+[33m86b236a[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Merge pull request #6 from idoavni99/refactor-integrations
+[33m8feaf55[m[33m ([m[1;31morigin/refactor-integrations[m[33m)[m FInish refactor
+[33mac9dabc[m .gitignore test
+[33mae1c681[m save refactor changes
+[33mc2eec5e[m Merge pull request #5 from idoavni99/morp
+[33mf16e411[m[33m ([m[1;31morigin/morp[m[33m)[m Feat: move roadmap logic into seperate service, make some repeated code reused
+[33m4c35614[m Save lint result
+[33m1c31f6b[m Merge branch 'main' of https://github.com/idoavni99/jobie-monorepo into morp
+[33mfe8cc5a[m final fixes for poc
+[33m915af24[m Make everything work (this time no secrets in env)
+[33m93ed947[m Load the module, move the generation service into the lib
+[33m864179b[m initial roadmap generating and printing (no .env)
+[33m76819d8[m ui redesign, added target goal linkedin url input and db save
+[33m9729995[m Add login registration screens (#4)
+[33m39f6829[m Add login registration screens (#4)
+[33m0392df4[m More concise code for proxying the accessToken (#3)
+[33m155796d[m More concise code for proxying the accessToken (#3)
+[33m9b8ebee[m Rename main.tsx to Main.tsx
+[33m7edcf4e[m Rename main.tsx to Main.tsx
+[33mfff43ef[m Add shared dependencies, lint rules and pre-commit hooks (#2)
+[33m15ab442[m Add shared dependencies, lint rules and pre-commit hooks (#2)
+[33mcc3723a[m Add some initial stuff for gateway and install shared deps (#1)
+[33m5a61473[m Add some initial stuff for gateway and install shared deps (#1)
+[33m2bfb957[m Ensure base infrastructure works as intended
+[33m53fbb77[m Ensure base infrastructure works as intended
+[33ma80987b[m base scripts
+[33m1985de7[m base scripts
+[33ma464666[m Use pnpm in all things project
+[33ma5171d1[m Use pnpm in all things project
+[33m1db8b52[m Init Monorepo
+[33mb367120[m Init Monorepo
+[33mfb88389[m Initial commit
+[33m84b5da6[m Initial commit
