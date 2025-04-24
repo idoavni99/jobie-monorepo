@@ -5,8 +5,7 @@ export const linkedinConfig = registerAs('openai', () => {
   return {
     apiKey,
     baseURL:
-      process.env['LINKEDIN_HOST'] ??
-      `https://linkedin-data-api.p.rapidapi.com`,
+      process.env['LINKEDIN_HOST'] ?? `https://linkedin-api8.p.rapidapi.com`,
   };
 });
 

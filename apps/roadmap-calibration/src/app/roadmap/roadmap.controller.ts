@@ -15,7 +15,6 @@ export class RoadmapController {
   async generate(@AuthUser() user: TUser): Promise<Roadmap> {
     const roadmap =
       await this.roadmapGenerationService.generateSummarizedRoadmap(user._id);
-
     return this.roadmapService.createRoadmap(roadmap);
   }
 
