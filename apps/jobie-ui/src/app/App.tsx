@@ -14,7 +14,7 @@ import { RoutesPaths } from './enums/routes.enum';
 import { HomeScreen } from './views/Home';
 import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
-import { Roadmap } from './views/Roadmap';
+import { Roadmap } from './views/roadmap/Roadmap';
 import { SetupProfile } from './views/SetupProfile';
 import { SignIn } from './views/SignIn';
 
