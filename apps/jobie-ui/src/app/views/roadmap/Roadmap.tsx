@@ -46,8 +46,8 @@ export const Roadmap = () => {
           <CircularProgress />
         </Stack>
       ) : (
-        <Stack gap={2}>
-          {/* Line ABOVE the scrollbar */}
+        <Stack>
+          {milestones && <MilestonesList milestones={milestones} />}
           <Box
             sx={{
               height: '2px',
@@ -55,25 +55,17 @@ export const Roadmap = () => {
               zIndex: 1,
             }}
           />
-          {milestones && <MilestonesList milestones={milestones} />}
         </Stack>
       )}
 
-      <Stack alignItems="center" mt={6}>
+      <Stack alignItems="center" mt={2}>
         <Button
           variant="outlined"
           onClick={regenerate}
+          size="large"
           sx={{
-            borderRadius: 999,
-            px: 4,
-            py: 1,
-            fontWeight: 'bold',
-            color: 'white',
-            borderColor: 'white',
-            backdropFilter: 'blur(6px)',
-            '&:hover': {
-              backgroundColor: 'rgba(255,255,255,0.1)',
-            },
+            color: '#fff',
+            borderColor: '#fff',
           }}
         >
           Regenerate Roadmap
