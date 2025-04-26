@@ -1,13 +1,13 @@
 import { TRoadmap } from '@jobie/roadmap/types';
-import { Stack, useMediaQuery } from '@mui/material';
+import { Stack } from '@mui/material';
+import { useIsMobile } from '../../../hooks/use-is-mobile';
 import { MilestoneListItem } from './MilestoneListItem';
 
 type Properties = {
   milestones: TRoadmap['milestonesWithSkills'];
 };
 export const MilestonesList = ({ milestones }: Properties) => {
-  const isMobile = useMediaQuery('(max-width: 600px)');
-
+  const isMobile = useIsMobile();
   return (
     <Stack
       direction={isMobile ? 'column' : 'row'}
@@ -19,7 +19,9 @@ export const MilestonesList = ({ milestones }: Properties) => {
         pb: 6,
 
         ...(isMobile
-          ? {}
+          ? {
+              height: '360px',
+            }
           : {
               '&::-webkit-scrollbar': {
                 height: 3,
