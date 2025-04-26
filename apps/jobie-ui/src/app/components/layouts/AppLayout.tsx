@@ -13,14 +13,14 @@ import { useIsMobile } from '../../hooks/use-is-mobile';
 import { AppHeader } from '../AppHeader';
 import { AppNavDrawer } from '../navigation/AppNavDrawer';
 
-const container = window !== undefined ? () => window.document.body : undefined;
+const container = globalThis === undefined ? undefined : () => globalThis.document.body;
 
 export const AppLayout = () => {
   const isMobile = useIsMobile();
   const [isNavBarOpenMobile, setIsNavBarOpenMobile] = useState(false);
 
   const toggleDrawer = useEventCallback(() =>
-    setIsNavBarOpenMobile((curr) => !curr)
+    setIsNavBarOpenMobile((current) => !current)
   );
   return (
     <Stack
