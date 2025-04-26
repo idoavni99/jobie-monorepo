@@ -30,34 +30,42 @@ export const AppLayout = () => {
       alignItems={'inherit'}
       gap={3}
     >
-      <AppBar>
-        <Toolbar>
-          {isMobile && (
-            <IconButton onClick={toggleDrawer}>
-              <MenuIcon />
-            </IconButton>
-          )}
-          <Stack
-            width="100%"
-            alignItems={isMobile ? 'flex-start' : 'center'}
-            paddingInlineStart={isMobile ? 2 : 0}
+      {isMobile ? (
+        <>
+          <AppBar>
+            <Toolbar>
+              {isMobile && (
+                <IconButton onClick={toggleDrawer}>
+                  <MenuIcon />
+                </IconButton>
+              )}
+              <Stack
+                width="100%"
+                alignItems={isMobile ? 'flex-start' : 'center'}
+                paddingInlineStart={isMobile ? 2 : 0}
+              >
+                <AppHeader />
+              </Stack>
+            </Toolbar>
+          </AppBar>
+          <Drawer
+            open={isNavBarOpenMobile}
+            container={container}
+            variant="temporary"
+            sx={{
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
+                boxShadow: 3,
+              },
+            }}
+            anchor="left"
           >
-            <AppHeader />
-          </Stack>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        {...(isMobile
-          ? {
-              open: isNavBarOpenMobile,
-              variant: 'temporary',
-              slotProps: { root: { keepMounted: true } },
-              onClose: toggleDrawer,
-            }
-          : { open: true, variant: 'permanent' })}
-      >
-        <AppNavDrawer onClose={isMobile ? toggleDrawer : undefined} />
-      </Drawer>
+            <AppNavDrawer onClose={isMobile ? toggleDrawer : undefined} />
+          </Drawer>
+        </>
+      ) : (
+        <AppHeader />
+      )}
       <Outlet />
     </Stack>
   );
