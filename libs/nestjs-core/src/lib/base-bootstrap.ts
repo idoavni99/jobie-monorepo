@@ -1,3 +1,5 @@
+// eslint-disable-next-line unicorn/prefer-module
+require('hpropagate')({ headersToPropagate: ['authorization'] });
 import { INestApplication, Type } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
