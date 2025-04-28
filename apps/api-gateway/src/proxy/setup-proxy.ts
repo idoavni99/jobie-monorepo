@@ -47,7 +47,7 @@ export const setupProxyToService = async (
     on: {
       proxyReq: (proxyRequest, request) => {
         if (request.authToken) {
-          proxyRequest.setHeader('authorization', request.authToken);
+          proxyRequest.setHeader('x-jobie-authorization', request.authToken);
         }
       },
     },

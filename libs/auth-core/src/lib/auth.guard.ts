@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
     if (!this.useAuth) return true;
 
     const request = context.switchToHttp().getRequest<AuthorizedRequest>();
-    const accessToken = request.headers['authorization'];
+    const accessToken = request.headers['x-jobie-authorization'];
     if (!accessToken) return false;
 
     const authUser = await this.jwtService.verifyAsync(accessToken, {
