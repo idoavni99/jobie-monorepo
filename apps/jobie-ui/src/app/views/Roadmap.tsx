@@ -8,8 +8,11 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { roadmapCalibrationApi } from '../../api/roadmap-calibration.api';
 import { useDataFetch } from '../../hooks/use-data-fetch';
+import { RoutesPaths } from '../enums/routes.enum';
+
 const fadeInUp = keyframes`
   from {
     opacity: 0;
@@ -31,6 +34,7 @@ export const Roadmap = () => {
       .get<TRoadmap>('/')
       .then(({ data }) => data.milestonesWithSkills)
   );
+  const navigate = useNavigate();
 
   const regenerate = async () => {
     try {
@@ -97,7 +101,13 @@ export const Roadmap = () => {
               return (
                 <Box
                   key={index}
+                  onClick={() =>
+                    navigate(
+                      RoutesPaths.MILESTONE.replace(':milestoneId', step._id)
+                    )
+                  }
                   sx={{
+                    cursor: 'pointer',
                     animation: `${fadeInUp} 0.6s ease-out`,
                     animationDelay: `${index * 0.15}s`,
                     animationFillMode: 'forwards',

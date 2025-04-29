@@ -1,4 +1,4 @@
-export type MilestoneStep = { step: string; completed: boolean };
+export type MilestoneStep = { _id: string; step: string; completed: boolean };
 
 export type TMilestone = {
   _id: string; // milestone id

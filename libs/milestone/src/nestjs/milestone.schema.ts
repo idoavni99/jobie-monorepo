@@ -28,13 +28,14 @@ export class Milestone implements MilestoneEntity {
   @Prop({
     type: [
       {
+        _id: String,
         step: String,
         completed: { type: Boolean, default: false },
       },
     ],
     default: [],
   })
-  steps: { step: string; completed: boolean }[];
+  steps: { _id: string; step: string; completed: boolean }[];
 
   @Prop({ default: false })
   completed: boolean;

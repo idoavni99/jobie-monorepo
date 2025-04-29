@@ -20,7 +20,7 @@ export class MilestoneGenerationService {
     `;
 
     const parsed = await this.openAiRepository.requestPromptJSON<{
-      steps: { step: string; completed: boolean }[];
+      steps: { _id: string; step: string; completed: boolean }[];
     }>(
       'You are a career mentor guiding a user through their career roadmap.',
       prompt

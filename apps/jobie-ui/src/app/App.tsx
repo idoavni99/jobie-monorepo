@@ -12,6 +12,7 @@ import { AppBackground } from './components/AppBackground';
 import { SetupLayout } from './components/SetupLayout';
 import { RoutesPaths } from './enums/routes.enum';
 import { HomeScreen } from './views/Home';
+import { Milestone } from './views/Milestone';
 import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
 import { Roadmap } from './views/Roadmap';
@@ -40,6 +41,7 @@ export const App = () => {
                     path={RoutesPaths.SETUP_PROFILE}
                     element={<SetupProfile />}
                   />
+                  <Route path={RoutesPaths.MILESTONE} element={<Milestone />} />
                 </Route>
               </Route>
 
