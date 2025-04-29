@@ -1,4 +1,5 @@
 export type MilestoneWithSkills = {
+  _id: string;
   milestone_name: string;
   skills: string[];
 };

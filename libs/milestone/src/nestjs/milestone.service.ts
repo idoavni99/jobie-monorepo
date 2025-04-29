@@ -6,7 +6,7 @@ import { Milestone } from './milestone.schema';
 export class MilestoneService {
   constructor(private readonly milestoneRepository: MilestoneRepository) {}
 
-  async saveMilestome(milestone: Milestone): Promise<Milestone> {
+  async saveMilestone(milestone: Partial<Milestone>): Promise<Milestone> {
     return this.milestoneRepository.upsert(milestone);
   }
 

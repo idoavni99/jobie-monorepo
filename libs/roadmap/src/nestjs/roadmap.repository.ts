@@ -11,7 +11,7 @@ export class RoadmapRepository {
     private readonly roadmapModel: Model<RoadmapDocument>
   ) {}
 
-  async create(roadmap: Partial<Roadmap>): Promise<Roadmap> {
+  async create(roadmap: Partial<Roadmap>): Promise<Roadmap | any> {
     const createdRoadmap = await this.roadmapModel.create(
       Object.assign(roadmap, { _id: randomUUID() })
     );

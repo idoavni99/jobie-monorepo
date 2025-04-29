@@ -1,6 +1,6 @@
 import { DataEntity, defaultSchemaOptions } from '@jobie/data-entities-core';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import { MilestoneWithSkills, TRoadmap } from '../types/roadmap.type';
 
 export type RoadmapDocument = HydratedDocument<Roadmap>;
@@ -30,6 +30,7 @@ export class Roadmap implements RoadmapEntity {
   @Prop({
     type: [
       {
+        _id: String,
         milestone_name: { type: String, required: true },
         skills: [{ type: String }],
       },
@@ -39,8 +40,7 @@ export class Roadmap implements RoadmapEntity {
   milestonesWithSkills: MilestoneWithSkills[];
 
   @Prop({
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Milestone',
+    type: [String],
     default: [],
   })
   milestoneIds: string[];

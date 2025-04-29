@@ -3,15 +3,18 @@ import { OpenAIRepository } from '@jobie/openai';
 import { Roadmap } from '@jobie/roadmap/nestjs';
 import { CareerVector, MilestoneWithSkills } from '@jobie/roadmap/types';
 import { UsersRepository } from '@jobie/users/nestjs';
+import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import axios from 'axios';
 import fuzzball from 'fuzzball';
-
+import { firstValueFrom } from 'rxjs';
 @Injectable()
 export class RoadmapGenerationService {
   constructor(
     private readonly openAiRepository: OpenAIRepository,
     private readonly usersRepository: UsersRepository,
-    private readonly linkedinRepository: LinkedinRepository
+    private readonly linkedinRepository: LinkedinRepository,
+    private readonly httpService: HttpService
   ) {}
 
   private buildCareerVector(profile: LinkedInProfile): CareerVector {
@@ -69,34 +72,38 @@ export class RoadmapGenerationService {
     };
   }
 
-  async generateSummarizedRoadmap(userId: string): Promise<Partial<Roadmap>> {
-    const user = await this.usersRepository.findById(userId);
-    if (!user || !user.linkedinProfileUrl || !user.aspirationalLinkedinUrl) {
-      throw new NotFoundException('User or LinkedIn URLs not available');
-    }
+  async generateSummarizedRoadmap(
+    userId: string,
+    token: string
+  ): Promise<Partial<Roadmap> | any> {
+    try {
+      const user = await this.usersRepository.findById(userId);
+      if (!user || !user.linkedinProfileUrl || !user.aspirationalLinkedinUrl) {
+        throw new NotFoundException('User or LinkedIn URLs not available');
+      }
 
-    const [userProfileRaw, targetProfileRaw] = await Promise.all([
-      this.linkedinRepository.getUserProfile(user.linkedinProfileUrl),
-      this.linkedinRepository.getUserProfile(user.aspirationalLinkedinUrl),
-    ]);
+      const [userProfileRaw, targetProfileRaw] = await Promise.all([
+        this.linkedinRepository.getUserProfile(user.linkedinProfileUrl),
+        this.linkedinRepository.getUserProfile(user.aspirationalLinkedinUrl),
+      ]);
 
-    const userVector = this.buildCareerVector(userProfileRaw);
-    const targetVector = this.buildCareerVector(targetProfileRaw);
-    const gap = this.compareVectors(userVector, targetVector);
+      const userVector = this.buildCareerVector(userProfileRaw);
+      const targetVector = this.buildCareerVector(targetProfileRaw);
+      const gap = this.compareVectors(userVector, targetVector);
 
-    const prompt = `
+      const prompt = `
 The user is currently working as "${
-      userVector.headline
-    }" and aims to transition to "${targetVector.headline}".
+        userVector.headline
+      }" and aims to transition to "${targetVector.headline}".
 They are based in ${user.location} and have the following background: "${
-      user.bio
-    }". Their career goal is: "${user.goalJob}".
+        user.bio
+      }". Their career goal is: "${user.goalJob}".
 
 Currently, they possess these skills: ${userVector.skills.join(', ')}.
 Their unique skills compared to the target: ${gap.unique_skills.join(', ')}.
 However, they are missing the following skills to achieve their target: ${gap.missing_skills.join(
-      ', '
-    )}.
+        ', '
+      )}.
 
 Generate a summarized career roadmap to help them transition.
 Each milestone should have a short name (3–5 words max) and include a small list of skills
@@ -111,27 +118,95 @@ Format response as JSON with:
 }
 `;
 
-    const { roadmap_steps: steps } =
-      ((await this.openAiRepository.requestPromptJSON(
-        'You are a career coach helping users plan career transitions',
-        prompt
-      )) ?? {}) as {
-        roadmap_steps: MilestoneWithSkills[];
+      const { roadmap_steps: steps } =
+        ((await this.openAiRepository.requestPromptJSON(
+          'You are a career coach helping users plan career transitions',
+          prompt
+        )) ?? {}) as {
+          roadmap_steps: MilestoneWithSkills[];
+        };
+
+      const milestoneTitles = steps.map((step) => step.milestone_name);
+      const milestonesWithSkills = steps.map((step) => ({
+        _id: crypto.randomUUID(),
+        milestone_name: step.milestone_name,
+        skills: step.skills ?? [],
+      }));
+      const milestoneIds = milestonesWithSkills.map((m) => m._id);
+
+      await Promise.all(
+        milestonesWithSkills.slice(0, 3).map(async (mws) => {
+          try {
+            await firstValueFrom(
+              this.httpService.post(
+                'http://localhost:3003/generateMilestone',
+                {
+                  _id: mws._id,
+                  userId: userId,
+                  milestone_name: mws.milestone_name,
+                  skills: mws.skills,
+                },
+                {
+                  headers: {
+                    'x-jobie-authorization': token,
+                  },
+                }
+              )
+            );
+          } catch (error) {
+            if (axios.isAxiosError(error)) {
+              const status = error.response?.status;
+              const data = error.response?.data;
+              const headers = error.response?.headers;
+
+              throw new Error(
+                `Axios error while generating milestone. Status: ${status}, Data: ${JSON.stringify(
+                  data
+                )}, Headers: ${JSON.stringify(headers)}, Message: ${
+                  error.message
+                }`
+              );
+            } else if (error instanceof Error) {
+              throw new TypeError(
+                `Internal error while generating milestone. Message: ${error.message}, Stack: ${error.stack}`
+              );
+            } else {
+              throw new TypeError(
+                `Unknown error while generating milestone: ${JSON.stringify(
+                  error
+                )}`
+              );
+            }
+          }
+        })
+      );
+
+      return {
+        userId,
+        goalJob: user.goalJob ?? '',
+        summarizedMilestones: milestoneTitles,
+        milestonesWithSkills,
+        milestoneIds,
+        isApproved: false,
       };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const data = error.response?.data;
+        const headers = error.response?.headers;
 
-    const milestoneTitles = steps.map((step) => step.milestone_name);
-    const milestonesWithSkills = steps.map((step) => ({
-      milestone_name: step.milestone_name,
-      skills: step.skills ?? [],
-    }));
-
-    return {
-      userId,
-      goalJob: user.goalJob ?? '',
-      summarizedMilestones: milestoneTitles,
-      milestonesWithSkills,
-      milestoneIds: [],
-      isApproved: false,
-    };
+        throw new Error(
+          `Axios error while generating roadmap. Status: ${status}, Data: ${JSON.stringify(
+            data
+          )}, Headers: ${JSON.stringify(headers)}, Message: ${error.message}`
+        );
+      } else if (error instanceof Error) {
+        throw new TypeError(
+          `Internal error while generating roadmap. Message: ${error.message}, Stack: ${error.stack}`
+        );
+      } else {
+        throw new TypeError(`Unknown error: ${JSON.stringify(error)}`);
+      }
+    }
   }
 }

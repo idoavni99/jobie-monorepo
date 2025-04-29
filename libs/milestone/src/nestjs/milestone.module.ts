@@ -10,7 +10,7 @@ import { MilestoneService } from './milestone.service';
       { name: Milestone.name, schema: MilestoneSchema },
     ]),
   ],
-  providers: [MilestoneRepository, MilestoneService],
+  providers: [MilestoneService, MilestoneRepository],
   exports: [MilestoneService],
 })
 export class MilestoneModule {}

@@ -10,17 +10,17 @@ export class Milestone implements MilestoneEntity {
   @Prop({ required: true })
   _id: string;
 
-  @Prop({ required: true })
+  @Prop()
   createdAt: Date;
 
-  @Prop({ required: true })
+  @Prop()
   updatedAt: Date;
 
   @Prop({ required: true })
   userId: string;
 
   @Prop({ required: true })
-  milestoneName: string;
+  milestone_name: string;
 
   @Prop({ type: [String], default: [] })
   skills: string[];
