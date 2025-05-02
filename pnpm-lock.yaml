@@ -86,6 +86,9 @@ importers:
       fuzzball:
         specifier: ^2.2.2
         version: 2.2.2
+      hpropagate:
+        specifier: ^1.0.1
+        version: 1.0.1
       http-proxy-middleware:
         specifier: ^3.0.3
         version: 3.0.3
@@ -5304,6 +5307,9 @@ packages:
 
   hpack.js@2.1.6:
     resolution: {integrity: sha512-zJxVehUdMGIKsRaNt7apO2Gqp0BdqW5yaiGHXXmbpvxgBYVZnAql+BJb4RO5ad2MgpbZKn5G6nMnegrH1FcNYQ==}
+
+  hpropagate@1.0.1:
+    resolution: {integrity: sha512-Xly46CxtBodZzlZVGyNTRwq9YhW8RZvsTTcCa8EjxlVEfGdcy9z2Oh6bVQgfXiJg6LY6+iS88RW3FDTJbMYPOA==}
 
   html-encoding-sniffer@3.0.0:
     resolution: {integrity: sha512-oWv4T4yJ52iKrufjnyZPkrN0CH3QnrUqdB6In1g5Fe1mia8GmF36gnfNySxoZtxD5+NmYw1EElVXiBk93UeskA==}
@@ -15505,6 +15511,10 @@ snapshots:
       obuf: 1.1.2
       readable-stream: 2.3.8
       wbuf: 1.7.3
+
+  hpropagate@1.0.1:
+    dependencies:
+      uuid: 8.3.2
 
   html-encoding-sniffer@3.0.0:
     dependencies:
