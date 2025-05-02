@@ -42,6 +42,7 @@
     "dayjs": "^1.11.13",
     "express": "^4.21.2",
     "fuzzball": "^2.2.2",
+    "hpropagate": "^1.0.1",
     "http-proxy-middleware": "^3.0.3",
     "mongoose": "^8.9.5",
     "nestjs-cls": "^4.5.0",
