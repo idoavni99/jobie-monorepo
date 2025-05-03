@@ -2,8 +2,12 @@ export type LinkedInProfile = {
   firstName: string;
   lastName: string;
   headline: string;
-  location: {
+  geo: {
     full: string;
+    city?: string;
+    country?: string;
+    countryCode?: string;
+
   };
   position: {
     title: string;
@@ -29,4 +33,5 @@ export type LinkedInProfile = {
   skills: {
     name: string;
   }[];
+  profilePictures?: { url: string; width: number; height: number }[];
 };

@@ -8,6 +8,11 @@ export type EnrichedProfileData = {
   skills: string[];
   experienceSummary: { title: string; companyName: string }[];
   linkedinHeadline: string;
+  linkedinFullName?: string;
+  linkedinProfilePictureUrl?: string;
+  linkedinLocation?: string;
+  linkedinPositions?: { title: string; companyName: string; startDate: string; endDate: string }[];
+  linkedinEducations?: { schoolName: string; degreeName: string; fieldOfStudy: string; startDate: string; endDate: string }[];
 };
 export type UserData = {
   _id: string;

@@ -1,17 +1,33 @@
+import { keyframes } from '@emotion/react';
 import { TRoadmap } from '@jobie/roadmap/types';
 import {
   Box,
   Button,
   CircularProgress,
   Stack,
-  Typography,
+  Typography
 } from '@mui/material';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { roadmapCalibrationApi } from '../../../api/roadmap-calibration.api';
 import { useDataFetch } from '../../../hooks/use-data-fetch';
 import { MilestonesList } from './milestones/MilestoneList';
 
+
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+`;
+
 export const Roadmap = () => {
+  const navigate = useNavigate();
+
   const {
     loading,
     data: milestones,
@@ -19,21 +35,20 @@ export const Roadmap = () => {
   } = useDataFetch(() =>
     roadmapCalibrationApi
       .get<TRoadmap>('/')
-      .then(({ data }) => data.milestonesWithSkills)
+      .then(({ data }) => data.milestonesWithSkills ?? [])
   );
 
-  const regenerate = async () => {
-    try {
-      await roadmapCalibrationApi.post('/generate');
-      fetchRoadmap();
-    } catch (error) {
-      console.error('Failed to regenerate roadmap', error);
-    }
-  };
 
   useEffect(() => {
     fetchRoadmap();
   }, [fetchRoadmap]);
+
+
+  useEffect(() => {
+    if (!loading && milestones && milestones.length === 0) {
+      navigate('/aspirations');
+    }
+  }, [loading, milestones, navigate]);
 
   return (
     <Box p={4} width="100%">
@@ -58,19 +73,6 @@ export const Roadmap = () => {
         </Stack>
       )}
 
-      <Stack alignItems="center" mt={2}>
-        <Button
-          variant="outlined"
-          onClick={regenerate}
-          size="large"
-          sx={{
-            color: '#fff',
-            borderColor: '#fff',
-          }}
-        >
-          Regenerate Roadmap
-        </Button>
-      </Stack>
     </Box>
   );
 };

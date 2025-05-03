@@ -19,6 +19,7 @@ import { LoginPayloadDto } from './dtos/login.payload.dto';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+
     @Inject(authConfigKey) private readonly authConfig: AuthConfigType
   ) {}
 
@@ -36,14 +37,17 @@ export class AuthController {
     if (signedCookies.refreshToken) {
       const accessToken = await this.authService.refreshAccess(
         signedCookies.refreshToken
+
       );
       this.setTokenCookies(response, accessToken, signedCookies.refreshToken);
       return this.authService.getMyIdentity(accessToken);
     }
   }
 
+
   @Post('logout')
   logout(@Res() response: Response) {
+
     response.clearCookie('accessToken', { signed: true });
     response.clearCookie('refreshToken', { signed: true });
     response.sendStatus(HttpStatus.OK);
@@ -71,6 +75,7 @@ export class AuthController {
     accessToken: string,
     refreshToken: string
   ) {
+
     response.cookie('accessToken', accessToken, {
       httpOnly: true,
       maxAge: this.authConfig.accessTokenLifetime,
@@ -86,4 +91,6 @@ export class AuthController {
       sameSite: 'strict',
     });
   }
+
 }
+
