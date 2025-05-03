@@ -14,9 +14,17 @@ export class RoadmapService {
     return this.roadmapRepository.findByUserId(userId);
   }
 
-  // Optional: keep if you want reset feature
-  async deleteUserRoadmap(userId: string) {
-    return this.roadmapRepository.deleteByUserId(userId);
-  }
+
+  // async deleteUserRoadmap(userId: string) {
+  //   return this.roadmapRepository.deleteByUserId(userId);
+  // }
+
+  // async updateMilestones(
+  //   userId: string,
+  //   titles: string[],
+  //   ids: string[]
+  // ): Promise<Roadmap | null> {
+  //   return this.roadmapRepository.updateMilestones(userId, titles, ids);
+  // }
 
 }

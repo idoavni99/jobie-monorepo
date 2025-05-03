@@ -17,6 +17,7 @@ import { AppLayout } from './components/layouts/AppLayout';
 import { SetupLayout } from './components/layouts/SetupLayout';
 import { RoutesPaths } from './enums/routes.enum';
 import { AspirationsPage } from './views/AspirationsPage';
+
 import { HomeScreen } from './views/Home';
 import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
@@ -40,6 +41,7 @@ export const App = () => {
 
               <Route element={<SetupRoute />}>
                 <Route element={<SetupLayout />}>
+
                   <Route path={RoutesPaths.SETUP_PROFILE} element={<SetupProfile />} />
 
 

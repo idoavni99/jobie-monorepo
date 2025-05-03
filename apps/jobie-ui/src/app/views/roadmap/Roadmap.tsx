@@ -2,6 +2,7 @@ import { keyframes } from '@emotion/react';
 import { TRoadmap } from '@jobie/roadmap/types';
 import {
   Box,
+  Button,
   CircularProgress,
   Stack,
   Typography
@@ -11,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { roadmapCalibrationApi } from '../../../api/roadmap-calibration.api';
 import { useDataFetch } from '../../../hooks/use-data-fetch';
 import { MilestonesList } from './milestones/MilestoneList';
+
 
 const fadeInUp = keyframes`
   from {
@@ -36,9 +38,11 @@ export const Roadmap = () => {
       .then(({ data }) => data.milestonesWithSkills ?? [])
   );
 
+
   useEffect(() => {
     fetchRoadmap();
   }, [fetchRoadmap]);
+
 
   useEffect(() => {
     if (!loading && milestones && milestones.length === 0) {
@@ -68,6 +72,7 @@ export const Roadmap = () => {
           />
         </Stack>
       )}
+
     </Box>
   );
 };

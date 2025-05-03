@@ -107,12 +107,6 @@ export class RoadmapGenerationService {
     }
 
     console.log('[buildRoadmap] Fetching user and target LinkedIn profiles...');
-    // const [userProfileRaw, targetProfileRaw] = await Promise.all([
-    //   this.linkedinRepository.getUserProfile(user.linkedinProfileUrl),
-    //   this.linkedinRepository.getUserProfile(targetUrl),
-    // ]);
-    // console.log('[buildRoadmap] userProfileRaw:', userProfileRaw);
-    // console.log('[buildRoadmap] targetProfileRaw:', targetProfileRaw);
 
     const targetProfileRaw = await this.linkedinRepository.getUserProfile(targetUrl);
     const targetVector = this.buildCareerVector(targetProfileRaw);
@@ -124,8 +118,6 @@ export class RoadmapGenerationService {
       educations: user.linkedinEducations ?? [],
       skills: user.skills ?? [],
     };
-    // console.log('[buildRoadmap] uservector:', userVector);
-    // console.log('[buildRoadmap] targetvectoe:', targetVector);
 
     const gap = this.compareVectors(userVector, targetVector);
     const userPositionsText = userVector.positions.map(

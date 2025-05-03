@@ -7,6 +7,7 @@ export type LinkedInProfile = {
     city?: string;
     country?: string;
     countryCode?: string;
+
   };
   position: {
     title: string;

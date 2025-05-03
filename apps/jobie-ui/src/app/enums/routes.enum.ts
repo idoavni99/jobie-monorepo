@@ -5,4 +5,5 @@ export enum RoutesPaths {
   HOME = '/',
   ROADMAP = '/roadmap',
   ASPIRATIONS = '/aspirations',
+
 }

@@ -44,6 +44,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   }, [user?._id, getUserMe]);
 
+
   // const onAuthenticationSuccess = async (rawUser: TUser) => {
   //   setUser(rawUser);
 
@@ -93,7 +94,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
 
 
-
   const login = async (userLoginData: Pick<TUser, 'email' | 'password'>) => {
     setIsLoadingAuthFormResponse(true);
 
@@ -125,6 +125,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       '/',
       data
     );
+
 
     const { data: suggestions } = await roadmapCalibrationApi.post(
       '/suggest-aspirations',
