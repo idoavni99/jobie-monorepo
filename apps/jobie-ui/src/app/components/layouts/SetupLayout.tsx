@@ -1,7 +1,7 @@
 import { Stack } from '@mui/material';
 import { Outlet, useLocation } from 'react-router-dom';
-import { RoutesPaths } from '../enums/routes.enum';
-import { AppHeader, AppHeaderProperties } from './AppHeader';
+import { RoutesPaths } from '../../enums/routes.enum';
+import { AppHeader, AppHeaderProperties } from '../AppHeader';
 
 const appHeaderPropertiesByPath: Record<string, AppHeaderProperties> = {
   [RoutesPaths.LOGIN]: {

@@ -1,10 +1,10 @@
 import { keyframes } from '@emotion/react';
-import { Stack, Typography, TypographyProps } from '@mui/material';
+import { Typography, TypographyProps } from '@mui/material';
 
 export type AppHeaderProperties = {
   title?: string;
   titleProps?: TypographyProps;
-  subTitle: string;
+  subTitle?: string;
   subTitleProps?: TypographyProps;
 };
 
@@ -24,19 +24,17 @@ export const AppHeader = ({
   titleProps: titleProperties = {},
 }: AppHeaderProperties) => {
   return (
-    <Stack justifyContent="center" alignItems="center" mt={6} mb={2}>
-      <Typography
-        variant="h1"
-        sx={{
-          fontWeight: 750,
-          color: '#f5f5f5',
-          textShadow: '0 4px 14px rgba(0,0,0,0.4)',
-          animation: `${fadeRise} 1s ease forwards`,
-        }}
-        {...titleProperties}
-      >
-        {title}
-      </Typography>
-    </Stack>
+    <Typography
+      variant="h1"
+      sx={{
+        fontWeight: 750,
+        color: '#f5f5f5',
+        textShadow: '0 4px 14px rgba(0,0,0,0.4)',
+        animation: `${fadeRise} 1s ease forwards`,
+      }}
+      {...titleProperties}
+    >
+      {title}
+    </Typography>
   );
 };

@@ -18,7 +18,8 @@ export const theme = createTheme({
       main: '#5581F1',
     },
     background: {
-      default: '#ffffff',
+      default: '#657BF2',
+      paper: '#7D63F5',
     },
   },
   shape: {

@@ -63,12 +63,12 @@ export class AuthController {
     @Body() { password, email }: LoginPayloadDto,
     @Res() response: Response,
   ) {
-    console.log('[auth/login] body =>', { email, pwLength: password?.length });
+    // console.log('[auth/login] body =>', { email, pwLength: password?.length });
 
     const { accessToken, refreshToken, ...userData } =
       await this.authService.login(email, password);
 
-    console.log('[auth/login] success – userId:', userData._id);
+    // console.log('[auth/login] success – userId:', userData._id);
 
     this.setTokenCookies(response, accessToken, refreshToken);
     response.status(HttpStatus.CREATED).json(userData);

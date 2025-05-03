@@ -78,7 +78,7 @@ export class LinkedinRepository {
         this.logger.error(`[getSimilarProfiles] ${message}`);
       }
 
-      return undefined;
+      return;
     }
   }
 }
