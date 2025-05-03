@@ -44,10 +44,55 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   }, [user?._id, getUserMe]);
 
-  const onAuthenticationSuccess = (rawUser: TUser) => {
+  // const onAuthenticationSuccess = async (rawUser: TUser) => {
+  //   setUser(rawUser);
+
+  //   try {
+  //     const { data: roadmap } = await roadmapCalibrationApi.get('/');
+
+  //     if (roadmap) {
+  //       navigate('/roadmap'); // User already approved a roadmap
+  //     } else {
+  //       navigate('/aspirations'); // User needs to choose a role model
+  //     }
+  //   } catch (error) {
+  //     console.error('Error checking user roadmap', error);
+  //     navigate('/aspirations'); // Default fallback
+  //   }
+  // };
+
+
+  // const onAuthenticationSuccess = (rawUser: TUser) => {
+  //   setUser(rawUser);
+  //   navigate('/');
+  // };
+
+
+  const onAuthenticationSuccess = async (rawUser: TUser) => {
     setUser(rawUser);
-    navigate('/');
+
+    if (!rawUser.isProfileSetUp) {
+      // User didn't even set up profile yet
+      navigate('/setup-profile');
+      return;
+    }
+
+    try {
+      const { data: roadmap } = await roadmapCalibrationApi.get('/');
+
+      if (roadmap && Object.keys(roadmap).length > 0) {
+        navigate('/roadmap');
+      } else {
+        navigate('/aspirations');
+      }
+    } catch (error) {
+      console.error('Error checking user roadmap', error);
+      navigate('/setup-profile'); // Fallback, very safe
+    }
   };
+
+
+
 
   const login = async (userLoginData: Pick<TUser, 'email' | 'password'>) => {
     setIsLoadingAuthFormResponse(true);
@@ -75,12 +120,28 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   const setupProfile = async (data: EnrichedProfileData) => {
+
     const { data: updatedUser } = await profileEnrichmentApi.post<TUser>(
       '/',
       data
     );
-    await roadmapCalibrationApi.post('/generate');
-    onAuthenticationSuccess(updatedUser);
+
+    const { data: suggestions } = await roadmapCalibrationApi.post(
+      '/suggest-aspirations',
+      {
+        targetUrl: data.aspirationalLinkedinUrl,
+        maxResults: 4,
+      }
+    );
+
+    setUser(updatedUser);
+
+    navigate('/aspirations', {
+      state: {
+        suggestions,
+        aspirationalLinkedinUrl: data.aspirationalLinkedinUrl,
+      },
+    });
   };
 
   const logout = async () => {

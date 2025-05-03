@@ -6,14 +6,14 @@ import { CreateUserDto, User } from './users.schema';
 
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectModel(User.name) private model: Model<User>) {}
+  constructor(@InjectModel(User.name) private model: Model<User>) { }
 
   async findAll(): Promise<User[]> {
     return this.model.find().exec();
   }
 
-  async findById(id: string): Promise<User | undefined> {
-    const user = await this.model.findById(id, { password: 0 }).exec();
+  async findById(id: string, projection: Record<string, any> = {}): Promise<User | undefined> {
+    const user = await this.model.findById(id, projection).exec();
     return user?.toObject();
   }
 

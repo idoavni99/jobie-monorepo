@@ -11,12 +11,14 @@ import { AuthProvider } from './auth/providers/AuthProvider';
 import { AppBackground } from './components/AppBackground';
 import { SetupLayout } from './components/SetupLayout';
 import { RoutesPaths } from './enums/routes.enum';
+import { AspirationsPage } from './views/AspirationsPage';
 import { HomeScreen } from './views/Home';
 import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
 import { Roadmap } from './views/Roadmap';
 import { SetupProfile } from './views/SetupProfile';
 import { SignIn } from './views/SignIn';
+
 
 export const App = () => {
   return (
@@ -36,10 +38,8 @@ export const App = () => {
                 <Route element={<SetupLayout />}>
                   <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
                   <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
-                  <Route
-                    path={RoutesPaths.SETUP_PROFILE}
-                    element={<SetupProfile />}
-                  />
+                  <Route path={RoutesPaths.SETUP_PROFILE} element={<SetupProfile />} />
+                  <Route path={RoutesPaths.ASPIRATIONS} element={<AspirationsPage />} />
                 </Route>
               </Route>
 

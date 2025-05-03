@@ -13,9 +13,9 @@ export class LinkedinModule {
         HttpModule.registerAsync({
           imports: [ConfigModule.forFeature(linkedinConfig)],
           useFactory: (config: LinkedinConfig) => ({
-            baseURL: config.baseURL,
+            baseURL: config.baseURL || 'https://linkedin-api8.p.rapidapi.com', // fallback 
             headers: {
-              'x-rapidapi-host': new URL(config.baseURL).host,
+              'x-rapidapi-host': 'linkedin-api8.p.rapidapi.com',
               'x-rapidapi-key': config.apiKey,
             },
           }),
