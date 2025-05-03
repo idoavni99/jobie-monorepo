@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { roadmapCalibrationApi } from '../../api/roadmap-calibration.api';
-import { useAuth } from '../../hooks/use-auth'; // <-- You must create this hook as shown below
+import { useAuth } from '../../hooks/use-auth';
 import { ConfirmModal } from './components/ConfirmModal';
 import { RoadmapModal } from './components/RoadmapModal';
 import { SuggestionCard } from './components/SuggestionCard';

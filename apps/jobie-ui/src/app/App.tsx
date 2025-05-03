@@ -24,7 +24,6 @@ import { Roadmap } from './views/roadmap/Roadmap';
 import { SetupProfile } from './views/SetupProfile';
 import { SignIn } from './views/SignIn';
 
-
 export const App = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -42,8 +41,7 @@ export const App = () => {
               <Route element={<SetupRoute />}>
                 <Route element={<SetupLayout />}>
                   <Route path={RoutesPaths.SETUP_PROFILE} element={<SetupProfile />} />
-                  <Route path={RoutesPaths.ASPIRATIONS} element={<AspirationsPage />} />
-                  <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
+
 
                 </Route>
               </Route>
@@ -51,6 +49,7 @@ export const App = () => {
               <Route element={<ProtectedRoute />}>
                 <Route element={<AppLayout />}>
                   <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
+                  <Route path={RoutesPaths.ASPIRATIONS} element={<AspirationsPage />} />
                   <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
                 </Route>
               </Route>
