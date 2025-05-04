@@ -3,12 +3,13 @@ import { TMilestone } from '@jobie/milestone/types';
 import {
   Box,
   CircularProgress,
+  Snackbar,
   Stack,
   Switch,
   Typography,
 } from '@mui/material';
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { milestoneMangementApi } from '../../api/milestone-management.api';
 import { useDataFetch } from '../../hooks/use-data-fetch';
 
@@ -25,19 +26,45 @@ const fadeInUp = keyframes`
 
 export const Milestone = () => {
   const { milestoneId } = useParams<{ milestoneId: string }>();
+  const navigate = useNavigate();
+  const [showSnackbar, setShowSnackbar] = useState(false);
+
   const {
     loading,
     data: milestone,
     fetchData: fetchMilestone,
   } = useDataFetch(() =>
     milestoneMangementApi
-      .post<TMilestone>(`/getMilestone`, { milestoneId })
+      .get<TMilestone>('/', {
+        params: { milestoneId: milestoneId },
+      })
       .then(({ data }) => data)
   );
 
   useEffect(() => {
     fetchMilestone();
   }, [fetchMilestone]);
+
+  useEffect(() => {
+    if (milestone?.status === 'completed') {
+      setShowSnackbar(true);
+
+      milestoneMangementApi
+        .post('/generateNext', {
+          CurrentMilestoneId: milestoneId,
+        })
+        .then(() => {
+          alert('Next milestone generated successfully!');
+        })
+        .catch((error) => {
+          console.error('Failed to generate next milestone:', error);
+        });
+
+      setTimeout(() => {
+        navigate(-1);
+      }, 2000);
+    }
+  }, [milestone?.status, navigate]);
 
   const toggleStep = async (stepId: string, completed: boolean) => {
     try {
@@ -46,7 +73,7 @@ export const Milestone = () => {
         stepId,
         completed,
       });
-      fetchMilestone(); // Re-fetch the updated milestone after toggling
+      fetchMilestone();
     } catch (error) {
       console.error('Failed to toggle step', error);
     }
@@ -85,17 +112,21 @@ export const Milestone = () => {
             textAlign="center"
             color="#333"
           >
-            {milestone.milestone_name}
+            {milestone.milestoneName}
           </Typography>
 
           {/* Completion Status */}
           <Typography
             textAlign="center"
-            color={milestone.completed ? 'green' : 'rgba(83, 23, 233, 0.77)'}
+            color={
+              milestone.status === 'completed'
+                ? 'green'
+                : 'rgba(83, 23, 233, 0.77)'
+            }
             fontWeight="bold"
             mb={3}
           >
-            {milestone.completed ? 'Completed' : 'In Progress'}
+            {milestone.status === 'completed' ? 'Completed' : 'In Progress'}
           </Typography>
 
           {/* Skills */}
@@ -168,6 +199,7 @@ export const Milestone = () => {
                   onChange={() => toggleStep(step._id, !step.completed)}
                   color="primary"
                   size="small"
+                  disabled={milestone.status === 'completed'}
                 />
               </Box>
             ))}
@@ -178,6 +210,14 @@ export const Milestone = () => {
           <Typography color="error">Milestone not found.</Typography>
         </Stack>
       )}
+
+      {/* Snackbar */}
+      <Snackbar
+        open={showSnackbar}
+        message="Milestone completed! Redirecting..."
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        autoHideDuration={1500}
+      />
     </Box>
   );
 };

@@ -9,6 +9,6 @@ import { RoadmapService } from './roadmap.service';
     MongooseModule.forFeature([{ name: Roadmap.name, schema: RoadmapSchema }]),
   ],
   providers: [RoadmapRepository, RoadmapService],
-  exports: [RoadmapService],
+  exports: [RoadmapService, RoadmapRepository],
 })
 export class RoadmapModule {}

@@ -1,4 +1,5 @@
 import { keyframes } from '@emotion/react';
+import { TMilestone } from '@jobie/milestone/types';
 import { TRoadmap } from '@jobie/roadmap/types';
 import {
   Box,
@@ -9,6 +10,7 @@ import {
 } from '@mui/material';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { milestoneMangementApi } from '../../api/milestone-management.api';
 import { roadmapCalibrationApi } from '../../api/roadmap-calibration.api';
 import { useDataFetch } from '../../hooks/use-data-fetch';
 import { RoutesPaths } from '../enums/routes.enum';
@@ -23,17 +25,48 @@ const fadeInUp = keyframes`
     transform: translateY(0) scale(1);
   }
 `;
-
 export const Roadmap = () => {
   const {
     loading,
     data: milestones,
     fetchData: fetchRoadmap,
   } = useDataFetch(() =>
-    roadmapCalibrationApi
-      .get<TRoadmap>('/')
-      .then(({ data }) => data.milestonesWithSkills)
+    roadmapCalibrationApi.get<TRoadmap>('/').then(async ({ data }) => {
+      const enriched = await Promise.all(
+        data.milestones.map(async (m) => {
+          try {
+            const { data: full } = await milestoneMangementApi.get<TMilestone>(
+              '/getMilestone',
+              {
+                params: { milestoneId: m._id },
+              }
+            );
+
+            const totalSteps = full.steps.length || 1;
+            const completedSteps = full.steps.filter((s) => s.completed).length;
+            const progress = (completedSteps / totalSteps) * 100;
+
+            return {
+              ...m,
+              progress,
+              completed: full.completed,
+            };
+          } catch {
+            console.warn(
+              `Milestone ${m._id} not found. Showing basic info only.`
+            );
+            return {
+              ...m,
+              progress: 0,
+              completed: false,
+            };
+          }
+        })
+      );
+      return enriched;
+    })
   );
+
   const navigate = useNavigate();
 
   const regenerate = async () => {
@@ -133,6 +166,17 @@ export const Roadmap = () => {
                     },
                   }}
                 >
+                  <CircularProgress
+                    variant="determinate"
+                    value={step.progress}
+                    size={260}
+                    thickness={3.5}
+                    sx={{
+                      position: 'absolute',
+                      color: step.completed ? 'success.main' : '#1976d2',
+                      opacity: 0.3,
+                    }}
+                  />
                   <Typography
                     fontWeight="bold"
                     fontSize="1.1rem"
@@ -140,7 +184,7 @@ export const Roadmap = () => {
                     mb={1}
                     px={2}
                   >
-                    {step.milestone_name}
+                    {step.milestoneName}
                   </Typography>
 
                   <Box

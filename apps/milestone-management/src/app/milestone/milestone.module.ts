@@ -3,10 +3,9 @@ import { OpenAIModule } from '@jobie/openai';
 import { Module } from '@nestjs/common';
 import { MilestoneGenerationService } from './milestone-generation.service';
 import { MilestoneController } from './milestone.controller';
-
 @Module({
   imports: [MilestoneModule, OpenAIModule.register()],
-  providers: [MilestoneGenerationService],
   controllers: [MilestoneController],
+  providers: [MilestoneGenerationService],
 })
 export class MilestoneManagementModule {}

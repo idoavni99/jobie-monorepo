@@ -1,18 +1,21 @@
-import { Milestone } from '@jobie/milestone/nestjs';
+import { TMilestone } from '@jobie/milestone/types';
 import { OpenAIRepository } from '@jobie/openai';
+import { RoadmapMilestone } from '@jobie/roadmap/types';
 import { Injectable } from '@nestjs/common';
-import { GenerateMilestoneDto } from './dtos/generate-milestone.dto';
-
 @Injectable()
 export class MilestoneGenerationService {
   constructor(private readonly openAiRepository: OpenAIRepository) {}
   async generateMilestone(
-    dto: GenerateMilestoneDto
-  ): Promise<Partial<Milestone>> {
+    roadmapMilestone: RoadmapMilestone
+  ): Promise<TMilestone> {
     const prompt = `
-    The user is working towards achieving the milestone: "${dto.milestone_name}"
+    The user is working towards achieving the milestone: "${
+      roadmapMilestone.milestoneName
+    }"
 
-    These skills will be acquired in this milestone: ${dto.skills.join(', ')}
+    These skills will be acquired in this milestone: ${roadmapMilestone.skills.join(
+      ', '
+    )}
 
     Provide a structured breakdown with actionable steps to complete this milestone.
     Each step should be approximately 10 words and no more than 5 steps in total.
@@ -20,21 +23,25 @@ export class MilestoneGenerationService {
     `;
 
     const parsed = await this.openAiRepository.requestPromptJSON<{
-      steps: { _id: string; step: string; completed: boolean }[];
+      steps: { step: string; completed: boolean }[];
     }>(
       'You are a career mentor guiding a user through their career roadmap.',
       prompt
     );
 
-    const steps = Array.isArray(parsed?.steps) ? parsed.steps : [];
+    // add _id to each step
+    parsed.steps = parsed.steps.map((step) => ({
+      ...step,
+      _id: crypto.randomUUID(),
+    }));
 
     return {
-      _id: dto._id,
-      userId: dto.userId,
-      milestone_name: dto.milestone_name,
-      skills: dto.skills,
-      steps,
-      completed: false,
-    };
+      _id: roadmapMilestone._id,
+      milestoneName: roadmapMilestone.milestoneName,
+      skills: roadmapMilestone.skills,
+      steps: parsed.steps,
+      status: roadmapMilestone.status,
+      hasGeneratedNext: false,
+    } as TMilestone;
   }
 }

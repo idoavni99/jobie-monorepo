@@ -1,7 +1,7 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { randomUUID } from 'node:crypto';
+import { TMilestone } from '../types';
 import { Milestone, MilestoneDocument } from './milestone.schema';
 
 @Injectable()
@@ -11,43 +11,13 @@ export class MilestoneRepository {
     private readonly milestoneModel: Model<MilestoneDocument>
   ) {}
 
-  async create(milestone: Partial<Milestone>): Promise<Milestone> {
-    try {
-      const createdMilestone = await this.milestoneModel.create(
-        // assign id for each of the milestone steps
-        Object.assign(milestone, {
-          steps: milestone.steps?.map((step) => ({
-            ...step,
-            _id: randomUUID(),
-          })),
-        })
-      );
-      return createdMilestone?.toObject();
-    } catch (error: any) {
-      console.error('Error inserting milestone:', error);
-
-      throw new HttpException(
-        {
-          message: `Failed to create milestone: ${error.message}`,
-          error: error.name,
-        },
-        500
-      );
-    }
+  async create(milestone: TMilestone): Promise<Milestone> {
+    const createdMilestone = await this.milestoneModel.create(milestone);
+    return createdMilestone?.toObject();
   }
-  // get milestone according to milestone id
-  async getById(milestoneId: string): Promise<Milestone> {
+  async findById(milestoneId: string): Promise<Milestone | undefined> {
     const milestone = await this.milestoneModel.findById(milestoneId);
-    if (!milestone) {
-      throw new HttpException(
-        {
-          message: `Milestone with id ${milestoneId} not found`,
-          error: 'NotFound',
-        },
-        404
-      );
-    }
-    return milestone.toObject();
+    return milestone?.toObject();
   }
 
   async updateStepCompletion(
@@ -56,31 +26,38 @@ export class MilestoneRepository {
     completed: boolean
   ): Promise<Milestone> {
     // update the step's "completed" field
-
-    const result = await this.milestoneModel.updateOne(
+    await this.milestoneModel.updateOne(
       { _id: milestoneId, 'steps._id': stepId },
       { $set: { 'steps.$.completed': completed } }
     );
 
-    if (result.modifiedCount === 0) {
-      throw new NotFoundException('Step or milestone not found');
-    }
-
-    // update the milestone's "completed" field if needed (if all steps are completed)
+    // update the milestone's status field
 
     const milestone = await this.milestoneModel.findById(milestoneId);
     if (!milestone) {
-      throw new NotFoundException('Milestone not found after update');
+      throw new NotFoundException(`Milestone with id ${milestoneId} not found`);
     }
 
-    const allDone = milestone.steps.every((s) => s.completed);
+    milestone.status = milestone.steps.every((s) => s.completed)
+      ? 'completed'
+      : 'active';
 
-    if (milestone.completed !== allDone) {
-      milestone.completed = allDone;
-      await milestone.save();
+    await milestone.save();
+
+    return milestone.toObject();
+  }
+
+  async markAsGeneratedNext(milestoneId: string): Promise<Milestone> {
+    // update the milestoness hasGeneratedNext field
+    const milestone = await this.milestoneModel.findById(milestoneId);
+    if (!milestone) {
+      throw new NotFoundException(`Milestone with id ${milestoneId} not found`);
     }
 
-    return milestone;
+    milestone.hasGeneratedNext = true;
+    await milestone.save();
+
+    return milestone.toObject();
   }
 
   async deleteByUserId(userId: string): Promise<void> {

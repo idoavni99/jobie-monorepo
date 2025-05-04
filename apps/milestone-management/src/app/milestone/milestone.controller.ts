@@ -1,28 +1,51 @@
+import { AuthUser } from '@jobie/auth-core';
 import { Milestone, MilestoneService } from '@jobie/milestone/nestjs';
-import { Body, Controller, Patch, Post } from '@nestjs/common';
-import { GenerateMilestoneDto } from './dtos/generate-milestone.dto';
+import { RoadmapMilestone } from '@jobie/roadmap/types';
+import { TUser } from '@jobie/users/types';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Get,
+  NotFoundException,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ToggleStepDto } from './dtos/toggle-step.dto';
 import { MilestoneGenerationService } from './milestone-generation.service';
-
 @Controller()
 export class MilestoneController {
   constructor(
     private readonly milestoneGenerationService: MilestoneGenerationService,
     private readonly milestoneService: MilestoneService
   ) {}
-  @Post('generateMilestone')
-  async generateMilestone(
-    @Body() dto: GenerateMilestoneDto
-  ): Promise<Milestone> {
-    const milestone = await this.milestoneGenerationService.generateMilestone(
-      dto
+  @Post('initialGenerate')
+  async initalGenerate(
+    @Body() roadmapMilestones: RoadmapMilestone | RoadmapMilestone[]
+  ): Promise<Milestone | Milestone[]> {
+    // check if the input is an array or a single milestone object
+
+    const items = Array.isArray(roadmapMilestones)
+      ? roadmapMilestones
+      : [roadmapMilestones];
+
+    // generate each milestone & save it to milestones DB
+    const results = await Promise.all(
+      items.map(async (milestone) => {
+        const generated =
+          await this.milestoneGenerationService.generateMilestone(milestone);
+        return this.milestoneService.createMilestone(generated);
+      })
     );
-    return this.milestoneService.createMilestone(milestone);
+    return Array.isArray(roadmapMilestones) ? results : results[0];
   }
-  // get milestone according to milestone id
-  @Post('getMilestone')
-  async getMilestone(@Body() dto: { milestoneId: string }): Promise<Milestone> {
-    const milestone = await this.milestoneService.getMilestone(dto.milestoneId);
+
+  @Get()
+  async get(
+    @Query('milestoneId') milestoneId: string
+  ): Promise<Milestone | undefined> {
+    const milestone = await this.milestoneService.getMilestoneById(milestoneId);
     return milestone;
   }
 
@@ -33,5 +56,45 @@ export class MilestoneController {
       dto.stepId,
       dto.completed
     );
+  }
+  @Post('generateNext')
+  async generateNext(
+    @AuthUser() user: TUser,
+    @Body() dto: { CurrentMilestoneId: string }
+  ): Promise<any> {
+    // first check if its already generated
+    const current_milestone = await this.milestoneService.getMilestoneById(
+      dto.CurrentMilestoneId
+    );
+    if (!current_milestone) {
+      throw new NotFoundException('Milestone not found');
+    }
+    if (current_milestone.hasGeneratedNext) {
+      throw new ConflictException('Next milestone already generated');
+    }
+
+    // Set current Roadmap's milestone status to "completed"
+    await this.milestoneService.updateRoadmapMilestoneStatus(
+      user._id,
+      current_milestone._id,
+      'completed'
+    );
+
+    // Set next Roadmap's milestone status to "active"
+    const next = await this.milestoneService.activateNextRoadmapMilestone(
+      user._id
+    );
+
+    // Generate the next milestone
+    const generated = await this.milestoneGenerationService.generateMilestone(
+      next
+    );
+
+    // Save the generated milestone to DB
+    const saved = await this.milestoneService.createMilestone(generated);
+
+    // Update the current milestone to have generated next milestone
+    await this.milestoneService.markAsGeneratedNext(current_milestone._id);
+    return saved;
   }
 }
