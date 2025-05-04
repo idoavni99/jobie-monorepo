@@ -6,16 +6,21 @@ import {
   BrowserRouter as Router,
   Routes,
 } from 'react-router-dom';
-import { AuthRoute, ProtectedRoute } from './auth/components/AuthRoute';
+import {
+  AuthRoute,
+  ProtectedRoute,
+  SetupRoute,
+} from './auth/components/AuthRoute';
 import { AuthProvider } from './auth/providers/AuthProvider';
 import { AppBackground } from './components/AppBackground';
-import { SetupLayout } from './components/SetupLayout';
+import { AppLayout } from './components/layouts/AppLayout';
+import { SetupLayout } from './components/layouts/SetupLayout';
 import { RoutesPaths } from './enums/routes.enum';
 import { HomeScreen } from './views/Home';
 import { Milestone } from './views/Milestone';
 import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
-import { Roadmap } from './views/Roadmap';
+import { Roadmap } from './views/roadmap/Roadmap';
 import { SetupProfile } from './views/SetupProfile';
 import { SignIn } from './views/SignIn';
 
@@ -33,15 +38,20 @@ export const App = () => {
                 </Route>
               </Route>
 
-              <Route element={<ProtectedRoute />}>
+              <Route element={<SetupRoute />}>
                 <Route element={<SetupLayout />}>
-                  <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
-                  <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
                   <Route
                     path={RoutesPaths.SETUP_PROFILE}
                     element={<SetupProfile />}
                   />
                   <Route path={RoutesPaths.MILESTONE} element={<Milestone />} />
+                </Route>
+              </Route>
+
+              <Route element={<ProtectedRoute />}>
+                <Route element={<AppLayout />}>
+                  <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
+                  <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
                 </Route>
               </Route>
 
