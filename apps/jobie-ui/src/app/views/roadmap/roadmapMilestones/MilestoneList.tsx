@@ -1,10 +1,10 @@
-import { TRoadmap } from '@jobie/roadmap/types';
+import { RoadmapMilestone } from '@jobie/roadmap/types';
 import { Stack } from '@mui/material';
 import { useIsMobile } from '../../../hooks/use-is-mobile';
 import { MilestoneListItem } from './MilestoneListItem';
 
 type Properties = {
-  milestones: TRoadmap['milestonesWithSkills'];
+  milestones: (RoadmapMilestone & { progress: number })[];
 };
 export const MilestonesList = ({ milestones }: Properties) => {
   const isMobile = useIsMobile();
@@ -38,9 +38,12 @@ export const MilestonesList = ({ milestones }: Properties) => {
     >
       {milestones.map((milestone) => (
         <MilestoneListItem
-          key={milestone.milestone_name}
-          milestoneName={milestone.milestone_name}
+          key={milestone.milestoneName}
+          _id={milestone._id}
+          milestoneName={milestone.milestoneName}
           skills={milestone.skills}
+          status={milestone.status}
+          progress={milestone.progress}
         />
       ))}
     </Stack>

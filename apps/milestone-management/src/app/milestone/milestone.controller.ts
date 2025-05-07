@@ -41,7 +41,7 @@ export class MilestoneController {
     return Array.isArray(roadmapMilestones) ? results : results[0];
   }
 
-  @Get()
+  @Get('')
   async get(
     @Query('milestoneId') milestoneId: string
   ): Promise<Milestone | undefined> {
