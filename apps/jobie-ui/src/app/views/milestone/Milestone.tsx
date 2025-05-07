@@ -1,5 +1,4 @@
 import { keyframes } from '@emotion/react';
-import { TMilestone } from '@jobie/milestone/types';
 import {
   Box,
   CircularProgress,
@@ -9,10 +8,9 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { milestoneMangementApi } from '../../../api/milestone-management.api';
-import { useDataFetch } from '../../../hooks/use-data-fetch';
 import { MilestoneSkillsList } from './details/MilestoneSkillsList';
 import { MilestoneStepsList } from './details/MilestoneStepsList';
+import { useMilestoneStore } from './store/milestone-store';
 
 const fadeInUp = keyframes`
   from {
@@ -26,25 +24,30 @@ const fadeInUp = keyframes`
 `;
 
 export const Milestone = () => {
-  const { milestoneId } = useParams<{ milestoneId: string }>();
   const navigate = useNavigate();
   const [showSnackbar, setShowSnackbar] = useState(false);
+  const { milestoneId } = useParams<{ milestoneId: string }>() as {
+    milestoneId: string;
+  };
 
-  const {
-    loading,
-    data: milestone,
-    fetchData: fetchMilestone,
-  } = useDataFetch(() =>
-    milestoneMangementApi
-      .get<TMilestone>('/', {
-        params: { milestoneId },
-      })
-      .then(({ data }) => data)
-  );
+  const { milestones, fetchMilestone, generateNextMilestone } =
+    useMilestoneStore();
+
+  const milestone = milestones[milestoneId];
 
   useEffect(() => {
-    fetchMilestone();
-  }, [fetchMilestone]);
+    const fetchData = async () => {
+      if (!milestone) {
+        await fetchMilestone(milestoneId);
+      }
+    };
+    fetchData();
+  }, [milestoneId, milestone, fetchMilestone]);
+
+  const handleComplete = async () => {
+    setShowSnackbar(true);
+    await generateNextMilestone(milestoneId);
+  };
 
   return (
     <Box p={4} width="100%">
@@ -52,11 +55,7 @@ export const Milestone = () => {
         Milestone Details
       </Typography>
 
-      {loading ? (
-        <Stack alignItems="center">
-          <CircularProgress />
-        </Stack>
-      ) : milestone ? (
+      {milestone ? (
         <Box
           sx={{
             animation: `${fadeInUp} 0.6s ease-out`,
@@ -90,34 +89,14 @@ export const Milestone = () => {
 
           <MilestoneSkillsList skills={milestone.skills} />
           <MilestoneStepsList
-            steps={milestone.steps}
             milestoneId={milestone._id}
-            status={milestone.status}
-            onComplete={() => {
-              setShowSnackbar(true);
-              milestoneMangementApi
-                .post('/generateNext', {
-                  CurrentMilestoneId: milestoneId,
-                })
-                .then(() => {
-                  alert('Next milestone generated successfully!');
-                })
-                .catch((error) => {
-                  console.error('Failed to generate next milestone:', error);
-                });
-
-              setTimeout(() => {
-                navigate(-1);
-              }, 2000);
-            }}
+            milestoneStatus={milestone.status}
+            onComplete={handleComplete}
           />
         </Box>
       ) : (
         <Stack alignItems="center">
-          <Typography color="error">
-            At least one preceding milestone must be completed before accessing
-            this one.
-          </Typography>
+          <CircularProgress />
         </Stack>
       )}
 
@@ -125,7 +104,11 @@ export const Milestone = () => {
         open={showSnackbar}
         message="Milestone completed! Redirecting..."
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        autoHideDuration={1500}
+        autoHideDuration={2000}
+        onClose={() => {
+          navigate(-1);
+          setShowSnackbar(false);
+        }}
       />
     </Box>
   );

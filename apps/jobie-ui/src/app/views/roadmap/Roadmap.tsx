@@ -21,47 +21,53 @@ export const Roadmap = () => {
   } = useDataFetch(() =>
     roadmapCalibrationApi.get<TRoadmap>('/').then(async ({ data }) => {
       const { milestones } = data;
+      // get all Active or Completed milestones from the milestone DB
+      try {
+        const { data: fullMilestones } = await milestoneMangementApi.get<
+          TMilestone[]
+        >('/all');
 
-      const finalMilestones = await Promise.all(
-        milestones.map(async (m) => {
-          // If the milestone is active or completed, fetch its steps to calculate progress
-          if (m.status === 'active' || m.status === 'completed') {
-            try {
-              const { data: full } =
-                await milestoneMangementApi.get<TMilestone>('/', {
-                  params: { milestoneId: m._id },
-                });
+        // create a Map for quick lookup
+        const milestoneMap = new Map(fullMilestones.map((m) => [m._id, m]));
 
-              const totalSteps = full.steps.length || 1;
-              const completedSteps = full.steps.filter(
-                (s) => s.completed
-              ).length;
-              const progress = (completedSteps / totalSteps) * 100;
+        // Iterate over the original milestones and either enrich or set progress to 0
+        const finalMilestones = milestones.map((m) => {
+          const enriched = milestoneMap.get(m._id);
 
-              return {
-                ...m,
-                progress,
-              };
-            } catch (error) {
-              console.warn(`Failed to enrich milestone ${m._id}:`, error);
-              return {
-                ...m,
-                progress: 0,
-              };
-            }
-          } else {
-            // If the milestone is in 'summary' status (not yet generated), set its progress to 0
+          if (enriched) {
+            // calculate the progress
+            const totalSteps = enriched.steps.length || 1;
+            const completedSteps = enriched.steps.filter(
+              (s) => s.completed
+            ).length;
+            const progress = (completedSteps / totalSteps) * 100;
+
             return {
               ...m,
-              progress: 0,
+              ...enriched,
+              progress,
             };
           }
-        })
-      );
 
-      return finalMilestones;
+          // if not enriched, just set progress to 0
+          return {
+            ...m,
+            progress: 0,
+          };
+        });
+
+        return finalMilestones;
+      } catch (error) {
+        console.warn(`Failed to fetch milestones:`, error);
+
+        return milestones.map((m) => ({
+          ...m,
+          progress: 0,
+        }));
+      }
     })
   );
+
   const regenerate = async () => {
     try {
       await roadmapCalibrationApi.post('/generate');

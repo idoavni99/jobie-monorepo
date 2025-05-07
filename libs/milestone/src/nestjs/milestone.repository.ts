@@ -19,6 +19,9 @@ export class MilestoneRepository {
     const milestone = await this.milestoneModel.findById(milestoneId);
     return milestone?.toObject();
   }
+  async findAll(): Promise<Milestone[]> {
+    return this.milestoneModel.find();
+  }
 
   async updateStepCompletion(
     milestoneId: string,

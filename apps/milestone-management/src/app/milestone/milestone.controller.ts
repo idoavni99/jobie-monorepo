@@ -49,6 +49,11 @@ export class MilestoneController {
     return milestone;
   }
 
+  @Get('/all')
+  async getAllMilestones(): Promise<Milestone[]> {
+    return this.milestoneService.findAll();
+  }
+
   @Patch('toggleStep')
   async toggleStep(@Body() dto: ToggleStepDto): Promise<Milestone> {
     return this.milestoneService.toggleStep(
@@ -61,7 +66,7 @@ export class MilestoneController {
   async generateNext(
     @AuthUser() user: TUser,
     @Body() dto: { CurrentMilestoneId: string }
-  ): Promise<any> {
+  ): Promise<Milestone> {
     // first check if its already generated
     const current_milestone = await this.milestoneService.getMilestoneById(
       dto.CurrentMilestoneId
