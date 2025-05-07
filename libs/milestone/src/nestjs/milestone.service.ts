@@ -18,8 +18,8 @@ export class MilestoneService {
   async getMilestoneById(milestoneId: string): Promise<Milestone | undefined> {
     return this.milestoneRepository.findById(milestoneId);
   }
-  async findAll(): Promise<Milestone[]> {
-    return this.milestoneRepository.findAll();
+  async getMilestonesByIds(milestoneIds: string): Promise<Milestone[]> {
+    return this.milestoneRepository.findByIds(milestoneIds);
   }
 
   async toggleStep(

@@ -21,11 +21,16 @@ export const Roadmap = () => {
   } = useDataFetch(() =>
     roadmapCalibrationApi.get<TRoadmap>('/').then(async ({ data }) => {
       const { milestones } = data;
-      // get all Active or Completed milestones from the milestone DB
       try {
+        // filter milestones Ids those with status "active" or "completed"
+        const filteredMilestonesIds = milestones
+          .filter((m) => m.status === 'active' || m.status === 'completed')
+          .map((m) => m._id);
+
+        // fetch all milestones with the filtered Ids
         const { data: fullMilestones } = await milestoneMangementApi.get<
           TMilestone[]
-        >('/all');
+        >(`/batch?ids=${filteredMilestonesIds.join(',')}`);
 
         // create a Map for quick lookup
         const milestoneMap = new Map(fullMilestones.map((m) => [m._id, m]));
@@ -44,7 +49,6 @@ export const Roadmap = () => {
 
             return {
               ...m,
-              ...enriched,
               progress,
             };
           }

@@ -49,9 +49,11 @@ export class MilestoneController {
     return milestone;
   }
 
-  @Get('/all')
-  async getAllMilestones(): Promise<Milestone[]> {
-    return this.milestoneService.findAll();
+  @Get('batch')
+  async getMilestonesByIds(
+    @Query('ids') milestoneIds: string
+  ): Promise<Milestone[]> {
+    return this.milestoneService.getMilestonesByIds(milestoneIds);
   }
 
   @Patch('toggleStep')

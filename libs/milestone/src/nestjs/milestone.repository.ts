@@ -19,6 +19,13 @@ export class MilestoneRepository {
     const milestone = await this.milestoneModel.findById(milestoneId);
     return milestone?.toObject();
   }
+  async findByIds(milestoneIds: string): Promise<Milestone[]> {
+    const idsArray = milestoneIds.split(','); // convert the string to an array
+    const milestones = await this.milestoneModel.find({
+      _id: { $in: idsArray },
+    });
+    return milestones.map((milestone) => milestone.toObject());
+  }
   async findAll(): Promise<Milestone[]> {
     return this.milestoneModel.find();
   }
