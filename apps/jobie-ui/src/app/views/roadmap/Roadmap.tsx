@@ -1,3 +1,4 @@
+import { TMilestone } from '@jobie/milestone/types';
 import { TRoadmap } from '@jobie/roadmap/types';
 import {
   Box,
@@ -7,9 +8,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect } from 'react';
+import { milestoneMangementApi } from '../../../api/milestone-management.api';
 import { roadmapCalibrationApi } from '../../../api/roadmap-calibration.api';
 import { useDataFetch } from '../../../hooks/use-data-fetch';
-import { MilestonesList } from './milestones/MilestoneList';
+import { MilestonesList } from './roadmapMilestones/MilestoneList';
 
 export const Roadmap = () => {
   const {
@@ -17,9 +19,57 @@ export const Roadmap = () => {
     data: milestones,
     fetchData: fetchRoadmap,
   } = useDataFetch(() =>
-    roadmapCalibrationApi
-      .get<TRoadmap>('/')
-      .then(({ data }) => data.milestonesWithSkills)
+    roadmapCalibrationApi.get<TRoadmap>('/').then(async ({ data }) => {
+      const { milestones } = data;
+      try {
+        // filter milestones Ids those with status "active" or "completed"
+        const filteredMilestonesIds = milestones
+          .filter((m) => m.status === 'active' || m.status === 'completed')
+          .map((m) => m._id);
+
+        // fetch all milestones with the filtered Ids
+        const { data: fullMilestones } = await milestoneMangementApi.get<
+          TMilestone[]
+        >(`/batch?ids=${filteredMilestonesIds.join(',')}`);
+
+        // create a Map for quick lookup
+        const milestoneMap = new Map(fullMilestones.map((m) => [m._id, m]));
+
+        // Iterate over the original milestones and either enrich or set progress to 0
+        const finalMilestones = milestones.map((m) => {
+          const enriched = milestoneMap.get(m._id);
+
+          if (enriched) {
+            // calculate the progress
+            const totalSteps = enriched.steps.length || 1;
+            const completedSteps = enriched.steps.filter(
+              (s) => s.completed
+            ).length;
+            const progress = (completedSteps / totalSteps) * 100;
+
+            return {
+              ...m,
+              progress,
+            };
+          }
+
+          // if not enriched, just set progress to 0
+          return {
+            ...m,
+            progress: 0,
+          };
+        });
+
+        return finalMilestones;
+      } catch (error) {
+        console.warn(`Failed to fetch milestones:`, error);
+
+        return milestones.map((m) => ({
+          ...m,
+          progress: 0,
+        }));
+      }
+    })
   );
 
   const regenerate = async () => {

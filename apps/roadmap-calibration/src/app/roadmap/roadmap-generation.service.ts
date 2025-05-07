@@ -1,7 +1,6 @@
 import { LinkedInProfile, LinkedinRepository } from '@jobie/linkedin';
 import { OpenAIRepository } from '@jobie/openai';
-import { Roadmap } from '@jobie/roadmap/nestjs';
-import { CareerVector, MilestoneWithSkills } from '@jobie/roadmap/types';
+import { CareerVector, RoadmapMilestone, TRoadmap } from '@jobie/roadmap/types';
 import { UsersRepository } from '@jobie/users/nestjs';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import fuzzball from 'fuzzball';
@@ -69,7 +68,7 @@ export class RoadmapGenerationService {
     };
   }
 
-  async generateSummarizedRoadmap(userId: string): Promise<Partial<Roadmap>> {
+  async generateSummarizedRoadmap(userId: string): Promise<TRoadmap> {
     const user = await this.usersRepository.findById(userId);
     if (!user || !user.linkedinProfileUrl || !user.aspirationalLinkedinUrl) {
       throw new NotFoundException('User or LinkedIn URLs not available');
@@ -105,32 +104,32 @@ Each milestone should have a short name (3–5 words max) and include a small li
 Format response as JSON with:
 {
   "roadmap_steps": [
-    { "milestone_name": "short name", "skills": ["skill1", "skill2"] },
+    { "milestoneName": "short name", "skills": ["skill1", "skill2"] },
     ...
   ]
 }
 `;
+    // generate roadmap steps using OpenAI
 
-    const { roadmap_steps: steps } =
-      ((await this.openAiRepository.requestPromptJSON(
-        'You are a career coach helping users plan career transitions',
-        prompt
-      )) ?? {}) as {
-        roadmap_steps: MilestoneWithSkills[];
-      };
+    const response = await this.openAiRepository.requestPromptJSON<{
+      roadmap_steps: Partial<RoadmapMilestone>[];
+    }>('You are a career coach helping users plan career transitions', prompt);
 
-    const milestoneTitles = steps.map((step) => step.milestone_name);
-    const milestonesWithSkills = steps.map((step) => ({
-      milestone_name: step.milestone_name,
+    const steps = response?.roadmap_steps ?? [];
+
+    // add IDs and status to each milestone
+
+    const milestones = steps.map((step, index) => ({
+      _id: crypto.randomUUID(),
+      milestoneName: step.milestoneName,
       skills: step.skills ?? [],
-    }));
+      status: index < 3 ? 'active' : 'summary',
+    })) as RoadmapMilestone[];
 
     return {
       userId,
       goalJob: user.goalJob ?? '',
-      summarizedMilestones: milestoneTitles,
-      milestonesWithSkills,
-      milestoneIds: [],
+      milestones,
       isApproved: false,
     };
   }

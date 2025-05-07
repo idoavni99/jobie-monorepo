@@ -5,6 +5,7 @@ export const gatewayConfig = registerAs('gateway', () => ({
     : {
         'user-profile-enrichment': 'http://localhost:3001',
         'roadmap-calibration': 'http://localhost:3002',
+        'milestone-management': 'http://localhost:3003',
       }) as Record<string, string>,
   appDomain: process.env.APP_DOMAIN ?? 'localhost',
 }));
