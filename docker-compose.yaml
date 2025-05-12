@@ -13,10 +13,10 @@ services:
   api-gateway:
     build:
       context: ./dist/apps/api-gateway
+      dockerfile: ./Dockerfile
     container_name: api-gateway
     environment:
       - USE_AUTH=false
-    dockerfile: ./Dockerfile
     env_file:
       - .env.deployment
     expose:
@@ -25,29 +25,29 @@ services:
   user-profile-enrichment:
     build:
       context: ./dist/apps/user-profile-enrichment
+      dockerfile: ./Dockerfile
     container_name: user-profile-enrichment
     env_file:
       - .env.deployment
-    dockerfile: ./Dockerfile
     expose:
       - '3001'
 
   roadmap-calibration:
     build:
       context: ./dist/apps/roadmap-calibration
+      dockerfile: ./Dockerfile
     container_name: roadmap-calibration
     env_file:
       - .env.deployment
-    dockerfile: ./Dockerfile
     expose:
       - '3002'
 
   milestone-management:
     build:
       context: ./dist/apps/milestone-management
+      dockerfile: ./Dockerfile
     container_name: milestone-management
     env_file:
       - .env.deployment
-    dockerfile: ./Dockerfile
     expose:
       - '3003'
