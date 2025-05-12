@@ -1,5 +1,8 @@
 # Base Node.js image
 FROM node:23-alpine
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 
 # Set working directory
 WORKDIR /usr/src/app
@@ -8,7 +11,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 # Install only production dependencies
-RUN npm install --only=production
+RUN pnpm install --only=production
 
 # Expose port dynamically via build-time ARG
 ARG SERVICE_PORT=3000
