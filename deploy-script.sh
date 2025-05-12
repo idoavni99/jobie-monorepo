@@ -3,5 +3,6 @@ git pull
 
 pnpm i
 
-docker compose down
+pnpm build
+
 docker compose up -d --build
