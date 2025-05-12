@@ -60,6 +60,7 @@ services:
     restart: always
     environment:
       - PORT=3002
+      - MILESTONE_MANAGEMENT_URL=http://milestone-management:3003
     env_file:
       - .env.deployment
     expose:

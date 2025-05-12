@@ -22,10 +22,7 @@ export class RoadmapController {
     // send the first three milestones to the milestone-management service for generation & saving
     const initialMilestones = roadmap.milestones.slice(0, 3);
     await firstValueFrom(
-      this.httpService.post(
-        'http://localhost:3003/initialGenerate',
-        initialMilestones
-      )
+      this.httpService.post('/initialGenerate', initialMilestones)
     );
     // save the roadmap to DB
     return this.roadmapService.createRoadmap(roadmap);
