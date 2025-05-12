@@ -12,6 +12,8 @@ services:
       - ./dist/apps/jobie-ui:/usr/share/nginx/html:ro
     depends_on:
       - api-gateway
+    networks:
+      - app-network
 
   api-gateway:
     build:
@@ -28,6 +30,8 @@ services:
       - .env.deployment
     expose:
       - '3000'
+    networks:
+      - app-network
 
   user-profile-enrichment:
     build:
@@ -43,6 +47,8 @@ services:
       - .env.deployment
     expose:
       - '3001'
+    networks:
+      - app-network
 
   roadmap-calibration:
     build:
@@ -58,6 +64,8 @@ services:
       - .env.deployment
     expose:
       - '3002'
+    networks:
+      - app-network
 
   milestone-management:
     build:
@@ -73,3 +81,9 @@ services:
       - .env.deployment
     expose:
       - '3003'
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
