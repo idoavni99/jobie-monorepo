@@ -19,4 +19,4 @@ ENV PORT=$SERVICE_PORT
 EXPOSE $SERVICE_PORT
 
 # Default command (can be overridden in docker-compose)
-CMD ["node", "dist/main.js"]
+CMD ["node", "main.js"]
