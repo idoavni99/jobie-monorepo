@@ -30,7 +30,7 @@ export const baseBootstrap = async (
 
   const { port } = app.get<CommonConfigType>(commonConfigKey);
 
-  await app.listen(port);
+  await app.listen(port, isDevelopment ? '127.0.0.1' : '0.0.0.0');
   logger.log(`🚀 Application is running on: http://localhost:${port}`);
 
   return app;
