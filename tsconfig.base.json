@@ -10,7 +10,6 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "strictNullChecks": true,
-    "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
     "lib": ["es2020", "dom"],
