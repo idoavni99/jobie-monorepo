@@ -56,7 +56,7 @@ export class User implements UserEntity {
   @Prop({ unique: true })
   email: string;
 
-  @Prop({ unique: true })
+  @Prop()
   linkedinProfileUrl?: string;
 
   @Prop()
