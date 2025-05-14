@@ -38,10 +38,9 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const hashedPassword =
-      await this.usersRepository.findPasswordByUsernameOrEmail({
-        email,
-      });
+    const hashedPassword = await this.usersRepository.findPasswordByEmail(
+      email
+    );
 
     if (!hashedPassword) throw new UnauthorizedException();
 
