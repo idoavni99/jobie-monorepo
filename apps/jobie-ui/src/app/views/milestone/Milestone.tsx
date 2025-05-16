@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useIsMobile } from '../../hooks/use-is-mobile';
 import { MilestoneSkillsList } from './details/MilestoneSkillsList';
 import { MilestoneStepsList } from './details/MilestoneStepsList';
 import { useMilestoneStore } from './store/milestone-store';
@@ -25,6 +26,7 @@ const fadeInUp = keyframes`
 
 export const Milestone = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [showSnackbar, setShowSnackbar] = useState(false);
   const { milestoneId } = useParams<{ milestoneId: string }>() as {
     milestoneId: string;
@@ -50,7 +52,7 @@ export const Milestone = () => {
   };
 
   return (
-    <Box p={4} width="100%">
+    <Box width="100%">
       <Typography variant="h4" mb={4} fontWeight="bold" textAlign="center">
         Milestone Details
       </Typography>
@@ -61,7 +63,7 @@ export const Milestone = () => {
             animation: `${fadeInUp} 0.6s ease-out`,
             animationFillMode: 'forwards',
             opacity: 0,
-            maxWidth: 700,
+            maxWidth: isMobile ? 300 : 700,
             mx: 'auto',
             p: 4,
             borderRadius: 4,

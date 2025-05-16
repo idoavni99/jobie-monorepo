@@ -16,7 +16,7 @@ export const baseBootstrap = async (
     cors: isDevelopment
       ? {
           allowedHeaders: ['x-jobie-authorization', 'content-type'],
-          origin: 'http://localhost:4200',
+          origin: 'https://localhost:4200',
           credentials: true,
         }
       : undefined,
