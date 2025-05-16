@@ -17,6 +17,7 @@ import { LoginPayloadDto } from './dtos/login.payload.dto';
 
 @Controller('auth')
 export class AuthController {
+  private isProduction = process.env.NODE_ENV === 'production';
   constructor(
     private readonly authService: AuthService,
     @Inject(authConfigKey) private readonly authConfig: AuthConfigType
@@ -76,14 +77,14 @@ export class AuthController {
       maxAge: this.authConfig.accessTokenLifetime,
       signed: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: this.isProduction ? 'strict' : 'none',
     });
     response.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       maxAge: this.authConfig.refreshTokenLifetime,
       signed: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: this.isProduction ? 'strict' : 'none',
     });
   }
 }

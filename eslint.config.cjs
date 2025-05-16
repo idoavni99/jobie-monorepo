@@ -9,6 +9,7 @@ module.exports = [
   {
     ignores: [
       '**/dist',
+      '**/dev-dist',
       '**/*.e2e.ts',
       '**/playwright.config.ts',
       '**/webpack.config.js',
@@ -24,7 +25,7 @@ module.exports = [
         'error',
         {
           enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?js$'],
+          allow: [String.raw`^.*/eslint(\.base)?\.config\.[cm]?js$`],
           depConstraints: [
             {
               sourceTag: '*',
