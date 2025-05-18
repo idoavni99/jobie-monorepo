@@ -30,35 +30,34 @@ export default defineConfig({
       devOptions: {
         enabled: true,
       },
-      includeAssets: [
-        'favicon.ico',
-        'apple-touch-icon.png',
-        'favicon-16x16.png',
-        'favicon-32x32.png',
-        'android-chrome-192x192.png',
-        'android-chrome-512x512.png',
-      ],
+      includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png'],
       manifest: {
         name: 'Jobie',
         short_name: 'Jobie',
         description: 'An AI Powered career advisor',
         theme_color: '#6D8CFF',
+        background_color: '#657BF2',
         icons: [
           {
-            src: '/favicon.ico',
-            sizes: '64x64 32x32 24x24 16x16',
-            type: 'image/x-icon',
+            src: 'pwa-64x64.png',
+            sizes: '64x64',
+            type: 'image/png',
           },
           {
-            src: '/android-chrome-192x192.png',
+            src: 'pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: '/android-chrome-512x512.png',
+            src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any',
+          },
+          {
+            src: 'maskable-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
           },
         ],
       },
