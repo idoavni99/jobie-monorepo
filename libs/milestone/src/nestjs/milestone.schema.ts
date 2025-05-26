@@ -7,17 +7,15 @@ export type MilestoneDocument = HydratedDocument<Milestone>;
 type MilestoneEntity = TMilestone & DataEntity;
 @Schema(defaultSchemaOptions)
 export class Milestone implements MilestoneEntity {
+  completed: boolean;
   @Prop({ required: true })
   _id: string;
 
-  @Prop({ required: true })
+  @Prop()
   createdAt: Date;
 
-  @Prop({ required: true })
+  @Prop()
   updatedAt: Date;
-
-  @Prop({ required: true })
-  userId: string;
 
   @Prop({ required: true })
   milestoneName: string;
@@ -28,16 +26,22 @@ export class Milestone implements MilestoneEntity {
   @Prop({
     type: [
       {
+        _id: String,
         step: String,
         completed: { type: Boolean, default: false },
       },
     ],
     default: [],
   })
-  steps: { step: string; completed: boolean }[];
-
+  steps: { _id: string; step: string; completed: boolean }[];
+  @Prop({
+    type: String,
+    enum: ['summary', 'active', 'completed'],
+    default: 'active',
+  })
+  status: 'summary' | 'active' | 'completed';
   @Prop({ default: false })
-  completed: boolean;
+  hasGeneratedNext: boolean;
 }
 
 export const MilestoneSchema = SchemaFactory.createForClass(Milestone);

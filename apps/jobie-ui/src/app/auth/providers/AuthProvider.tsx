@@ -44,28 +44,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   }, [user?._id, getUserMe]);
 
-  // const onAuthenticationSuccess = async (rawUser: TUser) => {
-  //   setUser(rawUser);
 
-  //   try {
-  //     const { data: roadmap } = await roadmapCalibrationApi.get('/');
-
-  //     if (roadmap) {
-  //       navigate('/roadmap'); // User already approved a roadmap
-  //     } else {
-  //       navigate('/aspirations'); // User needs to choose a role model
-  //     }
-  //   } catch (error) {
-  //     console.error('Error checking user roadmap', error);
-  //     navigate('/aspirations'); // Default fallback
-  //   }
-  // };
-
-
-  // const onAuthenticationSuccess = (rawUser: TUser) => {
-  //   setUser(rawUser);
-  //   navigate('/');
-  // };
 
 
   const onAuthenticationSuccess = async (rawUser: TUser) => {
@@ -120,7 +99,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   const setupProfile = async (data: EnrichedProfileData) => {
-
     const { data: updatedUser } = await profileEnrichmentApi.post<TUser>(
       '/',
       data

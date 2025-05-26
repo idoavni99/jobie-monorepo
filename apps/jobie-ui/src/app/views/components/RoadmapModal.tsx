@@ -2,18 +2,31 @@ import { Box, Button, CircularProgress, Modal, Stack, Typography } from '@mui/ma
 import { useEffect, useState } from 'react';
 import { roadmapCalibrationApi } from '../../../api/roadmap-calibration.api';
 
+type RoadmapCacheEntry = {
+    milestones: any[];
+    motivationLine?: string;
+};
+
 type RoadmapModalProperties = {
     open: boolean;
     onClose: () => void;
     profile: any; // one suggestion
-    roadmapsCache: Record<string, any>;
-    setRoadmapsCache: (cache: Record<string, any>) => void;
+    roadmapsCache: Record<string, RoadmapCacheEntry>;
+    setRoadmapsCache: (cache: Record<string, RoadmapCacheEntry>) => void;
     onSelect: () => void;
 };
 
-export const RoadmapModal = ({ open, onClose, profile, roadmapsCache, setRoadmapsCache, onSelect, }: RoadmapModalProperties) => {
+export const RoadmapModal = ({
+    open,
+    onClose,
+    profile,
+    roadmapsCache,
+    setRoadmapsCache,
+    onSelect,
+}: RoadmapModalProperties) => {
     const [loading, setLoading] = useState(false);
     const [milestones, setMilestones] = useState<any[] | undefined>();
+    const [motivationLine, setMotivationLine] = useState<string | undefined>();
 
     useEffect(() => {
         const loadRoadmap = async () => {
@@ -21,7 +34,8 @@ export const RoadmapModal = ({ open, onClose, profile, roadmapsCache, setRoadmap
 
             const cached = roadmapsCache[profile.profileURL];
             if (cached) {
-                setMilestones(cached);
+                setMilestones(cached.milestones);
+                setMotivationLine(cached.motivationLine);
                 return;
             }
 
@@ -30,10 +44,24 @@ export const RoadmapModal = ({ open, onClose, profile, roadmapsCache, setRoadmap
                 const { data } = await roadmapCalibrationApi.post('/generate-with-target', {
                     targetUrl: profile.profileURL,
                 });
-                setMilestones(data.milestonesWithSkills);
+
+                const normalized = (data.roadmap?.milestones ?? []).map((m: any) => ({
+                    _id: crypto.randomUUID(),
+                    milestoneName: m.milestoneName,
+                    skills: m.skills ?? [],
+                    status: 'summary',
+                }));
+
+                const motivation = data.motivationLine;
+
+                setMotivationLine(motivation);
+                setMilestones(normalized);
                 setRoadmapsCache({
                     ...roadmapsCache,
-                    [profile.profileURL]: data.milestonesWithSkills,
+                    [profile.profileURL]: {
+                        milestones: normalized,
+                        motivationLine: motivation,
+                    },
                 });
             } catch (error) {
                 console.error('Failed to load roadmap', error);
@@ -47,9 +75,7 @@ export const RoadmapModal = ({ open, onClose, profile, roadmapsCache, setRoadmap
         }
     }, [open, profile, roadmapsCache, setRoadmapsCache]);
 
-    if (!profile) {
-        return;
-    }
+    if (!profile) return;
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -77,6 +103,19 @@ export const RoadmapModal = ({ open, onClose, profile, roadmapsCache, setRoadmap
                     <CircularProgress />
                 ) : (
                     <Stack gap={2} width="100%" alignItems="center" maxHeight="60vh" overflow="auto">
+                        {motivationLine && (
+                            <Typography
+                                mb={2}
+                                px={2}
+                                fontStyle="italic"
+                                textAlign="center"
+                                fontSize="0.95rem"
+                                color="text.secondary"
+                            >
+                                {motivationLine}
+                            </Typography>
+                        )}
+
                         {milestones?.map((step, index) => (
                             <Box
                                 key={index}
@@ -86,12 +125,13 @@ export const RoadmapModal = ({ open, onClose, profile, roadmapsCache, setRoadmap
                                 width="100%"
                                 textAlign="center"
                             >
-                                <Typography fontWeight="bold">{step.milestone_name}</Typography>
+                                <Typography fontWeight="bold">{step.milestoneName}</Typography>
                                 <Typography fontSize="0.85rem" color="textSecondary" mt={0.5}>
                                     {step.skills.join(', ')}
                                 </Typography>
                             </Box>
                         ))}
+
                     </Stack>
                 )}
 

@@ -18,6 +18,7 @@ import { SetupLayout } from './components/layouts/SetupLayout';
 import { RoutesPaths } from './enums/routes.enum';
 import { AspirationsPage } from './views/AspirationsPage';
 import { HomeScreen } from './views/Home';
+import { Milestone } from './views/milestone/Milestone';
 import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
 import { Roadmap } from './views/roadmap/Roadmap';
@@ -31,6 +32,7 @@ export const App = () => {
         <Router>
           <AuthProvider>
             <Routes>
+              {/* Public auth routes */}
               <Route element={<AuthRoute />}>
                 <Route element={<SetupLayout />}>
                   <Route path={RoutesPaths.REGISTER} element={<Register />} />
@@ -38,27 +40,33 @@ export const App = () => {
                 </Route>
               </Route>
 
+              {/* Setup step if user logged in but not finished setup */}
               <Route element={<SetupRoute />}>
                 <Route element={<SetupLayout />}>
-                  <Route path={RoutesPaths.SETUP_PROFILE} element={<SetupProfile />} />
-
-
+                  <Route
+                    path={RoutesPaths.SETUP_PROFILE}
+                    element={<SetupProfile />}
+                  />
                 </Route>
               </Route>
 
+              {/* Protected routes after full auth and profile setup */}
               <Route element={<ProtectedRoute />}>
                 <Route element={<AppLayout />}>
                   <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
                   <Route path={RoutesPaths.ASPIRATIONS} element={<AspirationsPage />} />
+                  <Route path={RoutesPaths.MILESTONE} element={<Milestone />} />
                   <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
                 </Route>
               </Route>
 
+              {/* Default route */}
               <Route
                 path="/"
                 element={<Navigate to={RoutesPaths.HOME} replace />}
               />
 
+              {/* Fallback */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>

@@ -87,17 +87,20 @@ export const AspirationsPage = () => {
         if (!selectedTargetUrl) return;
 
         const rawRoadmap = roadmapsCache[selectedTargetUrl];
-        if (!rawRoadmap || !Array.isArray(rawRoadmap)) {
+        if (!rawRoadmap || !Array.isArray(rawRoadmap.milestones)) {
             console.error('No valid roadmap data found in cache for selected URL');
             return;
         }
-
         const fullRoadmap = {
-            milestonesWithSkills: rawRoadmap,
-            summarizedMilestones: rawRoadmap.map(m => m.milestone_name),
-            goalJob: selectedProfile?.headline || '', // e.g. "VP of Research", etc.
-            milestoneIds: [],
+            goalJob: selectedProfile?.headline || '',
+            milestones: rawRoadmap.milestones.map((m: any, index: number) => ({ /////changed this
+                _id: crypto.randomUUID(),
+                milestoneName: m.milestoneName,
+                skills: m.skills ?? [],
+                status: 'summary',
+            })),
         };
+
 
         try {
             await roadmapCalibrationApi.post('/select', {
@@ -126,6 +129,7 @@ export const AspirationsPage = () => {
                     <SuggestionCard
                         key={index}
                         profile={profile}
+                        isTargetRole={index === 0} //  Only first one
                         onViewRoadmap={() => handleViewRoadmap(profile)}
                     />
                 ))}

@@ -22,17 +22,9 @@ export class UsersRepository {
     return user?.toObject();
   }
 
-  async findPasswordByUsernameOrEmail({
-    username,
-    email,
-  }: {
-    username?: string;
-    email?: string;
-  }) {
+  async findPasswordByEmail(email: string) {
     const { password } =
-      (await this.model
-        .findOne({ $or: [{ username }, { email }] }, { password: 1 })
-        .exec()) ?? {};
+      (await this.model.findOne({ email }, { password: 1 }).exec()) ?? {};
     return password;
   }
 

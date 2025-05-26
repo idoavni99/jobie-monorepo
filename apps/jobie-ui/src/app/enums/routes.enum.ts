@@ -4,5 +4,6 @@ export enum RoutesPaths {
   SETUP_PROFILE = '/setup-profile',
   HOME = '/',
   ROADMAP = '/roadmap',
+  MILESTONE = '/roadmap/:milestoneId',
   ASPIRATIONS = '/aspirations',
 }

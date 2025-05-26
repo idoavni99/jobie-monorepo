@@ -11,15 +11,17 @@ type SuggestionProfile = {
 type SuggestionCardProperties = {
     profile: SuggestionProfile;
     onViewRoadmap: () => void;
+    isTargetRole?: boolean;
 };
 
-export const SuggestionCard = ({ profile, onViewRoadmap }: SuggestionCardProperties) => (
+export const SuggestionCard = ({ profile, onViewRoadmap, isTargetRole }: SuggestionCardProperties) => (
     <Box
         component="a"
         href={profile.profileURL}
         target="_blank"
         rel="noopener noreferrer"
         sx={{
+            position: 'relative',
             width: 220,
             height: 220,
             borderRadius: '50%',
@@ -40,6 +42,30 @@ export const SuggestionCard = ({ profile, onViewRoadmap }: SuggestionCardPropert
             },
         }}
     >
+        {/* Circular Arc Label */}
+        {isTargetRole && (
+            <svg width="220" height="220" style={{ position: 'absolute', top: 0, left: 0 }}>
+                <defs>
+                    <path id="target-arc" d="M20,110 A90,90 0 0,1 200,110" fill="none" />
+                </defs>
+                <text
+                    fill="#cccccc"
+                    fontSize="12"
+                    fontWeight="bold"
+                    letterSpacing="1px"
+                    style={{
+                        textTransform: 'uppercase',
+                        filter: 'drop-shadow(0 0 1px #ffffff88)',
+
+                    }}
+                >
+                    <textPath href="#target-arc" startOffset="50%" textAnchor="middle">
+                        TARGET ROLE
+                    </textPath>
+                </text>
+            </svg>
+        )}
+
         <Avatar
             src={profile.profilePicture}
             alt={profile.fullName}

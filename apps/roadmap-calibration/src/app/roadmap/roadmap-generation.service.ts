@@ -1,11 +1,11 @@
 import { LinkedInProfile, LinkedinRepository } from '@jobie/linkedin';
 import { OpenAIRepository } from '@jobie/openai';
-import { Roadmap } from '@jobie/roadmap/nestjs';
-import { CareerVector, MilestoneWithSkills } from '@jobie/roadmap/types';
+import { CareerVector, RoadmapMilestoneStatus, TRoadmap } from '@jobie/roadmap/types';
 import { UsersRepository } from '@jobie/users/nestjs';
 import { TUser } from '@jobie/users/types';
 import { Injectable } from '@nestjs/common';
 import fuzzball from 'fuzzball';
+
 
 @Injectable()
 export class RoadmapGenerationService {
@@ -16,7 +16,6 @@ export class RoadmapGenerationService {
   ) { }
 
   private buildCareerVector(profile: LinkedInProfile): CareerVector {
-    console.log('[buildCareerVector] Received profile:', profile);
     return {
       name: `${profile?.firstName ?? ''} ${profile?.lastName ?? ''}`,
       headline: profile?.headline ?? '',
@@ -40,8 +39,11 @@ export class RoadmapGenerationService {
     };
   }
 
-  private compareVectors(userVector: CareerVector, targetVector: CareerVector, threshold = 80) {
-    console.log('[compareVectors] Comparing vectors...');
+  private compareVectors(
+    userVector: CareerVector,
+    targetVector: CareerVector,
+    threshold = 80
+  ) {
     const userSkills = [...new Set(userVector.skills)];
     const targetSkills = [...new Set(targetVector.skills)];
 
@@ -57,8 +59,6 @@ export class RoadmapGenerationService {
       return score < threshold;
     });
 
-    console.log('[compareVectors] missingSkills:', missingSkills);
-    console.log('[compareVectors] uniqueSkills:', uniqueSkills);
 
     return {
       missing_skills: missingSkills,
@@ -74,18 +74,8 @@ export class RoadmapGenerationService {
   }
 
   async suggestSimilarProfiles(targetUrl: string, maxResults: number) {
-    console.log('[suggestSimilarProfiles] Fetching target profile for:', targetUrl);
     const targetProfile = await this.linkedinRepository.getUserProfile(targetUrl);
-    console.log('[suggestSimilarProfiles] Target profile fetched:', targetProfile);
-
-    console.log('[suggestSimilarProfiles] Fetching similar profiles...');
     const similar = await this.linkedinRepository.getSimilarProfiles(targetUrl, maxResults);
-
-    if (similar) {
-      console.log('[suggestSimilarProfiles] Similar profiles fetched');
-    } else {
-      console.warn('[suggestSimilarProfiles] Failed to fetch similar profiles');
-    }
 
     const parsedTarget = {
       fullName: `${targetProfile.firstName ?? ''} ${targetProfile.lastName ?? ''}`.trim(),
@@ -100,19 +90,14 @@ export class RoadmapGenerationService {
   }
 
 
-  async buildRoadmap(user: TUser, targetUrl: string): Promise<Partial<Roadmap>> {
+  async buildRoadmap(user: TUser, targetUrl: string): Promise<{
+    roadmap: Partial<TRoadmap>;
+    motivationLine?: string;
+  }> { //not saving the roadmap here, so the milestones are created only after the approval of the roadmap
     if (!targetUrl) {
       console.warn('[buildRoadmap] Missing targetUrl — cannot generate roadmap');
       throw new Error('Missing target LinkedIn URL. Please select a target profile before generating a roadmap.');
     }
-
-    console.log('[buildRoadmap] Fetching user and target LinkedIn profiles...');
-    // const [userProfileRaw, targetProfileRaw] = await Promise.all([
-    //   this.linkedinRepository.getUserProfile(user.linkedinProfileUrl),
-    //   this.linkedinRepository.getUserProfile(targetUrl),
-    // ]);
-    // console.log('[buildRoadmap] userProfileRaw:', userProfileRaw);
-    // console.log('[buildRoadmap] targetProfileRaw:', targetProfileRaw);
 
     const targetProfileRaw = await this.linkedinRepository.getUserProfile(targetUrl);
     const targetVector = this.buildCareerVector(targetProfileRaw);
@@ -124,8 +109,7 @@ export class RoadmapGenerationService {
       educations: user.linkedinEducations ?? [],
       skills: user.skills ?? [],
     };
-    // console.log('[buildRoadmap] uservector:', userVector);
-    // console.log('[buildRoadmap] targetvectoe:', targetVector);
+
 
     const gap = this.compareVectors(userVector, targetVector);
     const userPositionsText = userVector.positions.map(
@@ -160,47 +144,114 @@ export class RoadmapGenerationService {
   They have held these positions: ${userPositionsText}.
   The target profile has held these positions: ${targetPositionsText}.
   
-  Generate a summarized career roadmap to help them transition.
+  1. Generate a summarized career roadmap to help them transition.
   Each milestone should have a short name (3–5 words max) and include a small list of skills
   (each skill should be recognizable by LinkedIn and industry-standard).
   If you can, do 10 milestones.
   Be specific, no general names and skils. 
   Put more focus on the recent positions of the target as tha main goal since it defines his expertise better
+  2.Also generate one sentence that speaks directly to the user and explains why they should choose this roadmap over others. Be specific: clearly connect the user’s actual current skills and experience to the role the target person has. Make it clear how this roadmap builds on what the user already has and what it helps them develop. Do not flatter or generalize. Be realistic, insightful, and grounded — speak like a mentor. Do not mention specific companies, titles, or make promises. The tone should be confident and personal, not vague or salesy.
   Format response as JSON with:
   {
     "roadmap_steps": [
       { "milestone_name": "short name", "skills": ["skill1", "skill2"] },
       ...
-    ]
+    ],
+    "motivation_line": "One sentence that encourages the user to follow this path."
   }
   `;
 
-    console.log('[buildRoadmap] Sending prompt to OpenAI...');
-    const { roadmap_steps: steps } =
+    const { roadmap_steps: steps, motivation_line } =
       ((await this.openAiRepository.requestPromptJSON(
         'You are a career coach helping users plan career transitions',
         prompt
       )) ?? {}) as {
-        roadmap_steps: MilestoneWithSkills[];
+        roadmap_steps: { milestone_name: string; skills: string[] }[];
+        motivation_line?: string;
       };
 
-    console.log('[buildRoadmap] Received steps:', steps);
 
-    const milestoneTitles = steps.map((step) => step.milestone_name);
-    const milestonesWithSkills = steps.map((step) => ({
-      milestone_name: step.milestone_name,
+    const milestones = steps.map((step, index) => ({
+      _id: String(index), // Temporary unique ID
+      milestoneName: step.milestone_name,
       skills: step.skills ?? [],
+      status: 'summary' as RoadmapMilestoneStatus,
     }));
 
-    console.log('[buildRoadmap] Final roadmap object ready');
 
     return {
-      userId: user._id,
-      goalJob: user.goalJob ?? '',
-      summarizedMilestones: milestoneTitles,
-      milestonesWithSkills,
-      milestoneIds: [],
-      isApproved: false,
+      roadmap: {
+        userId: user._id,
+        goalJob: user.goalJob ?? '',
+        milestones,
+        isApproved: false,
+      },
+      motivationLine: motivation_line,
     };
   }
+
+
+  //   async generateSummarizedRoadmap(userId: string): Promise<TRoadmap> {
+  //     const user = await this.usersRepository.findById(userId);
+  //     if (!user || !user.linkedinProfileUrl || !user.aspirationalLinkedinUrl) {
+  //       throw new NotFoundException('User or LinkedIn URLs not available');
+  //     }
+
+  //     const [userProfileRaw, targetProfileRaw] = await Promise.all([
+  //       this.linkedinRepository.getUserProfile(user.linkedinProfileUrl),
+  //       this.linkedinRepository.getUserProfile(user.aspirationalLinkedinUrl),
+  //     ]);
+
+  //     const userVector = this.buildCareerVector(userProfileRaw);
+  //     const targetVector = this.buildCareerVector(targetProfileRaw);
+  //     const gap = this.compareVectors(userVector, targetVector);
+
+  //     const prompt = `
+  // The user is currently working as "${userVector.headline
+  //       }" and aims to transition to "${targetVector.headline}".
+  // They are based in ${user.location} and have the following background: "${user.bio
+  //       }". Their career goal is: "${user.goalJob}".
+
+  // Currently, they possess these skills: ${userVector.skills.join(', ')}.
+  // Their unique skills compared to the target: ${gap.unique_skills.join(', ')}.
+  // However, they are missing the following skills to achieve their target: ${gap.missing_skills.join(
+  //         ', '
+  //       )}.
+
+  // Generate a summarized career roadmap to help them transition.
+  // Each milestone should have a short name (3–5 words max) and include a small list of skills
+  // (each skill should be recognizable by LinkedIn and industry-standard).
+
+  // Format response as JSON with:
+  // {
+  //   "roadmap_steps": [
+  //     { "milestoneName": "short name", "skills": ["skill1", "skill2"] },
+  //     ...
+  //   ]
+  // }
+  // `;
+  //     // generate roadmap steps using OpenAI
+
+  //     const response = await this.openAiRepository.requestPromptJSON<{
+  //       roadmap_steps: Partial<RoadmapMilestone>[];
+  //     }>('You are a career coach helping users plan career transitions', prompt);
+
+  //     const steps = response?.roadmap_steps ?? [];
+
+  //     // add IDs and status to each milestone
+
+  //     const milestones = steps.map((step, index) => ({
+  //       _id: crypto.randomUUID(),
+  //       milestoneName: step.milestoneName,
+  //       skills: step.skills ?? [],
+  //       status: index < 3 ? 'active' : 'summary',
+  //     })) as RoadmapMilestone[];
+
+  //     return {
+  //       userId,
+  //       goalJob: user.goalJob ?? '',
+  //       milestones,
+  //       isApproved: false,
+  //     };
+  //   }
 }

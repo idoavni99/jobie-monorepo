@@ -54,7 +54,6 @@ export class User implements UserEntity {
   })
   lastName: string;
 
-
   @Prop({ unique: true })
   email: string;
 

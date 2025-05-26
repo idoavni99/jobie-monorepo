@@ -27,7 +27,7 @@ export const ProtectedRoute = () => {
     } else if (!user?.isProfileSetUp) {
       navigate('/setup-profile');
     }
-  }, [user?._id, user?.isProfileSetUp, navigate]);
+  }, [user?._id, user?.isProfileSetUp, navigate, isLoadingUserAuth]);
 
   return isLoadingUserAuth ? (
     <CircularProgress />

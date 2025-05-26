@@ -1,8 +1,18 @@
-import { Box, keyframes, Stack, Typography } from '@mui/material';
-
+import {
+  Box,
+  CircularProgress,
+  keyframes,
+  Stack,
+  Typography,
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { RoutesPaths } from '../../../enums/routes.enum';
 type Properties = {
+  _id: string;
   milestoneName: string;
   skills: string[];
+  status: string;
+  progress: number;
 };
 
 const fadeInUp = keyframes`
@@ -16,9 +26,22 @@ const fadeInUp = keyframes`
   }
 `;
 
-export const MilestoneListItem = ({ milestoneName, skills }: Properties) => {
+export const MilestoneListItem = ({
+  milestoneName,
+  skills,
+  _id,
+  status,
+  progress,
+}: Properties) => {
+  const navigate = useNavigate();
   return (
-    <Stack alignItems="center" gap={3}>
+    <Stack
+      alignItems="center"
+      gap={3}
+      onClick={() => {
+        navigate(RoutesPaths.MILESTONE.replace(':milestoneId', _id));
+      }}
+    >
       <Stack
         justifyContent="center"
         alignItems="center"
@@ -41,6 +64,17 @@ export const MilestoneListItem = ({ milestoneName, skills }: Properties) => {
           },
         }}
       >
+        <CircularProgress
+          variant="determinate"
+          value={progress}
+          size={260}
+          thickness={3.5}
+          sx={{
+            position: 'absolute',
+            color: status === 'completed' ? '#4caf50' : '#1976d2',
+            opacity: 0.3,
+          }}
+        />
         <Typography
           fontWeight="bold"
           fontSize="1.1rem"

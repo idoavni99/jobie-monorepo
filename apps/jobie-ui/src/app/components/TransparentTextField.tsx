@@ -9,11 +9,14 @@ export const TransparentTextField = styled(TextField)(() => ({
     color: 'rgba(255,255,255,0.6)',
     fontSize: '0.875rem',
   },
+  '& .MuiInputLabel-root.Mui-focused': {
+    color: 'rgb(60, 81, 156)',
+  },
   '& .MuiOutlinedInput-notchedOutline': {
     borderColor: 'rgba(255,255,255,0.2)',
   },
   '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-    borderColor: '#6D8CFF',
+    borderColor: 'rgb(60, 81, 156)',
   },
   '& .MuiOutlinedInput-root': {
     borderRadius: '13px',

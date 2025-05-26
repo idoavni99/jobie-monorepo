@@ -26,13 +26,14 @@ export const AppHeader = ({
   return (
     <Typography
       variant="h1"
+      {...titleProperties}
       sx={{
         fontWeight: 750,
         color: '#f5f5f5',
         textShadow: '0 4px 14px rgba(0,0,0,0.4)',
         animation: `${fadeRise} 1s ease forwards`,
+        ...titleProperties.sx,
       }}
-      {...titleProperties}
     >
       {title}
     </Typography>
