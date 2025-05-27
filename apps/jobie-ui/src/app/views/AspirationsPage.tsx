@@ -11,7 +11,7 @@ import { UserProfileCard } from './components/UserProfileCard';
 
 export const AspirationsPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuthStore(); // fallback to fetch from DB
+  const { user, refreshUserData } = useAuthStore(); // fallback to fetch from DB
 
   // const { suggestions: navSuggestions, aspirationalLinkedinUrl: navUrl } = location.state || {};
 
@@ -115,6 +115,8 @@ export const AspirationsPage = () => {
         roadmap: fullRoadmap,
         aspirationalLinkedinUrl: selectedTargetUrl,
       });
+
+      await refreshUserData();
 
       navigate('/roadmap');
     } catch (error) {
