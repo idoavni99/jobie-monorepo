@@ -106,7 +106,7 @@ export const AspirationsPage = () => {
         _id: crypto.randomUUID(),
         milestoneName: m.milestoneName,
         skills: m.skills ?? [],
-        status: 'summary',
+        status: index < 3 ? 'active' : 'summary',
       })),
     };
 
