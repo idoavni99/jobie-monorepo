@@ -12,4 +12,5 @@ export type TRoadmap = {
   goalJob: string;
   milestones: RoadmapMilestone[];
   isApproved: boolean;
+  motivationLine?: string;
 };

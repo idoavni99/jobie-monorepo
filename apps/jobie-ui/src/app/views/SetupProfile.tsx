@@ -1,13 +1,16 @@
 import { EnrichedProfileData } from '@jobie/users/types';
 import { Button, CircularProgress, Stack, Typography } from '@mui/material';
-import { use } from 'react';
+import { useCallback } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { AuthContext } from '../auth/providers/AuthProvider';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../auth/store/auth.store';
 import { GlassCard } from '../components/GlassCard';
 import { TransparentTextField } from '../components/TransparentTextField';
+import { RoutesPaths } from '../enums/routes.enum';
 
 export const SetupProfile = () => {
-  const { setupProfile } = use(AuthContext);
+  const { setupProfile } = useAuthStore();
+  const navigate = useNavigate();
 
   const {
     control,
@@ -24,12 +27,20 @@ export const SetupProfile = () => {
     },
   });
 
+  const onSubmit = useCallback(
+    async (data: EnrichedProfileData) => {
+      await setupProfile(data);
+      navigate(RoutesPaths.ASPIRATIONS);
+    },
+    [setupProfile, navigate]
+  );
+
   return (
     <Stack justifyContent="center" alignItems="center" height="100vh" px={3}>
       <GlassCard>
         <Stack
           component="form"
-          onSubmit={handleSubmit(setupProfile)}
+          onSubmit={handleSubmit(onSubmit)}
           gap={3}
           alignItems="center"
         >

@@ -3,50 +3,56 @@ import { Roadmap, RoadmapService } from '@jobie/roadmap/nestjs';
 import { UsersRepository } from '@jobie/users/nestjs';
 import { TUser } from '@jobie/users/types';
 import { HttpService } from '@nestjs/axios';
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { SuggestAspirationsDto } from './dto';
 import { RoadmapGenerationService } from './roadmap-generation.service';
 @Controller()
 export class RoadmapController {
+  private readonly logger = new Logger(RoadmapController.name);
   constructor(
     private readonly roadmapGenerationService: RoadmapGenerationService,
     private readonly roadmapService: RoadmapService,
     private readonly usersRepository: UsersRepository,
-    private readonly httpService: HttpService,
-  ) { }
+    private readonly httpService: HttpService
+  ) {}
 
   @Post('suggest-aspirations')
   async suggest(
     @AuthUser() user: TUser,
     @Body() { targetUrl, maxResults = 4 }: SuggestAspirationsDto
   ) {
-
     // fallback to DB if targetUrl is not in request
     const finalUrl =
       targetUrl?.trim() ||
-      (await this.roadmapGenerationService.getAspirationalUrlFromUser(user._id));
-
+      (await this.roadmapGenerationService.getAspirationalUrlFromUser(
+        user._id
+      ));
 
     if (!finalUrl) {
-      console.warn('[POST /suggest-aspirations] No targetUrl in body or DB');
+      this.logger.warn(
+        '[POST /suggest-aspirations] No targetUrl in body or DB'
+      );
       throw new Error('targetUrl is required');
     }
 
     try {
-      const suggestions = await this.roadmapGenerationService.suggestSimilarProfiles(finalUrl, maxResults);
+      const suggestions =
+        await this.roadmapGenerationService.suggestSimilarProfiles(
+          finalUrl,
+          maxResults
+        );
       return suggestions;
     } catch (error) {
-      console.error('[POST /suggest-aspirations] Error:', error);
+      this.logger.error('[POST /suggest-aspirations] Error:', error);
       throw error;
     }
   }
 
-
   @Post('generate-with-target')
   async generateWithTarget(
     @AuthUser() user: TUser,
-    @Body('targetUrl') targetUrl: string,
+    @Body('targetUrl') targetUrl: string
   ): Promise<{ roadmap: Partial<Roadmap>; motivationLine?: string }> {
     return this.roadmapGenerationService.buildRoadmap(user, targetUrl);
   }
@@ -56,13 +62,6 @@ export class RoadmapController {
     @AuthUser() user: TUser,
     @Body() body: { roadmap: Partial<Roadmap>; aspirationalLinkedinUrl: string }
   ): Promise<Roadmap> {
-    console.log(
-      '[POST /select] userId:',
-      user._id,
-      'aspirationalLinkedinUrl:',
-      body.aspirationalLinkedinUrl
-    );
-
     try {
       const savedRoadmap = await this.roadmapService.createRoadmap({
         ...body.roadmap,
@@ -80,11 +79,12 @@ export class RoadmapController {
 
       await this.usersRepository.update(user._id, {
         aspirationalLinkedinUrl: body.aspirationalLinkedinUrl,
+        isRoadmapGenerated: true,
       });
 
       return savedRoadmap;
     } catch (error) {
-      console.error('[POST /select] Error:', error);
+      this.logger.error('[POST /select] Error:', error);
       throw error;
     }
   }
@@ -95,10 +95,8 @@ export class RoadmapController {
       const roadmap = await this.roadmapService.getRoadmapByUserId(user._id);
       return roadmap;
     } catch (error) {
-      console.error('[GET /roadmap] Error:', error);
+      this.logger.error('[GET /roadmap] Error:', error);
       throw error;
     }
   }
-
 }
-

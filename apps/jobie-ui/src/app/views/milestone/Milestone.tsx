@@ -28,6 +28,7 @@ export const Milestone = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [showSnackbar, setShowSnackbar] = useState(false);
+  const [isLoadingMilestone, setIsLoadingMilestone] = useState(true);
   const { milestoneId } = useParams<{ milestoneId: string }>() as {
     milestoneId: string;
   };
@@ -38,12 +39,9 @@ export const Milestone = () => {
   const milestone = milestones[milestoneId];
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!milestone) {
-        await fetchMilestone(milestoneId);
-      }
-    };
-    fetchData();
+    if (!milestone) {
+      fetchMilestone(milestoneId).then(() => setIsLoadingMilestone(false));
+    }
   }, [milestoneId, milestone, fetchMilestone]);
 
   const handleComplete = async () => {
@@ -98,7 +96,14 @@ export const Milestone = () => {
         </Box>
       ) : (
         <Stack alignItems="center">
-          <CircularProgress />
+          {isLoadingMilestone ? (
+            <CircularProgress />
+          ) : (
+            <Typography textAlign="center">
+              This milestone is not active yet, complete some of the ones before
+              it to unlock it.
+            </Typography>
+          )}
         </Stack>
       )}
 

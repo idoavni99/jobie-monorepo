@@ -25,15 +25,18 @@ export class User implements UserEntity {
   @Prop()
   fullName: string;
 
+  @Prop({ type: Boolean, default: false })
+  isRoadmapGenerated: boolean;
+
   @Virtual({
     get: function (this: User) {
       return Boolean(
         this.goalJob &&
-        this.education &&
-        this.location &&
-        this.bio &&
-        this.linkedinProfileUrl &&
-        this.aspirationalLinkedinUrl
+          this.education &&
+          this.location &&
+          this.bio &&
+          this.linkedinProfileUrl &&
+          this.aspirationalLinkedinUrl
       );
     },
   })
@@ -45,7 +48,6 @@ export class User implements UserEntity {
     },
   })
   firstName: string;
-
 
   @Virtual({
     get: function (this: User) {
@@ -124,7 +126,6 @@ export class User implements UserEntity {
 
   @Prop()
   linkedinLocation?: string;
-
 }
 
 export class CreateUserDto {

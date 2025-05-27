@@ -1,19 +1,19 @@
 import { LinkedInProfile, LinkedinRepository } from '@jobie/linkedin';
 import { OpenAIRepository } from '@jobie/openai';
-import { CareerVector, RoadmapMilestoneStatus, TRoadmap } from '@jobie/roadmap/types';
+import { CareerVector, RoadmapMilestone, TRoadmap } from '@jobie/roadmap/types';
 import { UsersRepository } from '@jobie/users/nestjs';
 import { TUser } from '@jobie/users/types';
 import { Injectable } from '@nestjs/common';
 import fuzzball from 'fuzzball';
-
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class RoadmapGenerationService {
   constructor(
     private readonly openAiRepository: OpenAIRepository,
     private readonly usersRepository: UsersRepository,
-    private readonly linkedinRepository: LinkedinRepository,
-  ) { }
+    private readonly linkedinRepository: LinkedinRepository
+  ) {}
 
   private buildCareerVector(profile: LinkedInProfile): CareerVector {
     return {
@@ -49,16 +49,17 @@ export class RoadmapGenerationService {
 
     const missingSkills = targetSkills.filter((skill) => {
       const [, score] =
-        fuzzball.extract(skill, userSkills, { scorer: fuzzball.ratio })[0] ?? [];
+        fuzzball.extract(skill, userSkills, { scorer: fuzzball.ratio })[0] ??
+        [];
       return score < threshold;
     });
 
     const uniqueSkills = userSkills.filter((skill) => {
       const [, score] =
-        fuzzball.extract(skill, targetSkills, { scorer: fuzzball.ratio })[0] ?? [];
+        fuzzball.extract(skill, targetSkills, { scorer: fuzzball.ratio })[0] ??
+        [];
       return score < threshold;
     });
-
 
     return {
       missing_skills: missingSkills,
@@ -66,7 +67,9 @@ export class RoadmapGenerationService {
     };
   }
 
-  async getAspirationalUrlFromUser(userId: string): Promise<string | undefined> {
+  async getAspirationalUrlFromUser(
+    userId: string
+  ): Promise<string | undefined> {
     const user = await this.usersRepository.findById(userId, {
       aspirationalLinkedinUrl: 1,
     });
@@ -74,11 +77,18 @@ export class RoadmapGenerationService {
   }
 
   async suggestSimilarProfiles(targetUrl: string, maxResults: number) {
-    const targetProfile = await this.linkedinRepository.getUserProfile(targetUrl);
-    const similar = await this.linkedinRepository.getSimilarProfiles(targetUrl, maxResults);
+    const targetProfile = await this.linkedinRepository.getUserProfile(
+      targetUrl
+    );
+    const similar = await this.linkedinRepository.getSimilarProfiles(
+      targetUrl,
+      maxResults
+    );
 
     const parsedTarget = {
-      fullName: `${targetProfile.firstName ?? ''} ${targetProfile.lastName ?? ''}`.trim(),
+      fullName: `${targetProfile.firstName ?? ''} ${
+        targetProfile.lastName ?? ''
+      }`.trim(),
       headline: targetProfile.headline ?? '',
       profileURL: targetUrl,
       profilePicture: targetProfile.profilePicture ?? '',
@@ -89,17 +99,26 @@ export class RoadmapGenerationService {
     };
   }
 
-
-  async buildRoadmap(user: TUser, targetUrl: string): Promise<{
+  async buildRoadmap(
+    user: TUser,
+    targetUrl: string
+  ): Promise<{
     roadmap: Partial<TRoadmap>;
     motivationLine?: string;
-  }> { //not saving the roadmap here, so the milestones are created only after the approval of the roadmap
+  }> {
+    //not saving the roadmap here, so the milestones are created only after the approval of the roadmap
     if (!targetUrl) {
-      console.warn('[buildRoadmap] Missing targetUrl — cannot generate roadmap');
-      throw new Error('Missing target LinkedIn URL. Please select a target profile before generating a roadmap.');
+      console.warn(
+        '[buildRoadmap] Missing targetUrl — cannot generate roadmap'
+      );
+      throw new Error(
+        'Missing target LinkedIn URL. Please select a target profile before generating a roadmap.'
+      );
     }
 
-    const targetProfileRaw = await this.linkedinRepository.getUserProfile(targetUrl);
+    const targetProfileRaw = await this.linkedinRepository.getUserProfile(
+      targetUrl
+    );
     const targetVector = this.buildCareerVector(targetProfileRaw);
     const userVector: CareerVector = {
       name: user.linkedinFullName ?? '',
@@ -110,32 +129,60 @@ export class RoadmapGenerationService {
       skills: user.skills ?? [],
     };
 
-
     const gap = this.compareVectors(userVector, targetVector);
-    const userPositionsText = userVector.positions.map(
-      (p) => `${p.title} (${p.startDate?.slice(0, 10)} – ${p.endDate?.slice(0, 10)})`
-    ).join('; ');
+    const userPositionsText = userVector.positions
+      .map(
+        (p) =>
+          `${p.title} (${p.startDate?.slice(0, 10)} – ${p.endDate?.slice(
+            0,
+            10
+          )})`
+      )
+      .join('; ');
 
-    const targetPositionsText = targetVector.positions.map(
-      (p) => `${p.title} (${p.startDate?.slice(0, 10)} – ${p.endDate?.slice(0, 10)})`
-    ).join('; ');
-    const userEducationText = userVector.educations.map(
-      (ed) => `${ed.degreeName} in ${ed.fieldOfStudy} (${ed.startDate?.slice(0, 10)} – ${ed.endDate?.slice(0, 10)})`
-    ).join('; ');
+    const targetPositionsText = targetVector.positions
+      .map(
+        (p) =>
+          `${p.title} (${p.startDate?.slice(0, 10)} – ${p.endDate?.slice(
+            0,
+            10
+          )})`
+      )
+      .join('; ');
+    const userEducationText = userVector.educations
+      .map(
+        (ed) =>
+          `${ed.degreeName} in ${ed.fieldOfStudy} (${ed.startDate?.slice(
+            0,
+            10
+          )} – ${ed.endDate?.slice(0, 10)})`
+      )
+      .join('; ');
 
-    const targetEducationText = targetVector.educations.map(
-      (ed) => `${ed.degreeName} in ${ed.fieldOfStudy} (${ed.startDate?.slice(0, 10)} – ${ed.endDate?.slice(0, 10)})`
-    ).join('; ');
-
+    const targetEducationText = targetVector.educations
+      .map(
+        (ed) =>
+          `${ed.degreeName} in ${ed.fieldOfStudy} (${ed.startDate?.slice(
+            0,
+            10
+          )} – ${ed.endDate?.slice(0, 10)})`
+      )
+      .join('; ');
 
     const prompt = `
-  The user is currently working as "${userVector.headline}" and aims to transition to "${targetVector.headline}".
-  They are based in ${user.location} and have the following background: "${user.bio}".
+  The user is currently working as "${
+    userVector.headline
+  }" and aims to transition to "${targetVector.headline}".
+  They are based in ${user.location} and have the following background: "${
+      user.bio
+    }".
   Their career goal is: "${user.goalJob}".
   
   Currently, they possess these skills: ${userVector.skills.join(', ')}.
   Their unique skills compared to the target: ${gap.unique_skills.join(', ')}.
-  However, they are missing the following skills to achieve their target: ${gap.missing_skills.join(', ')}.
+  However, they are missing the following skills to achieve their target: ${gap.missing_skills.join(
+    ', '
+  )}.
   
   The user has the following education: ${userEducationText} ${user.education}.
   The target profile has the following education: ${targetEducationText}.
@@ -170,14 +217,12 @@ export class RoadmapGenerationService {
         motivation_line?: string;
       };
 
-
-    const milestones = steps.map((step, index) => ({
-      _id: String(index), // Temporary unique ID
+    const milestones = steps.map<RoadmapMilestone>((step, index) => ({
+      _id: randomUUID(),
       milestoneName: step.milestone_name,
       skills: step.skills ?? [],
-      status: 'summary' as RoadmapMilestoneStatus,
+      status: index < 3 ? 'active' : 'summary',
     }));
-
 
     return {
       roadmap: {
@@ -189,7 +234,6 @@ export class RoadmapGenerationService {
       motivationLine: motivation_line,
     };
   }
-
 
   //   async generateSummarizedRoadmap(userId: string): Promise<TRoadmap> {
   //     const user = await this.usersRepository.findById(userId);

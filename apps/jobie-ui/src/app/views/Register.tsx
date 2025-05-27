@@ -5,14 +5,13 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { use } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { AuthContext } from '../auth/providers/AuthProvider';
+import { useAuthStore } from '../auth/store/auth.store';
 import { GlassCard } from '../components/GlassCard';
 import { TransparentTextField } from '../components/TransparentTextField';
 
 export const Register = () => {
-  const { register } = use(AuthContext);
+  const { register } = useAuthStore();
 
   const { control, handleSubmit, formState } = useForm({
     defaultValues: {

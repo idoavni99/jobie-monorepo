@@ -16,7 +16,7 @@ export class Roadmap implements RoadmapEntity {
   @Prop()
   updatedAt: Date;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   userId: string;
 
   @Prop()

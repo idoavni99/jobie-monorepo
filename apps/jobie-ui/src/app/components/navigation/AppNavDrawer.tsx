@@ -1,4 +1,3 @@
-import HomeIcon from '@mui/icons-material/Home';
 import MergeIcon from '@mui/icons-material/Merge';
 import {
   List,
@@ -13,11 +12,6 @@ import { useNavigate } from 'react-router-dom';
 import { RoutesPaths } from '../../enums/routes.enum';
 
 const navBarItems = [
-  {
-    name: 'Home',
-    route: RoutesPaths.HOME,
-    icon: <HomeIcon />,
-  },
   {
     name: 'Roadmap',
     route: RoutesPaths.ROADMAP,

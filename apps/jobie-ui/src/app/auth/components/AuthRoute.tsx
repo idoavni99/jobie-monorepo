@@ -1,58 +1,55 @@
+import { TUser } from '@jobie/users/types';
 import { CircularProgress } from '@mui/material';
-import { use, useEffect } from 'react';
-import { Navigate, Outlet, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../providers/AuthProvider';
+import { Navigate, Outlet } from 'react-router-dom';
+import { RoutesPaths } from '../../enums/routes.enum';
+import { useAuthStore } from '../store/auth.store';
+
+const getRoutePathByUserState = (userState: TUser | undefined) => {
+  if (!userState) return RoutesPaths.LOGIN;
+
+  const { isProfileSetUp, isRoadmapGenerated } = userState;
+
+  if (!isProfileSetUp && !isRoadmapGenerated) {
+    return RoutesPaths.SETUP_PROFILE;
+  }
+
+  if (!isRoadmapGenerated) return RoutesPaths.ASPIRATIONS;
+
+  return RoutesPaths.HOME;
+};
 
 export const AuthRoute = () => {
-  const { user, isLoadingUserAuth } = use(AuthContext);
+  const { user, isLoadingUserAuth } = useAuthStore();
 
   return isLoadingUserAuth ? (
     <CircularProgress />
   ) : user ? (
-    <Navigate to={'/'} />
+    <Navigate to={getRoutePathByUserState(user)} />
   ) : (
     <Outlet />
   );
 };
 
 export const ProtectedRoute = () => {
-  const navigate = useNavigate();
-  const { user, isLoadingUserAuth } = use(AuthContext);
-
-  useEffect(() => {
-    if (isLoadingUserAuth) return;
-
-    if (!user?._id) {
-      navigate('/login');
-    } else if (!user?.isProfileSetUp) {
-      navigate('/setup-profile');
-    }
-  }, [user?._id, user?.isProfileSetUp, navigate, isLoadingUserAuth]);
+  const { user, isLoadingUserAuth } = useAuthStore();
 
   return isLoadingUserAuth ? (
     <CircularProgress />
-  ) : user ? (
+  ) : user?.isProfileSetUp && user.isRoadmapGenerated ? (
     <Outlet />
   ) : (
-    <Navigate to={`/login`} />
+    <Navigate to={getRoutePathByUserState(user)} />
   );
 };
 
 export const SetupRoute = () => {
-  const navigate = useNavigate();
-  const { user, isLoadingUserAuth } = use(AuthContext);
-
-  useEffect(() => {
-    if (user?.isProfileSetUp) {
-      navigate('/');
-    }
-  }, [user?.isProfileSetUp, navigate]);
+  const { isProfileSetUp, isLoadingUserAuth, user } = useAuthStore();
 
   return isLoadingUserAuth ? (
     <CircularProgress />
-  ) : user ? (
-    <Outlet />
+  ) : !user || (isProfileSetUp && user.isRoadmapGenerated) ? (
+    <Navigate to={getRoutePathByUserState(user)} />
   ) : (
-    <Navigate to={`/login`} />
+    <Outlet />
   );
 };

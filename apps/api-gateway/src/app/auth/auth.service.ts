@@ -8,6 +8,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -17,16 +18,19 @@ import { authConfigKey, type AuthConfigType } from '../../config/auth.config';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersRepository: UsersRepository,
     @Inject(authConfigKey) private readonly authConfig: AuthConfigType,
     @Inject(commonConfigKey) private readonly commonConfig: CommonConfigType
-  ) { }
+  ) {}
   async getMyIdentity(accessToken: string) {
     const user = await this.parseAccessToken(accessToken);
 
-    return user?._id ? this.usersRepository.findById(user._id) : user;
+    this.logger.log('Parse token result', user);
+
+    return user?._id && this.usersRepository.findById(user._id);
   }
 
   async register(user: CreateUserDto) {
