@@ -1,5 +1,6 @@
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useEffect } from 'react';
 import {
   Navigate,
   Route,
@@ -11,7 +12,7 @@ import {
   ProtectedRoute,
   SetupRoute,
 } from './auth/components/AuthRoute';
-import { AuthProvider } from './auth/providers/AuthProvider';
+import { useAuthStore } from './auth/store/auth.store';
 import { AppBackground } from './components/AppBackground';
 import { AppLayout } from './components/layouts/AppLayout';
 import { SetupLayout } from './components/layouts/SetupLayout';
@@ -26,50 +27,57 @@ import { SetupProfile } from './views/SetupProfile';
 import { SignIn } from './views/SignIn';
 
 export const App = () => {
+  const { refreshUserData } = useAuthStore();
+  useEffect(() => {
+    refreshUserData();
+  }, [refreshUserData]);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <AppBackground>
         <Router>
-          <AuthProvider>
-            <Routes>
-              {/* Public auth routes */}
-              <Route element={<AuthRoute />}>
-                <Route element={<SetupLayout />}>
-                  <Route path={RoutesPaths.REGISTER} element={<Register />} />
-                  <Route path={RoutesPaths.LOGIN} element={<SignIn />} />
-                </Route>
+          <Routes>
+            {/* Public auth routes */}
+            <Route element={<AuthRoute />}>
+              <Route element={<SetupLayout />}>
+                <Route path={RoutesPaths.REGISTER} element={<Register />} />
+                <Route path={RoutesPaths.LOGIN} element={<SignIn />} />
               </Route>
+            </Route>
 
-              {/* Setup step if user logged in but not finished setup */}
-              <Route element={<SetupRoute />}>
-                <Route element={<SetupLayout />}>
-                  <Route
-                    path={RoutesPaths.SETUP_PROFILE}
-                    element={<SetupProfile />}
-                  />
-                </Route>
+            {/* Setup step if user logged in but not finished setup */}
+            <Route element={<SetupRoute />}>
+              <Route element={<SetupLayout />}>
+                <Route
+                  path={RoutesPaths.SETUP_PROFILE}
+                  element={<SetupProfile />}
+                />
+
+                <Route
+                  path={RoutesPaths.ASPIRATIONS}
+                  element={<AspirationsPage />}
+                />
               </Route>
+            </Route>
 
-              {/* Protected routes after full auth and profile setup */}
-              <Route element={<ProtectedRoute />}>
-                <Route element={<AppLayout />}>
-                  <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
-                  <Route path={RoutesPaths.ASPIRATIONS} element={<AspirationsPage />} />
-                  <Route path={RoutesPaths.MILESTONE} element={<Milestone />} />
-                  <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
-                </Route>
+            {/* Protected routes after full auth and profile setup */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AppLayout />}>
+                <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
+                <Route path={RoutesPaths.MILESTONE} element={<Milestone />} />
+                <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
               </Route>
+            </Route>
 
-              {/* Default route */}
-              <Route
-                path="/"
-                element={<Navigate to={RoutesPaths.HOME} replace />}
-              />
+            {/* Default route */}
+            <Route
+              path="/"
+              element={<Navigate to={RoutesPaths.HOME} replace />}
+            />
 
-              {/* Fallback */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthProvider>
+            {/* Fallback */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </Router>
       </AppBackground>
     </LocalizationProvider>

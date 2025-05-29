@@ -1,10 +1,9 @@
 import { Button, Stack, Typography } from '@mui/material';
-import { use } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../auth/providers/AuthProvider';
+import { useAuthStore } from '../auth/store/auth.store';
 
 export const HomeScreen = () => {
-  const { logout, user } = use(AuthContext);
+  const { logout, user } = useAuthStore();
   const navigate = useNavigate();
   return (
     <Stack gap={4}>

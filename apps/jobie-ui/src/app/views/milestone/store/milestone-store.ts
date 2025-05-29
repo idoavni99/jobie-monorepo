@@ -123,6 +123,7 @@ export const useMilestoneStore = create<MilestoneState>()(
     }),
     {
       name: 'MilestoneStore', // Will appear in Redux DevTools
+      enabled: import.meta.env.DEV,
     }
   )
 );
