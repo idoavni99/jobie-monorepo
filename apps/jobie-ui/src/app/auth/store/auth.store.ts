@@ -7,7 +7,6 @@ import { profileEnrichmentApi } from '../../../api/profile-enrichment.api';
 type AuthState = {
   user?: TUser;
   isLoadingUserAuth: boolean;
-  isProfileSetUp: boolean;
   refreshUserData: () => Promise<void>;
   login: (userCredentials: Pick<TUser, 'email' | 'password'>) => Promise<void>;
   logout: () => Promise<void>;
@@ -19,7 +18,7 @@ type AuthState = {
 
 export const useAuthStore = create<AuthState>()(
   devtools(
-    (set, get) => ({
+    (set) => ({
       user: undefined,
       isLoadingUserAuth: true,
       refreshUserData: async () => {
@@ -32,23 +31,31 @@ export const useAuthStore = create<AuthState>()(
       },
       login: async (userCredentials) => {
         set({ isLoadingUserAuth: true });
-        const { data: user } = await gatewayApi.post<TUser>(
-          '/login',
-          userCredentials
-        );
-        set({ user, isLoadingUserAuth: false });
+        try {
+          const { data: user } = await gatewayApi.post<TUser>(
+            '/login',
+            userCredentials
+          );
+          set({ user, isLoadingUserAuth: false });
+        } catch {
+          set({ isLoadingUserAuth: false });
+        }
       },
       logout: async () => {
         await gatewayApi.post('/logout');
-        set({ user: undefined, isLoadingUserAuth: true });
+        set({ user: undefined, isLoadingUserAuth: false });
       },
       register: async (registrationData) => {
         set({ isLoadingUserAuth: true });
-        const { data: user } = await gatewayApi.post<TUser>(
-          '/register',
-          registrationData
-        );
-        set({ user, isLoadingUserAuth: false });
+        try {
+          const { data: user } = await gatewayApi.post<TUser>(
+            '/register',
+            registrationData
+          );
+          set({ user, isLoadingUserAuth: false });
+        } catch {
+          set({ isLoadingUserAuth: false });
+        }
       },
       setupProfile: async (setupData) => {
         const { data: user } = await profileEnrichmentApi.post<TUser>(

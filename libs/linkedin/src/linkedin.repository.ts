@@ -24,7 +24,7 @@ export class LinkedinRepository {
     if (medium?.url) return medium.url;
 
     // Fallback to largest available
-    const sorted = [...pics].sort((a, b) => b.width - a.width);
+    const sorted = pics.toSorted((a, b) => b.width - a.width);
     return sorted[0]?.url ?? '';
   }
 

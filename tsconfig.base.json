@@ -12,42 +12,20 @@
     "strictNullChecks": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2024", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@jobie/auth-core": [
-        "libs/auth-core/src/index.ts"
-      ],
-      "@jobie/data-entities-core": [
-        "libs/data-entities-core/src/index.ts"
-      ],
-      "@jobie/linkedin": [
-        "libs/linkedin/src/index.ts"
-      ],
-      "@jobie/milestone/*": [
-        "libs/milestone/src/*"
-      ],
-      "@jobie/nestjs-core": [
-        "libs/nestjs-core/src/index.ts"
-      ],
-      "@jobie/openai": [
-        "libs/openai/src/index.ts"
-      ],
-      "@jobie/roadmap/*": [
-        "libs/roadmap/src/*"
-      ],
-      "@jobie/users/*": [
-        "libs/users/src/*"
-      ]
+      "@jobie/auth-core": ["libs/auth-core/src/index.ts"],
+      "@jobie/data-entities-core": ["libs/data-entities-core/src/index.ts"],
+      "@jobie/linkedin": ["libs/linkedin/src/index.ts"],
+      "@jobie/milestone/*": ["libs/milestone/src/*"],
+      "@jobie/nestjs-core": ["libs/nestjs-core/src/index.ts"],
+      "@jobie/openai": ["libs/openai/src/index.ts"],
+      "@jobie/roadmap/*": ["libs/roadmap/src/*"],
+      "@jobie/users/*": ["libs/users/src/*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

@@ -21,7 +21,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     @Inject(authConfigKey) private readonly authConfig: AuthConfigType
-  ) { }
+  ) {}
 
   @Get('me')
   async isLoggedIn(
@@ -45,8 +45,7 @@ export class AuthController {
 
   @Post('logout')
   logout(@Res() response: Response) {
-    response.clearCookie('accessToken', { signed: true });
-    response.clearCookie('refreshToken', { signed: true });
+    this.clearTokenCookies(response);
     response.sendStatus(HttpStatus.OK);
   }
 
@@ -63,8 +62,14 @@ export class AuthController {
   }
 
   @Post('register')
-  register(@Body() user: CreateUserDto) {
-    return this.authService.register(user);
+  async register(
+    @Body() user: CreateUserDto,
+    @Res({ passthrough: true }) response: Response
+  ) {
+    const { accessToken, refreshToken, ...createdUser } =
+      await this.authService.register(user);
+    this.setTokenCookies(response, accessToken, refreshToken);
+    return createdUser;
   }
 
   private setTokenCookies(
@@ -84,6 +89,21 @@ export class AuthController {
       maxAge: this.authConfig.refreshTokenLifetime,
       signed: true,
       secure: true,
+      sameSite: this.isProduction ? 'strict' : 'none',
+    });
+  }
+
+  private clearTokenCookies(response: Response) {
+    response.clearCookie('accessToken', {
+      signed: true,
+      secure: true,
+      httpOnly: true,
+      sameSite: this.isProduction ? 'strict' : 'none',
+    });
+    response.clearCookie('refreshToken', {
+      signed: true,
+      secure: true,
+      httpOnly: true,
       sameSite: this.isProduction ? 'strict' : 'none',
     });
   }

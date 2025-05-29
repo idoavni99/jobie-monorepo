@@ -28,17 +28,26 @@ export class AuthService {
   async getMyIdentity(accessToken: string) {
     const user = await this.parseAccessToken(accessToken);
 
-    this.logger.log('Parse token result', user);
+    if (!user) {
+      throw new UnauthorizedException('Try logging in again');
+    }
 
-    return user?._id && this.usersRepository.findById(user._id);
+    return this.usersRepository.findById(user._id);
   }
 
   async register(user: CreateUserDto) {
-    return this.usersRepository.create(
+    const newUser = await this.usersRepository.create(
       Object.assign(user, {
         password: await this.hashPassword(user.password),
       })
     );
+
+    const [accessToken, refreshToken] = await Promise.all([
+      this.signAccessToken(newUser),
+      this.signRefreshToken(newUser),
+    ]);
+
+    return { ...newUser, accessToken, refreshToken };
   }
 
   async login(email: string, password: string) {

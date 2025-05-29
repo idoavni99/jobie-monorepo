@@ -9,30 +9,25 @@ const getRoutePathByUserState = (userState: TUser | undefined) => {
 
   const { isProfileSetUp, isRoadmapGenerated } = userState;
 
+  console.log(isProfileSetUp, isRoadmapGenerated);
+
   if (!isProfileSetUp && !isRoadmapGenerated) {
     return RoutesPaths.SETUP_PROFILE;
   }
 
   if (!isRoadmapGenerated) return RoutesPaths.ASPIRATIONS;
-
   return RoutesPaths.HOME;
 };
 
 export const AuthRoute = () => {
-  const { user, isLoadingUserAuth } = useAuthStore();
+  const { user } = useAuthStore();
 
-  return isLoadingUserAuth ? (
-    <CircularProgress />
-  ) : user ? (
-    <Navigate to={getRoutePathByUserState(user)} />
-  ) : (
-    <Outlet />
-  );
+  return user ? <Navigate to={getRoutePathByUserState(user)} /> : <Outlet />;
 };
 
 export const ProtectedRoute = () => {
   const { user, isLoadingUserAuth } = useAuthStore();
-
+  console.log(user);
   return isLoadingUserAuth ? (
     <CircularProgress />
   ) : user?.isProfileSetUp && user.isRoadmapGenerated ? (
@@ -43,11 +38,10 @@ export const ProtectedRoute = () => {
 };
 
 export const SetupRoute = () => {
-  const { isProfileSetUp, isLoadingUserAuth, user } = useAuthStore();
-
+  const { isLoadingUserAuth, user } = useAuthStore();
   return isLoadingUserAuth ? (
     <CircularProgress />
-  ) : !user || (isProfileSetUp && user.isRoadmapGenerated) ? (
+  ) : !user || (user.isProfileSetUp && user.isRoadmapGenerated) ? (
     <Navigate to={getRoutePathByUserState(user)} />
   ) : (
     <Outlet />
