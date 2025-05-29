@@ -1,9 +1,9 @@
 // MilestoneStepItem.tsx
 import { MilestoneStep } from '@jobie/milestone/types';
 import { Box, Switch, Typography } from '@mui/material';
+import Link from '@mui/material/Link';
 import { memo, useCallback } from 'react';
 import { useMilestoneStore } from '../store/milestone-store';
-
 type Properties = {
   step: MilestoneStep;
   milestoneId: string;
@@ -17,6 +17,10 @@ const MilestoneStepItem = memo(
     const handleToggle = useCallback(() => {
       toggleStep(milestoneId, step._id, !step.completed);
     }, [milestoneId, step._id, step.completed, toggleStep]);
+
+    const urlMatch = step.step.match(/(https?:\/\/[^\s]+)$/);
+    const url = urlMatch ? urlMatch[1] : '';
+    const description = step.step.replace(url, '').trim();
 
     return (
       <Box
@@ -38,15 +42,34 @@ const MilestoneStepItem = memo(
           bgcolor={step.completed ? 'green' : 'rgba(83, 23, 233, 0.77)'}
           flexShrink={0}
         />
-        <Typography
-          fontSize="0.9rem"
-          color="#333"
-          sx={{
-            textDecoration: step.completed ? 'line-through' : 'none',
-          }}
-        >
-          {step.step}
-        </Typography>
+        <Box flex={1}>
+          <Typography
+            fontSize="0.9rem"
+            color="#333"
+            sx={{
+              textDecoration: step.completed ? 'line-through' : 'none',
+              whiteSpace: 'pre-wrap',
+            }}
+          >
+            {description}
+          </Typography>
+          {url && (
+            <Link
+              href={url.trim()}
+              target="_blank"
+              rel="noopener noreferrer"
+              fontSize="0.8rem"
+              color="primary"
+              underline="hover"
+              sx={{
+                display: 'inline-block',
+                mt: 0.5,
+              }}
+            >
+              Open Resource
+            </Link>
+          )}
+        </Box>
         <Switch
           checked={step.completed}
           onChange={handleToggle}
