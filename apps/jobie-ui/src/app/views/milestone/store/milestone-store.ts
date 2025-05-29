@@ -20,7 +20,6 @@ export const useMilestoneStore = create<MilestoneState>()(
       milestones: {},
 
       fetchMilestone: async (milestoneId) => {
-        console.log('Fetching milestone:', milestoneId);
         try {
           const { data } = await milestoneMangementApi.get<TMilestone>('/', {
             params: { milestoneId },
@@ -124,6 +123,7 @@ export const useMilestoneStore = create<MilestoneState>()(
     }),
     {
       name: 'MilestoneStore', // Will appear in Redux DevTools
+      enabled: import.meta.env.DEV,
     }
   )
 );

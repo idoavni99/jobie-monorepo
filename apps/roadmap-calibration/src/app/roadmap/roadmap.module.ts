@@ -22,4 +22,4 @@ import { RoadmapController } from './roadmap.controller';
   controllers: [RoadmapController],
   providers: [RoadmapGenerationService],
 })
-export class RoadmapCalibrationModule {}
+export class RoadmapCalibrationModule { }

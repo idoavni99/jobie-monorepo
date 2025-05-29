@@ -8,6 +8,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { authConfigKey, type AuthConfigType } from '../../config/auth.config';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersRepository: UsersRepository,
@@ -26,15 +28,26 @@ export class AuthService {
   async getMyIdentity(accessToken: string) {
     const user = await this.parseAccessToken(accessToken);
 
-    return user?._id ? this.usersRepository.findById(user._id) : user;
+    if (!user) {
+      throw new UnauthorizedException('Try logging in again');
+    }
+
+    return this.usersRepository.findById(user._id);
   }
 
   async register(user: CreateUserDto) {
-    return this.usersRepository.create(
+    const newUser = await this.usersRepository.create(
       Object.assign(user, {
         password: await this.hashPassword(user.password),
       })
     );
+
+    const [accessToken, refreshToken] = await Promise.all([
+      this.signAccessToken(newUser),
+      this.signRefreshToken(newUser),
+    ]);
+
+    return { ...newUser, accessToken, refreshToken };
   }
 
   async login(email: string, password: string) {

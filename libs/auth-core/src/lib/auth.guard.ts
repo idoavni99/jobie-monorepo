@@ -11,7 +11,7 @@ export class AuthGuard implements CanActivate {
     private readonly useAuth: boolean,
     private readonly jwtSecret: string,
     private readonly jwtService: JwtService
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     if (!this.useAuth) return true;

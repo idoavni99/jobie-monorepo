@@ -11,4 +11,4 @@ import { RoadmapService } from './roadmap.service';
   providers: [RoadmapRepository, RoadmapService],
   exports: [RoadmapService, RoadmapRepository],
 })
-export class RoadmapModule {}
+export class RoadmapModule { }

@@ -15,10 +15,10 @@ export const baseBootstrap = async (
     bufferLogs: true,
     cors: isDevelopment
       ? {
-          allowedHeaders: ['x-jobie-authorization', 'content-type'],
-          origin: 'https://localhost:4200',
-          credentials: true,
-        }
+        allowedHeaders: ['x-jobie-authorization', 'content-type'],
+        origin: 'https://localhost:4200',
+        credentials: true,
+      }
       : undefined,
   });
 

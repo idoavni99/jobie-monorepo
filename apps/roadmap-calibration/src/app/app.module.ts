@@ -21,4 +21,4 @@ import { RoadmapCalibrationModule } from './roadmap/roadmap.module';
     RoadmapCalibrationModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }

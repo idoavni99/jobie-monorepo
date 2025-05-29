@@ -19,6 +19,7 @@ export const NotFound = () => {
             startIcon={<HomeIcon />}
             variant="contained"
             sx={(theme) => ({
+              background: theme.palette.gradient.main,
               paddingX: '1rem',
               paddingY: '0.6rem',
             })}

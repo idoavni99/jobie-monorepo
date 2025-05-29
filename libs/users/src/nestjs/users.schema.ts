@@ -25,6 +25,9 @@ export class User implements UserEntity {
   @Prop()
   fullName: string;
 
+  @Prop({ type: Boolean, default: false })
+  isRoadmapGenerated: boolean;
+
   @Virtual({
     get: function (this: User) {
       return Boolean(
@@ -41,14 +44,14 @@ export class User implements UserEntity {
 
   @Virtual({
     get: function (this: User) {
-      return this.fullName.split(' ').shift();
+      return this.fullName?.split(' ')[0] ?? '';
     },
   })
   firstName: string;
 
   @Virtual({
     get: function (this: User) {
-      return this.fullName.split(' ').pop();
+      return this.fullName?.split(' ').slice(1).join(' ') ?? '';
     },
   })
   lastName: string;
@@ -77,22 +80,52 @@ export class User implements UserEntity {
   @Prop({ type: [String], default: [] })
   skills?: string[];
 
+  @Prop()
+  linkedinHeadline?: string;
+
+  @Prop()
+  linkedinFullName?: string;
+
+  @Prop()
+  linkedinProfilePictureUrl?: string;
   @Prop({
     type: [
       {
         title: String,
-        companyName: String,
+        startDate: String,
+        endDate: String,
       },
     ],
     default: [],
   })
-  experienceSummary?: {
+  linkedinPositions?: {
     title: string;
     companyName: string;
+    startDate: string;
+    endDate: string;
+  }[];
+
+  @Prop({
+    type: [
+      {
+        degreeName: String,
+        fieldOfStudy: String,
+        startDate: String,
+        endDate: String,
+      },
+    ],
+    default: [],
+  })
+  linkedinEducations?: {
+    schoolName: string;
+    degreeName: string;
+    fieldOfStudy: string;
+    startDate: string;
+    endDate: string;
   }[];
 
   @Prop()
-  linkedinHeadline?: string;
+  linkedinLocation?: string;
 }
 
 export class CreateUserDto {
