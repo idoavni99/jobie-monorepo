@@ -16,9 +16,9 @@ export class MilestoneGenerationService {
     These skills will be acquired in this milestone: ${roadmapMilestone.skills.join(
       ', '
     )}
-
     Provide a structured breakdown with actionable steps to complete this milestone.
-    Each step should be approximately 10 words and no more than 5 steps in total.
+    Each step should be approximately 60 to 80 words and no more than 5 steps in total.
+    Each step should be a single line (3 senetences), and include a real URL (guide, exercise, online course - udemy or coursera etc, or resource) that is in a new line. Ensure the URL works (not 404 and indeed works).
     Format the response as JSON: {"steps": [{"step": "description", "completed": false}, ...]}
     `;
 
