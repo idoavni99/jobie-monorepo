@@ -1,9 +1,10 @@
 import { TRoadmap } from '@jobie/roadmap/types';
-import { Box, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { roadmapCalibrationApi } from '../../api/roadmap-calibration.api';
 import { useAuthStore } from '../auth/store/auth.store';
+import { useIsMobile } from '../hooks/use-is-mobile';
 import { ConfirmModal } from './components/ConfirmModal';
 import { RoadmapModal } from './components/RoadmapModal';
 import { SuggestionCard } from './components/SuggestionCard';
@@ -11,6 +12,7 @@ import { UserProfileCard } from './components/UserProfileCard';
 
 export const AspirationsPage = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { user, refreshUserData } = useAuthStore(); // fallback to fetch from DB
 
   // const { suggestions: navSuggestions, aspirationalLinkedinUrl: navUrl } = location.state || {};
@@ -125,16 +127,30 @@ export const AspirationsPage = () => {
   };
 
   return (
-    <Box p={4} width="100%">
+    <Box
+      p={4}
+      width="100%"
+      height={isMobile ? '90dvh' : '100%'}
+      overflow="auto"
+    >
       <Typography variant="h4" fontWeight="bold" textAlign="center" mb={4}>
         We found people similar to your dream role...
       </Typography>
 
-      <Box display="flex" justifyContent="center" mb={6}>
-        <UserProfileCard />
-      </Box>
+      {!isMobile && (
+        <Stack mb={6} justifyContent="center" alignItems="center">
+          <UserProfileCard />
+        </Stack>
+      )}
 
-      <Box display="flex" flexWrap="wrap" gap={4} justifyContent="center">
+      <Stack
+        flexWrap="wrap"
+        direction={isMobile ? 'column' : 'row'}
+        gap={4}
+        alignItems="center"
+        justifyContent="center"
+      >
+        {isMobile && <UserProfileCard />}
         {suggestions.map((profile: any, index: number) => (
           <SuggestionCard
             key={index}
@@ -143,7 +159,7 @@ export const AspirationsPage = () => {
             onViewRoadmap={() => handleViewRoadmap(profile)}
           />
         ))}
-      </Box>
+      </Stack>
 
       {selectedProfile && (
         <RoadmapModal

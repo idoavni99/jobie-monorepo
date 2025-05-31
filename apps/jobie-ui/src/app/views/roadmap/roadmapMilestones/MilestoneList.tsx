@@ -36,7 +36,7 @@ export const MilestonesList = ({ milestones }: Properties) => {
   return (
     <Virtuoso
       style={{
-        height: isMobile ? globalThis.outerHeight : '360px',
+        height: isMobile ? '80dvh' : '360px',
         width: isMobile ? '100%' : globalThis.outerWidth,
       }}
       components={{ List }}
