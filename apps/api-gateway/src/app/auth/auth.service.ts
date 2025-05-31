@@ -24,7 +24,7 @@ export class AuthService {
     private readonly usersRepository: UsersRepository,
     @Inject(authConfigKey) private readonly authConfig: AuthConfigType,
     @Inject(commonConfigKey) private readonly commonConfig: CommonConfigType
-  ) {}
+  ) { }
   async getMyIdentity(accessToken: string) {
     const user = await this.parseAccessToken(accessToken);
 

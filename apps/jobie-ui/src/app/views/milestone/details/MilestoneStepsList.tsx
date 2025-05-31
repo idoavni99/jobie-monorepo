@@ -1,5 +1,6 @@
 import { Stack } from '@mui/material';
 import { useEffect } from 'react';
+import { useIsMobile } from '../../../hooks/use-is-mobile';
 import { useMilestoneStore } from '../store/milestone-store';
 import MilestoneStepItem from './MilestoneStepItem';
 
@@ -14,6 +15,7 @@ export const MilestoneStepsList = ({
   milestoneStatus,
   onComplete,
 }: Properties) => {
+  const isMobile = useIsMobile();
   const { milestones } = useMilestoneStore();
   const milestone = milestones[milestoneId];
 
@@ -28,7 +30,7 @@ export const MilestoneStepsList = ({
   }, [milestone, onComplete]);
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} overflow={'auto'} height={isMobile ? '300px' : 'auto'}>
       {milestone.steps.map((step) => (
         <MilestoneStepItem
           key={step._id}

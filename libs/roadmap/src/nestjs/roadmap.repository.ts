@@ -10,7 +10,7 @@ export class RoadmapRepository {
   constructor(
     @InjectModel(Roadmap.name)
     private readonly roadmapModel: Model<RoadmapDocument>
-  ) {}
+  ) { }
 
   async create(roadmap: TRoadmap): Promise<Roadmap> {
     const createdRoadmap = await this.roadmapModel.findOneAndUpdate(
