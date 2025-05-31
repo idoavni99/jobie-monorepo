@@ -57,11 +57,11 @@ export const Milestone = () => {
 
       {milestone ? (
         <Box
+          maxWidth={isMobile ? 300 : 700}
           sx={{
             animation: `${fadeInUp} 0.6s ease-out`,
             animationFillMode: 'forwards',
             opacity: 0,
-            maxWidth: isMobile ? 300 : 700,
             mx: 'auto',
             p: 4,
             borderRadius: 4,
