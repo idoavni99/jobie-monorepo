@@ -7,7 +7,7 @@ import { ProfileService } from './profile.service';
 
 @Controller('')
 export class ProfileController {
-  constructor(private readonly profileService: ProfileService) {}
+  constructor(private readonly profileService: ProfileService) { }
 
   @Post('')
   enrichUserProfile(

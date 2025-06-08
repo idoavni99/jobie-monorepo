@@ -1,3 +1,5 @@
+// eslint-disable-next-line unicorn/prefer-module
+require('hpropagate')({ headersToPropagate: ['x-jobie-authorization'] });
 import { INestApplication, Type } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
@@ -13,10 +15,10 @@ export const baseBootstrap = async (
     bufferLogs: true,
     cors: isDevelopment
       ? {
-          allowedHeaders: ['authorization', 'content-type'],
-          origin: 'http://localhost:4200',
-          credentials: true,
-        }
+        allowedHeaders: ['x-jobie-authorization', 'content-type'],
+        origin: 'https://localhost:4200',
+        credentials: true,
+      }
       : undefined,
   });
 
@@ -28,7 +30,7 @@ export const baseBootstrap = async (
 
   const { port } = app.get<CommonConfigType>(commonConfigKey);
 
-  await app.listen(port);
+  await app.listen(port, isDevelopment ? '127.0.0.1' : '0.0.0.0');
   logger.log(`🚀 Application is running on: http://localhost:${port}`);
 
   return app;

@@ -5,16 +5,15 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { use } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../auth/providers/AuthProvider';
+import { useAuthStore } from '../auth/store/auth.store';
 import { GlassCard } from '../components/GlassCard';
 import { TransparentTextField } from '../components/TransparentTextField';
 import { RoutesPaths } from '../enums/routes.enum';
 export const SignIn = () => {
   const navigate = useNavigate();
-  const { login } = use(AuthContext);
+  const { login } = useAuthStore();
 
   const { control, handleSubmit, formState } = useForm({
     defaultValues: {

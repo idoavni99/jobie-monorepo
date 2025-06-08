@@ -1,7 +1,7 @@
 import { DataEntity, defaultSchemaOptions } from '@jobie/data-entities-core';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
-import { MilestoneWithSkills, TRoadmap } from '../types/roadmap.type';
+import { HydratedDocument } from 'mongoose';
+import { RoadmapMilestone, TRoadmap } from '../types/roadmap.type';
 
 export type RoadmapDocument = HydratedDocument<Roadmap>;
 type RoadmapEntity = TRoadmap & DataEntity;
@@ -16,34 +16,28 @@ export class Roadmap implements RoadmapEntity {
   @Prop()
   updatedAt: Date;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   userId: string;
 
   @Prop()
   goalJob: string;
 
-  // רק שמות של milestones – לשימושים פשוטים
-  @Prop({ type: [String], default: [] })
-  summarizedMilestones: string[];
-
-  // כל milestone עם הסקילס שלו
   @Prop({
     type: [
       {
-        milestone_name: { type: String, required: true },
+        _id: String,
+        milestoneName: { type: String, required: true },
         skills: [{ type: String }],
+        status: {
+          type: String,
+          enum: ['summary', 'active', 'completed'],
+          default: 'summary',
+        },
       },
     ],
     default: [],
   })
-  milestonesWithSkills: MilestoneWithSkills[];
-
-  @Prop({
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Milestone',
-    default: [],
-  })
-  milestoneIds: string[];
+  milestones: RoadmapMilestone[];
 
   @Prop({ default: false })
   isApproved: boolean;

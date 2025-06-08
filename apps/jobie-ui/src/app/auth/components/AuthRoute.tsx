@@ -1,39 +1,49 @@
+import { TUser } from '@jobie/users/types';
 import { CircularProgress } from '@mui/material';
-import { use, useEffect } from 'react';
-import { Navigate, Outlet, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../providers/AuthProvider';
+import { Navigate, Outlet } from 'react-router-dom';
+import { RoutesPaths } from '../../enums/routes.enum';
+import { useAuthStore } from '../store/auth.store';
+
+const getRoutePathByUserState = (userState: TUser | undefined) => {
+  if (!userState) return RoutesPaths.LOGIN;
+
+  const { isProfileSetUp, isRoadmapGenerated } = userState;
+
+  console.log(isProfileSetUp, isRoadmapGenerated);
+
+  if (!isProfileSetUp && !isRoadmapGenerated) {
+    return RoutesPaths.SETUP_PROFILE;
+  }
+
+  if (!isRoadmapGenerated) return RoutesPaths.ASPIRATIONS;
+  return RoutesPaths.HOME;
+};
 
 export const AuthRoute = () => {
-  const { user, isLoadingUserAuth } = use(AuthContext);
+  const { user } = useAuthStore();
 
-  return isLoadingUserAuth ? (
-    <CircularProgress />
-  ) : user ? (
-    <Navigate to={'/'} />
-  ) : (
-    <Outlet />
-  );
+  return user ? <Navigate to={getRoutePathByUserState(user)} /> : <Outlet />;
 };
 
 export const ProtectedRoute = () => {
-  const navigate = useNavigate();
-  const { user, isLoadingUserAuth } = use(AuthContext);
-
-  useEffect(() => {
-    if (
-      user?._id &&
-      !user?.isProfileSetUp &&
-      !globalThis.location.href.includes('/setup-profile')
-    ) {
-      navigate('/setup-profile');
-    }
-  }, [user?._id, user?.isProfileSetUp, navigate]);
-
+  const { user, isLoadingUserAuth } = useAuthStore();
+  console.log(user);
   return isLoadingUserAuth ? (
     <CircularProgress />
-  ) : user ? (
+  ) : user?.isProfileSetUp && user.isRoadmapGenerated ? (
     <Outlet />
   ) : (
-    <Navigate to={`/login`} />
+    <Navigate to={getRoutePathByUserState(user)} />
+  );
+};
+
+export const SetupRoute = () => {
+  const { isLoadingUserAuth, user } = useAuthStore();
+  return isLoadingUserAuth ? (
+    <CircularProgress />
+  ) : !user || (user.isProfileSetUp && user.isRoadmapGenerated) ? (
+    <Navigate to={getRoutePathByUserState(user)} />
+  ) : (
+    <Outlet />
   );
 };
