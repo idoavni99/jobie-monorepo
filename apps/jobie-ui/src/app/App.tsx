@@ -46,13 +46,18 @@ export const App = () => {
               </Route>
             </Route>
 
+              <Route element={<SetupRoute />}>
+                <Route element={<SetupLayout />}>
+                  <Route
+                    path={RoutesPaths.SETUP_PROFILE}
+                    element={<SetupProfile />}
+                  />
+
+                </Route>
+              </Route>  
             {/* Setup step if user logged in but not finished setup */}
             <Route element={<SetupRoute />}>
               <Route element={<SetupLayout />}>
-                <Route
-                  path={RoutesPaths.SETUP_PROFILE}
-                  element={<SetupProfile />}
-                />
 
                 <Route
                   path={RoutesPaths.ASPIRATIONS}
@@ -67,6 +72,7 @@ export const App = () => {
                 <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
                 <Route path={RoutesPaths.MILESTONE} element={<Milestone />} />
                 <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
+                <Route path={RoutesPaths.EDIT_PROFILE} element={<EditProfile />}/>
               </Route>
             </Route>
 
