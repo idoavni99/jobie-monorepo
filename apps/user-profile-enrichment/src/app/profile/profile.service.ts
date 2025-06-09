@@ -2,6 +2,7 @@ import { LinkedinRepository } from '@jobie/linkedin';
 import { UsersRepository } from '@jobie/users/nestjs';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EnrichUserProfileDto } from '../dto/enrich-user-profile.dto';
+import { EnrichUserProfileUpdateDto } from '../dto/enrich-user-profile-update.dto';
 @Injectable()
 export class ProfileService {
   constructor(
