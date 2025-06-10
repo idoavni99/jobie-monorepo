@@ -36,7 +36,7 @@ export const SetupProfile = () => {
   );
 
   return (
-    <GlassCard sx={{ height: '80dvh' }}>
+    <GlassCard sx={{ height: '85dvh' }}>
       <Stack
         component="form"
         onSubmit={handleSubmit(onSubmit)}
