@@ -9,8 +9,6 @@ const getRoutePathByUserState = (userState: TUser | undefined) => {
 
   const { isProfileSetUp, isRoadmapGenerated } = userState;
 
-  console.log(isProfileSetUp, isRoadmapGenerated);
-
   if (!isProfileSetUp && !isRoadmapGenerated) {
     return RoutesPaths.SETUP_PROFILE;
   }
@@ -27,7 +25,6 @@ export const AuthRoute = () => {
 
 export const ProtectedRoute = () => {
   const { user, isLoadingUserAuth } = useAuthStore();
-  console.log(user);
   return isLoadingUserAuth ? (
     <CircularProgress />
   ) : user?.isProfileSetUp && user.isRoadmapGenerated ? (
