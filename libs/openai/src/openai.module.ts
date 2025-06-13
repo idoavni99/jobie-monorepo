@@ -23,12 +23,7 @@ export class OpenAIModule {
           }),
           provide: 'GIVEN_OPENAI_CONFIG',
         },
-        {
-          provide: OpenAIRepository,
-          inject: [{ token: 'GIVEN_OPENAI_CONFIG', optional: false }],
-          useFactory: (config: ClientOptions) =>
-            new OpenAIRepository(config.apiKey as string, config),
-        },
+        OpenAIRepository,
       ],
       exports: [OpenAIRepository],
     };
