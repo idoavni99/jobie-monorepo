@@ -1,4 +1,4 @@
-import { LinkedinModule } from '@jobie/linkedin';
+import { LinkedinModule } from '@jobie/linkedin/linkedin.module';
 import { Module } from '@nestjs/common';
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
@@ -8,4 +8,4 @@ import { ProfileService } from './profile.service';
   controllers: [ProfileController],
   providers: [ProfileService],
 })
-export class ProfileModule { }
+export class ProfileModule {}

@@ -20,7 +20,7 @@ export class MilestoneController {
     private readonly milestoneGenerationService: MilestoneGenerationService,
     private readonly milestoneService: MilestoneService
   ) {}
-  @Post('initialGenerate')
+  @Post('initial-generate')
   async initalGenerate(
     @Body() roadmapMilestones: RoadmapMilestone | RoadmapMilestone[]
   ): Promise<Milestone | Milestone[]> {
@@ -31,14 +31,10 @@ export class MilestoneController {
       : [roadmapMilestones];
 
     // generate each milestone & save it to milestones DB
-    const results = await Promise.all(
-      items.map(async (milestone) => {
-        const generated =
-          await this.milestoneGenerationService.generateMilestone(milestone);
-        return this.milestoneService.createMilestone(generated);
-      })
-    );
-    return Array.isArray(roadmapMilestones) ? results : results[0];
+    const results =
+      await this.milestoneGenerationService.generateMultipleMilestones(items);
+
+    return this.milestoneService.createMultipleMilestones(results);
   }
 
   @Get('')

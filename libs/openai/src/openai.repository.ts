@@ -29,8 +29,6 @@ export class OpenAIRepository {
       },
     });
 
-    this.logger.log(result);
-
     return result.text ?? '';
   }
 
