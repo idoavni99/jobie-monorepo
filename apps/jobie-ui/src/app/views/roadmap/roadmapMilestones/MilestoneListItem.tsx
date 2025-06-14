@@ -79,6 +79,7 @@ export const MilestoneListItem = ({
           fontWeight="bold"
           fontSize="1.1rem"
           color="#222"
+          whiteSpace="pre-wrap"
           mb={1}
           px={2}
         >

@@ -1,37 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { ClientOptions, OpenAI } from 'openai';
-import { safeJSON } from 'openai/core';
+import { GoogleGenAI, GoogleGenAIOptions } from '@google/genai';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class OpenAIRepository {
-  private readonly openai: OpenAI;
+  private readonly openai: GoogleGenAI;
+  private readonly logger = new Logger(OpenAIRepository.name);
 
-  constructor(
-    apiKey: string,
-    extraOptions: Omit<ClientOptions, 'apiKey' | 'baseURL'> = {}
-  ) {
-    this.openai = new OpenAI({
-      apiKey,
-      ...extraOptions,
-    });
+  constructor(@Inject('GIVEN_OPENAI_CONFIG') config: GoogleGenAIOptions) {
+    this.openai = new GoogleGenAI(config);
   }
 
   async requestPrompt(initializationPrompt: string, contentPrompt: string) {
-    const result = await this.openai.chat.completions.create({
-      model: 'gpt-4o',
-      temperature: 0.7,
-      messages: [
+    const result = await this.openai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [
         {
-          role: 'system',
-          content: initializationPrompt,
+          role: 'model',
+          parts: [
+            {
+              text: initializationPrompt,
+            },
+          ],
         },
-        { role: 'user', content: contentPrompt },
+        { role: 'user', parts: [{ text: contentPrompt }] },
       ],
+      config: {
+        responseMimeType: 'application/json',
+      },
     });
 
-    const content = result.choices?.[0]?.message?.content?.trim() ?? '';
-    if (content.startsWith('```json')) return content.slice(7, -3);
-    return content;
+    return result.text ?? '';
   }
 
   async requestPromptJSON<T>(
@@ -42,7 +40,15 @@ export class OpenAIRepository {
       initializationPrompt,
       contentPrompt
     );
-    const parsedResult = safeJSON(textResult) as T;
+    const parsedResult = this.safeJSON(textResult) as T;
     return parsedResult;
+  }
+
+  private safeJSON(text: string) {
+    try {
+      return JSON.parse(text);
+    } catch {
+      return {};
+    }
   }
 }

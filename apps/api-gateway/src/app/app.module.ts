@@ -4,12 +4,13 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { authConfig } from '../config/auth.config';
 import { gatewayConfig } from '../config/gateway.config';
+import { googleOauthConfig } from '../config/google.config';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     BaseAppModule.forRoot({
-      rootConfigs: [gatewayConfig, authConfig, mongoConfig],
+      rootConfigs: [gatewayConfig, authConfig, mongoConfig, googleOauthConfig],
     }),
     MongooseModule.forRootAsync({
       useFactory: (config: MongoConfigType) => {

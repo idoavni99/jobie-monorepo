@@ -15,6 +15,13 @@ export class MilestoneService {
   async createMilestone(milestone: TMilestone): Promise<Milestone> {
     return this.milestoneRepository.create(milestone);
   }
+
+  async createMultipleMilestones(
+    milestones: TMilestone[]
+  ): Promise<Milestone[]> {
+    return this.milestoneRepository.createMany(milestones);
+  }
+
   async getMilestoneById(milestoneId: string): Promise<Milestone | undefined> {
     return this.milestoneRepository.findById(milestoneId);
   }
@@ -39,7 +46,7 @@ export class MilestoneService {
     userId: string,
     milestoneId: string,
     status: 'active' | 'summary' | 'completed'
-  ): Promise<any> {
+  ): Promise<void> {
     const roadmap = await this.roadmapRepository.findByUserId(userId);
     if (!roadmap) throw new NotFoundException('Roadmap not found');
 

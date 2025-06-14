@@ -65,7 +65,7 @@ export const Register = () => {
           name="fullName"
           rules={{
             required: true,
-            pattern: /^[A-Z][a-z]+(?:\s[A-Z][a-z]+)+$/,
+            minLength: 4,
           }}
           render={({ field, fieldState }) => (
             <TransparentTextField
@@ -88,7 +88,7 @@ export const Register = () => {
           rules={{
             required: true,
             pattern:
-              /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+              /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{6,}$/,
           }}
           render={({ field, fieldState }) => (
             <TransparentTextField

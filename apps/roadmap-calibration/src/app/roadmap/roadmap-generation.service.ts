@@ -1,14 +1,22 @@
-import { LinkedInProfile, LinkedinRepository } from '@jobie/linkedin';
+import {
+  LinkedInProfile,
+  LinkedinRepository,
+  SimilarProfile,
+} from '@jobie/linkedin/index';
 import { OpenAIRepository } from '@jobie/openai';
-import { CareerVector, RoadmapMilestone, TRoadmap } from '@jobie/roadmap/types';
-import { UsersRepository } from '@jobie/users/nestjs';
+import { CareerVector, RoadmapMilestone } from '@jobie/roadmap/types';
+import { User, UsersRepository } from '@jobie/users/nestjs';
 import { TUser } from '@jobie/users/types';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import fuzzball from 'fuzzball';
 import { randomUUID } from 'node:crypto';
+import { SuggestedRoadmap } from './types/suggested-roadmap.type';
 
 @Injectable()
 export class RoadmapGenerationService {
+  private suggestionsByUserId = new Map<string, SimilarProfile[]>();
+  private roadmapsByUserAndUrl = new Map<string, SuggestedRoadmap>();
+
   constructor(
     private readonly openAiRepository: OpenAIRepository,
     private readonly usersRepository: UsersRepository,
@@ -67,45 +75,73 @@ export class RoadmapGenerationService {
     };
   }
 
-  async getAspirationalUrlFromUser(
+  async getSimilarProfileDataFromUser(
     userId: string
-  ): Promise<string | undefined> {
-    const user = await this.usersRepository.findById(userId, {
+  ): Promise<Pick<User, 'goalJob' | 'aspirationalLinkedinUrl' | 'location'>> {
+    const payload = await this.usersRepository.findById(userId, {
       aspirationalLinkedinUrl: 1,
+      goalJob: 1,
+      location: 1,
     });
-    return user?.aspirationalLinkedinUrl ?? undefined;
+
+    if (!payload) throw new NotFoundException('User not found');
+
+    return payload;
   }
+  async suggestSimilarProfiles(userId: string, maxResults: number) {
+    if (this.suggestionsByUserId.has(userId))
+      return { profiles: this.suggestionsByUserId.get(userId) };
 
-  async suggestSimilarProfiles(targetUrl: string, maxResults: number) {
-    const targetProfile = await this.linkedinRepository.getUserProfile(
-      targetUrl
-    );
-    const similar = await this.linkedinRepository.getSimilarProfiles(
-      targetUrl,
-      maxResults
-    );
+    const { aspirationalLinkedinUrl, goalJob, location } =
+      await this.getSimilarProfileDataFromUser(userId);
+    const profiles =
+      (await this.linkedinRepository.getSimilarProfiles(
+        goalJob ?? '',
+        location ?? '',
+        aspirationalLinkedinUrl,
+        aspirationalLinkedinUrl ? maxResults : maxResults + 1
+      )) || [];
 
-    const parsedTarget = {
-      fullName: `${targetProfile.firstName ?? ''} ${
-        targetProfile.lastName ?? ''
-      }`.trim(),
-      headline: targetProfile.headline ?? '',
-      profileURL: targetUrl,
-      profilePicture: targetProfile.profilePicture ?? '',
-    };
+    if (aspirationalLinkedinUrl) {
+      const targetProfile = await this.linkedinRepository.getUserProfile(
+        aspirationalLinkedinUrl
+      );
+      const parsedTarget = {
+        fullName: `${targetProfile.firstName ?? ''} ${
+          targetProfile.lastName ?? ''
+        }`.trim(),
+        headline: targetProfile.headline ?? '',
+        profileURL: aspirationalLinkedinUrl,
+        profilePicture: targetProfile.profilePicture ?? '',
+      };
+
+      profiles.unshift(parsedTarget);
+    }
+
+    this.suggestionsByUserId.set(userId, profiles);
 
     return {
-      profiles: [parsedTarget, ...(similar ?? [])],
+      profiles,
     };
+  }
+
+  clearUserCache(userId: string) {
+    this.suggestionsByUserId.delete(userId);
+    for (const key in this.roadmapsByUserAndUrl.keys()) {
+      if (key.startsWith(userId)) {
+        this.roadmapsByUserAndUrl.delete(key);
+      }
+    }
   }
 
   async buildRoadmap(
     user: TUser,
     targetUrl: string
-  ): Promise<{
-    roadmap: Partial<TRoadmap>;
-    motivationLine?: string;
-  }> {
+  ): Promise<SuggestedRoadmap> {
+    if (this.roadmapsByUserAndUrl.has(`${user._id}-${targetUrl}`))
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return this.roadmapsByUserAndUrl.get(`${user._id}-${targetUrl}`)!;
+
     //not saving the roadmap here, so the milestones are created only after the approval of the roadmap
     if (!targetUrl) {
       console.warn(
@@ -224,7 +260,7 @@ export class RoadmapGenerationService {
       status: index < 3 ? 'active' : 'summary',
     }));
 
-    return {
+    const completeRoadmap = {
       roadmap: {
         userId: user._id,
         goalJob: user.goalJob ?? '',
@@ -233,69 +269,7 @@ export class RoadmapGenerationService {
       },
       motivationLine: motivation_line,
     };
+    this.roadmapsByUserAndUrl.set(`${user._id}-${targetUrl}`, completeRoadmap);
+    return completeRoadmap;
   }
-
-  //   async generateSummarizedRoadmap(userId: string): Promise<TRoadmap> {
-  //     const user = await this.usersRepository.findById(userId);
-  //     if (!user || !user.linkedinProfileUrl || !user.aspirationalLinkedinUrl) {
-  //       throw new NotFoundException('User or LinkedIn URLs not available');
-  //     }
-
-  //     const [userProfileRaw, targetProfileRaw] = await Promise.all([
-  //       this.linkedinRepository.getUserProfile(user.linkedinProfileUrl),
-  //       this.linkedinRepository.getUserProfile(user.aspirationalLinkedinUrl),
-  //     ]);
-
-  //     const userVector = this.buildCareerVector(userProfileRaw);
-  //     const targetVector = this.buildCareerVector(targetProfileRaw);
-  //     const gap = this.compareVectors(userVector, targetVector);
-
-  //     const prompt = `
-  // The user is currently working as "${userVector.headline
-  //       }" and aims to transition to "${targetVector.headline}".
-  // They are based in ${user.location} and have the following background: "${user.bio
-  //       }". Their career goal is: "${user.goalJob}".
-
-  // Currently, they possess these skills: ${userVector.skills.join(', ')}.
-  // Their unique skills compared to the target: ${gap.unique_skills.join(', ')}.
-  // However, they are missing the following skills to achieve their target: ${gap.missing_skills.join(
-  //         ', '
-  //       )}.
-
-  // Generate a summarized career roadmap to help them transition.
-  // Each milestone should have a short name (3–5 words max) and include a small list of skills
-  // (each skill should be recognizable by LinkedIn and industry-standard).
-
-  // Format response as JSON with:
-  // {
-  //   "roadmap_steps": [
-  //     { "milestoneName": "short name", "skills": ["skill1", "skill2"] },
-  //     ...
-  //   ]
-  // }
-  // `;
-  //     // generate roadmap steps using OpenAI
-
-  //     const response = await this.openAiRepository.requestPromptJSON<{
-  //       roadmap_steps: Partial<RoadmapMilestone>[];
-  //     }>('You are a career coach helping users plan career transitions', prompt);
-
-  //     const steps = response?.roadmap_steps ?? [];
-
-  //     // add IDs and status to each milestone
-
-  //     const milestones = steps.map((step, index) => ({
-  //       _id: crypto.randomUUID(),
-  //       milestoneName: step.milestoneName,
-  //       skills: step.skills ?? [],
-  //       status: index < 3 ? 'active' : 'summary',
-  //     })) as RoadmapMilestone[];
-
-  //     return {
-  //       userId,
-  //       goalJob: user.goalJob ?? '',
-  //       milestones,
-  //       isApproved: false,
-  //     };
-  //   }
 }

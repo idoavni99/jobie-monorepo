@@ -1,6 +1,6 @@
+import { GoogleGenAIOptions } from '@google/genai';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ClientOptions } from 'openai';
 import {
   OPENAI_PROVIDER_KEY,
   OpenAIConfig,
@@ -10,7 +10,7 @@ import { OpenAIRepository } from './openai.repository';
 
 @Module({})
 export class OpenAIModule {
-  static register(options: ClientOptions = {}): DynamicModule {
+  static register(options: GoogleGenAIOptions = {}): DynamicModule {
     return {
       module: OpenAIModule,
       imports: [ConfigModule.forFeature(openAIConfig)],
@@ -23,12 +23,7 @@ export class OpenAIModule {
           }),
           provide: 'GIVEN_OPENAI_CONFIG',
         },
-        {
-          provide: OpenAIRepository,
-          inject: [{ token: 'GIVEN_OPENAI_CONFIG', optional: false }],
-          useFactory: (config: ClientOptions) =>
-            new OpenAIRepository(config.apiKey as string, config),
-        },
+        OpenAIRepository,
       ],
       exports: [OpenAIRepository],
     };
