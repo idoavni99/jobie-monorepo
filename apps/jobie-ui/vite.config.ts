@@ -37,6 +37,10 @@ export default defineConfig({
       devOptions: {
         enabled: true,
       },
+      workbox: {
+        cleanupOutdatedCaches: true,
+        navigateFallbackDenylist: [/^api-gateway*/],
+      },
       includeAssets: ['favicon.ico', 'icons/apple-touch-icon-180x180.png'],
       manifest: {
         name: 'Jobie',
