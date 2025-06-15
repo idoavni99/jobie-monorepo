@@ -1,7 +1,9 @@
-import { TRoadmap } from '@jobie/roadmap/types';
-import { Box, Stack, Typography } from '@mui/material';
+import { SimilarProfile } from '@jobie/linkedin/types';
+import { RoadmapMilestone, TRoadmap } from '@jobie/roadmap/types';
+import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { milestoneMangementApi } from '../../api/milestone-management.api';
 import { roadmapCalibrationApi } from '../../api/roadmap-calibration.api';
 import { useAuthStore } from '../auth/store/auth.store';
 import { useIsMobile } from '../hooks/use-is-mobile';
@@ -13,110 +15,86 @@ import { UserProfileCard } from './components/UserProfileCard';
 export const AspirationsPage = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { user, refreshUserData } = useAuthStore(); // fallback to fetch from DB
-
-  // const { suggestions: navSuggestions, aspirationalLinkedinUrl: navUrl } = location.state || {};
+  const { user, refreshUserData } = useAuthStore();
 
   const [suggestions, setSuggestions] = useState([]);
-  const [aspirationalLinkedinUrl, setAspirationalLinkedinUrl] = useState<
-    string | undefined
-  >();
   const [loading, setLoading] = useState(false);
 
-  const [selectedProfile, setSelectedProfile] = useState<any>();
+  const [selectedProfile, setSelectedProfile] = useState<SimilarProfile>();
+  const [selectedRoadmap, setSelectedRoadmap] = useState<TRoadmap>();
   const [openRoadmapModal, setOpenRoadmapModal] = useState(false);
-  const [roadmapsCache, setRoadmapsCache] = useState<Record<string, TRoadmap>>(
-    {}
-  );
 
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [selectedTargetUrl, setSelectedTargetUrl] = useState<
     string | undefined
   >();
-  useEffect(() => {
-    const checkRoadmapExists = async () => {
-      try {
-        const { data } = await roadmapCalibrationApi.get('/');
-        if (data?.isApproved) {
-          navigate('/roadmap');
-        }
-      } catch (error) {
-        console.error('Error checking existing roadmap:', error);
-      }
-    };
-
-    checkRoadmapExists();
-  }, [navigate]);
 
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (user?.aspirationalLinkedinUrl) {
-        try {
-          setLoading(true);
-          const { data } = await roadmapCalibrationApi.post(
-            '/suggest-aspirations',
-            {
-              targetUrl: user.aspirationalLinkedinUrl,
-              maxResults: 4,
-            }
-          );
-          setSuggestions(Array.isArray(data?.profiles) ? data.profiles : []);
-          setAspirationalLinkedinUrl(user.aspirationalLinkedinUrl);
-        } catch (error) {
-          console.error('Fallback fetch failed:', error);
-        } finally {
-          setLoading(false);
-        }
+      try {
+        setLoading(true);
+        const { data } = await roadmapCalibrationApi.post(
+          '/suggest-aspirations',
+          {
+            maxResults: 4,
+          }
+        );
+        setSuggestions(Array.isArray(data?.profiles) ? data.profiles : []);
+      } catch (error) {
+        console.error('Fallback fetch failed:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchSuggestions();
   }, [user?.aspirationalLinkedinUrl]);
 
-  if (!suggestions || !aspirationalLinkedinUrl) {
-    return loading ? (
-      <Typography>Loading suggestions...</Typography>
-    ) : (
-      <Typography>Missing suggestions. Please restart setup.</Typography>
-    );
+  if (loading) {
+    return <CircularProgress />;
+  } else if (!suggestions?.length) {
+    return <Typography>Missing suggestions. Please restart setup.</Typography>;
   }
 
-  const handleViewRoadmap = (profile: any) => {
+  const handleViewRoadmap = (profile: SimilarProfile) => {
     setSelectedProfile(profile);
     setOpenRoadmapModal(true);
   };
 
-  const handleSelectRoadmap = () => {
-    if (selectedProfile) {
+  const handleSelectRoadmap = (selectedRoadmap?: TRoadmap) => {
+    if (selectedProfile && selectedRoadmap) {
       setSelectedTargetUrl(selectedProfile.profileURL);
+      setSelectedRoadmap(selectedRoadmap);
       setConfirmModalOpen(true);
     }
   };
 
   const handleConfirmSelection = async () => {
-    if (!selectedTargetUrl) return;
+    if (!selectedRoadmap) return;
 
-    const rawRoadmap = roadmapsCache[selectedTargetUrl];
-    if (!rawRoadmap || !Array.isArray(rawRoadmap.milestones)) {
-      console.error('No valid roadmap data found in cache for selected URL');
-      return;
-    }
     const fullRoadmap = {
       goalJob: selectedProfile?.headline || '',
-      milestones: rawRoadmap.milestones.map((m: any, index: number) => ({
-        /////changed this
-        _id: crypto.randomUUID(),
-        milestoneName: m.milestoneName,
-        skills: m.skills ?? [],
-        status: index < 3 ? 'active' : 'summary',
-      })),
+      milestones: selectedRoadmap.milestones.map(
+        (m: RoadmapMilestone, index: number) => ({
+          _id: crypto.randomUUID(),
+          milestoneName: m.milestoneName,
+          skills: m.skills ?? [],
+          status: index < 3 ? 'active' : 'summary',
+        })
+      ),
     };
 
     try {
-      await roadmapCalibrationApi.post('/select', {
-        roadmap: fullRoadmap,
-        aspirationalLinkedinUrl: selectedTargetUrl,
-      });
+      await Promise.all([
+        roadmapCalibrationApi.post('/select', {
+          roadmap: fullRoadmap,
+          aspirationalLinkedinUrl: selectedTargetUrl,
+        }),
+        milestoneMangementApi.post(
+          '/initial-generate',
+          fullRoadmap.milestones.slice(0, 3)
+        ),
+      ]);
 
       await refreshUserData();
 
@@ -151,7 +129,7 @@ export const AspirationsPage = () => {
         justifyContent="center"
       >
         {isMobile && <UserProfileCard />}
-        {suggestions.map((profile: any, index: number) => (
+        {suggestions.map((profile: SimilarProfile, index: number) => (
           <SuggestionCard
             key={index}
             profile={profile}
@@ -166,8 +144,6 @@ export const AspirationsPage = () => {
           open={openRoadmapModal}
           onClose={() => setOpenRoadmapModal(false)}
           profile={selectedProfile}
-          roadmapsCache={roadmapsCache}
-          setRoadmapsCache={setRoadmapsCache}
           onSelect={handleSelectRoadmap}
         />
       )}

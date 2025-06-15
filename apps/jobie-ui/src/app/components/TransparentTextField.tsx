@@ -6,11 +6,8 @@ export const TransparentTextField = styled(TextField)(() => ({
     color: '#ffffff',
   },
   '& .MuiInputLabel-root': {
-    color: 'rgba(255,255,255,0.6)',
+    color: 'rgb(29, 46, 105)',
     fontSize: '0.875rem',
-  },
-  '& .MuiInputLabel-root.Mui-focused': {
-    color: 'rgb(60, 81, 156)',
   },
   '& .MuiOutlinedInput-notchedOutline': {
     borderColor: 'rgba(255,255,255,0.2)',

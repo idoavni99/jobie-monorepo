@@ -23,7 +23,6 @@ export const SetupProfile = () => {
       location: '',
       goalJob: '',
       linkedinProfileUrl: '',
-      aspirationalLinkedinUrl: '',
     },
   });
 
@@ -61,7 +60,7 @@ export const SetupProfile = () => {
           render={({ field, fieldState }) => (
             <TransparentTextField
               {...field}
-              label="Goal Job or Specialty"
+              label="Goal Job or Specialty (*)"
               placeholder="e.g. Software Engineer"
               error={fieldState.invalid}
               helperText={fieldState.error && 'Required field'}
@@ -81,7 +80,7 @@ export const SetupProfile = () => {
           render={({ field, fieldState }) => (
             <TransparentTextField
               {...field}
-              label="LinkedIn Profile"
+              label="LinkedIn Profile (*)"
               placeholder="Paste your LinkedIn URL"
               error={fieldState.invalid}
               helperText={
@@ -99,7 +98,7 @@ export const SetupProfile = () => {
           render={({ field, fieldState }) => (
             <TransparentTextField
               {...field}
-              label="Location"
+              label="Location (*)"
               placeholder="e.g. Tel Aviv"
               error={fieldState.invalid}
               helperText={fieldState.error && 'Required field'}
@@ -115,7 +114,7 @@ export const SetupProfile = () => {
           render={({ field, fieldState }) => (
             <TransparentTextField
               {...field}
-              label="Education"
+              label="Education (*)"
               placeholder="e.g. BSc in Computer Science"
               error={fieldState.invalid}
               helperText={fieldState.error && 'Required field'}
@@ -131,7 +130,7 @@ export const SetupProfile = () => {
           render={({ field, fieldState }) => (
             <TransparentTextField
               {...field}
-              label="About You"
+              label="About You (*)"
               placeholder="Tell us something short (max 150 chars)"
               error={fieldState.invalid}
               helperText={
@@ -153,7 +152,7 @@ export const SetupProfile = () => {
           control={control}
           name="aspirationalLinkedinUrl"
           rules={{
-            required: true,
+            required: false,
             pattern:
               /^https?:\/\/(www\.)?linkedin\.com\/(in|pub)\/[a-zA-Z0-9-_%]+\/?$/,
           }}
