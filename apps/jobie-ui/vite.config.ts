@@ -38,8 +38,37 @@ export default defineConfig({
         enabled: true,
       },
       workbox: {
-        cleanupOutdatedCaches: true,
-        navigateFallbackDenylist: [/^api-gateway*/],
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/api-gateway'),
+            handler: 'NetworkOnly',
+            options: {
+              cacheName: 'api-gateway-bypass',
+            },
+          },
+          {
+            urlPattern: /\.(?:png|gif|jpg|jpeg|svg|webp|ico)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+              },
+            },
+          },
+          {
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-assets',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 7 * 24 * 60 * 60,
+              },
+            },
+          },
+        ],
       },
       includeAssets: ['favicon.ico', 'icons/apple-touch-icon-180x180.png'],
       manifest: {
