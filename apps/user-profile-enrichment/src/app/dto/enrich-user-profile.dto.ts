@@ -1,7 +1,7 @@
 import { EnrichedProfileData } from '@jobie/users/types';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsString, IsUrl, MaxLength } from 'class-validator';
+import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 export class EnrichUserProfileDto
   implements
     Omit<
@@ -60,10 +60,10 @@ export class EnrichUserProfileDto
   @ApiProperty({
     name: 'aspirationalLinkedinUrl',
     type: String,
-    required: true,
   })
   @Expose()
   @IsUrl()
+  @IsOptional()
   @MaxLength(150)
-  aspirationalLinkedinUrl: string;
+  aspirationalLinkedinUrl?: string;
 }

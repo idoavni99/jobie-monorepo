@@ -1,4 +1,4 @@
-import { LinkedinRepository } from '@jobie/linkedin';
+import { LinkedinRepository } from '@jobie/linkedin/linkedin.repository';
 import { UsersRepository } from '@jobie/users/nestjs';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EnrichUserProfileDto } from '../dto/enrich-user-profile.dto';

@@ -8,7 +8,7 @@ const getRoutePathByUserState = (userState: TUser | undefined) => {
   if (!userState) return RoutesPaths.LOGIN;
 
   const { isProfileSetUp, isRoadmapGenerated } = userState;
-
+  console.log({ isProfileSetUp, isRoadmapGenerated });
   if (!isProfileSetUp && !isRoadmapGenerated) {
     return RoutesPaths.SETUP_PROFILE;
   }

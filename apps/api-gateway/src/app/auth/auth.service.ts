@@ -24,7 +24,7 @@ export class AuthService {
     private readonly usersRepository: UsersRepository,
     @Inject(authConfigKey) private readonly authConfig: AuthConfigType,
     @Inject(commonConfigKey) private readonly commonConfig: CommonConfigType
-  ) { }
+  ) {}
   async getMyIdentity(accessToken: string) {
     const user = await this.parseAccessToken(accessToken);
 
@@ -103,6 +103,19 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException('Refresh Token missing');
     }
+  }
+
+  async loginExternal(externalUser: CreateUserDto) {
+    const user = await this.usersRepository.findByEmail(externalUser.email);
+    if (user) {
+      const [accessToken, refreshToken] = await Promise.all([
+        this.signAccessToken(user),
+        this.signRefreshToken(user),
+      ]);
+      return { ...user, accessToken, refreshToken };
+    }
+
+    return this.register(externalUser);
   }
 
   private async signAccessToken(user: UserEntity) {

@@ -15,6 +15,12 @@ export class MilestoneRepository {
     const createdMilestone = await this.milestoneModel.create(milestone);
     return createdMilestone?.toObject();
   }
+
+  async createMany(milestones: TMilestone[]): Promise<Milestone[]> {
+    const createdMilestones = await this.milestoneModel.insertMany(milestones);
+    return createdMilestones.map((milestone) => milestone.toObject());
+  }
+
   async findById(milestoneId: string): Promise<Milestone | undefined> {
     const milestone = await this.milestoneModel.findById(milestoneId);
     return milestone?.toObject();

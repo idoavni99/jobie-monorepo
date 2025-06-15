@@ -1,3 +1,4 @@
+import { AuthorizedRequest } from '@jobie/auth-core';
 import { CreateUserDto } from '@jobie/users/nestjs';
 import {
   Body,
@@ -5,22 +6,31 @@ import {
   Get,
   HttpStatus,
   Inject,
+  NotFoundException,
   Post,
   Req,
   Res,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { AuthConfigType, authConfigKey } from '../../config/auth.config';
+import { authConfigKey, AuthConfigType } from '../../config/auth.config';
+import {
+  googleOauthConfigKey,
+  GoogleOauthConfigType,
+} from '../../config/google.config';
 import { AuthService } from './auth.service';
 import { LoginPayloadDto } from './dtos/login.payload.dto';
+import { GoogleAuthGuard } from './google/google-auth.guard';
 
 @Controller('auth')
 export class AuthController {
   private isProduction = process.env.NODE_ENV === 'production';
   constructor(
     private readonly authService: AuthService,
-    @Inject(authConfigKey) private readonly authConfig: AuthConfigType
+    @Inject(authConfigKey) private readonly authConfig: AuthConfigType,
+    @Inject(googleOauthConfigKey)
+    private readonly googleConfig: GoogleOauthConfigType
   ) {}
 
   @Get('me')
@@ -41,6 +51,33 @@ export class AuthController {
       this.setTokenCookies(response, accessToken, signedCookies.refreshToken);
       return this.authService.getMyIdentity(accessToken);
     }
+  }
+
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  googleAuthRedirect() {
+    return;
+  }
+
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  async authenticateGoogleUser(
+    @Req() request: AuthorizedRequest,
+    @Res() response: Response
+  ) {
+    console.log(request.user);
+    if (request.user) {
+      const { accessToken, refreshToken } =
+        await this.authService.loginExternal(
+          request.user as unknown as CreateUserDto
+        );
+      this.setTokenCookies(response, accessToken, refreshToken);
+      return response.redirect(
+        new URL(this.googleConfig.callbackEndpoint).origin
+      );
+    }
+
+    throw new NotFoundException('');
   }
 
   @Post('logout')

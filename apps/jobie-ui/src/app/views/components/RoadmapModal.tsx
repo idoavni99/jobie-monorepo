@@ -1,3 +1,4 @@
+import { type SimilarProfile } from '@jobie/linkedin/types';
 import { RoadmapMilestone, TRoadmap } from '@jobie/roadmap/types';
 import {
   Box,
@@ -13,36 +14,23 @@ import { roadmapCalibrationApi } from '../../../api/roadmap-calibration.api';
 type RoadmapModalProperties = {
   open: boolean;
   onClose: () => void;
-  profile: any; // one suggestion
-  roadmapsCache: Record<string, TRoadmap>;
-  setRoadmapsCache: (cache: Record<string, TRoadmap>) => void;
-  onSelect: () => void;
+  profile: SimilarProfile; // one suggestion
+  onSelect: (selectedRoadmap?: TRoadmap) => void;
 };
 
 export const RoadmapModal = ({
   open,
   onClose,
   profile,
-  roadmapsCache,
-  setRoadmapsCache,
   onSelect,
 }: RoadmapModalProperties) => {
   const [loading, setLoading] = useState(false);
-  const [milestones, setMilestones] = useState<
-    RoadmapMilestone[] | undefined
-  >();
-  const [motivationLine, setMotivationLine] = useState<string | undefined>();
+  const [motivationLine, setMotivationLine] = useState<string>();
+  const [roadmap, setRoadmap] = useState<TRoadmap>();
 
   useEffect(() => {
     const loadRoadmap = async () => {
       if (!profile) return;
-
-      const cached = roadmapsCache[profile.profileURL];
-      if (cached) {
-        setMilestones(cached.milestones);
-        setMotivationLine(cached.motivationLine);
-        return;
-      }
 
       try {
         setLoading(true);
@@ -53,24 +41,18 @@ export const RoadmapModal = ({
           }
         );
 
-        const normalized = (data.roadmap?.milestones ?? []).map((m: any) => ({
-          _id: crypto.randomUUID(),
-          milestoneName: m.milestoneName,
-          skills: m.skills ?? [],
-          status: 'summary',
-        }));
+        const normalized = (data.roadmap?.milestones ?? []).map(
+          (m: Omit<RoadmapMilestone, '_id' | 'status'>) => ({
+            _id: crypto.randomUUID(),
+            milestoneName: m.milestoneName,
+            skills: m.skills ?? [],
+            status: 'summary',
+          })
+        );
 
         const motivation = data.motivationLine;
-
         setMotivationLine(motivation);
-        setMilestones(normalized);
-        setRoadmapsCache({
-          ...roadmapsCache,
-          [profile.profileURL]: {
-            milestones: normalized,
-            motivationLine: motivation,
-          },
-        });
+        setRoadmap({ ...data, milestones: normalized });
       } catch (error) {
         console.error('Failed to load roadmap', error);
       } finally {
@@ -81,7 +63,7 @@ export const RoadmapModal = ({
     if (open) {
       loadRoadmap();
     }
-  }, [open, profile, roadmapsCache, setRoadmapsCache]);
+  }, [open, profile]);
 
   if (!profile) return;
 
@@ -130,7 +112,7 @@ export const RoadmapModal = ({
               </Typography>
             )}
 
-            {milestones?.map((step, index) => (
+            {roadmap?.milestones?.map((step, index) => (
               <Box
                 key={index}
                 p={2}
@@ -159,7 +141,7 @@ export const RoadmapModal = ({
               backgroundColor: '#000',
             },
           }}
-          onClick={onSelect}
+          onClick={() => onSelect(roadmap)}
         >
           Select This Roadmap
         </Button>
