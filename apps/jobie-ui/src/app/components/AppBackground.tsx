@@ -10,7 +10,6 @@ export const AppBackground = styled(Box)(() => ({
   width: '100vw',
   background: GRADIENT,
   animation: `smoothGradientFlow 18s ease-in-out infinite`,
-  px: 2,
   '@keyframes smoothGradientFlow': {
     '0%': {
       backgroundPosition: '0% 50%',

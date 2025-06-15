@@ -19,7 +19,7 @@ const MilestoneStepItem = memo(
     }, [milestoneId, step._id, step.completed, toggleStep]);
 
     const urlMatch = step.step.match(/(https?:\/\/[^\s]+)$/);
-    const url = urlMatch ? urlMatch[1] : '';
+    const url = urlMatch ? urlMatch[1] ?? urlMatch[0] : '';
     const description = step.step.replace(url, '').trim();
 
     return (

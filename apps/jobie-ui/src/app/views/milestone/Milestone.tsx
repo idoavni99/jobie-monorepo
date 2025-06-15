@@ -50,15 +50,17 @@ export const Milestone = () => {
   };
 
   return (
-    <Box width="100%">
+    <Box width="100%" maxHeight="80dvh">
       <Typography variant="h4" mb={4} fontWeight="bold" textAlign="center">
         Milestone Details
       </Typography>
 
       {milestone ? (
         <Box
-          maxWidth={isMobile ? 300 : 700}
           sx={{
+            maxWidth: isMobile ? 300 : 700,
+            overflow: 'auto',
+            maxHeight: '80dvh',
             animation: `${fadeInUp} 0.6s ease-out`,
             animationFillMode: 'forwards',
             opacity: 0,
