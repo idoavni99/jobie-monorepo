@@ -38,6 +38,7 @@ export default defineConfig({
         enabled: true,
       },
       workbox: {
+        navigateFallbackDenylist: [/^\/api-gateway\/.*/],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.startsWith('/api-gateway'),
