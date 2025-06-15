@@ -1,19 +1,25 @@
 import { LinkedInProfile, LinkedinRepository } from '@jobie/linkedin';
 import { OpenAIRepository } from '@jobie/openai';
+//import { Roadmap } from '@jobie/roadmap/nestjs/roadmap.schema';
+import { Roadmap, RoadmapService } from '@jobie/roadmap/nestjs';
+import { HttpService } from '@nestjs/axios';
 import { CareerVector, RoadmapMilestone, TRoadmap } from '@jobie/roadmap/types';
 import { UsersRepository } from '@jobie/users/nestjs';
 import { TUser } from '@jobie/users/types';
 import { Injectable } from '@nestjs/common';
 import fuzzball from 'fuzzball';
 import { randomUUID } from 'node:crypto';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class RoadmapGenerationService {
   constructor(
     private readonly openAiRepository: OpenAIRepository,
     private readonly usersRepository: UsersRepository,
-    private readonly linkedinRepository: LinkedinRepository
-  ) {}
+    private readonly linkedinRepository: LinkedinRepository,
+    private readonly roadmapService: RoadmapService,
+    private readonly httpService: HttpService
+  ) { }
 
   private buildCareerVector(profile: LinkedInProfile): CareerVector {
     return {
@@ -86,9 +92,8 @@ export class RoadmapGenerationService {
     );
 
     const parsedTarget = {
-      fullName: `${targetProfile.firstName ?? ''} ${
-        targetProfile.lastName ?? ''
-      }`.trim(),
+      fullName: `${targetProfile.firstName ?? ''} ${targetProfile.lastName ?? ''
+        }`.trim(),
       headline: targetProfile.headline ?? '',
       profileURL: targetUrl,
       profilePicture: targetProfile.profilePicture ?? '',
@@ -99,6 +104,33 @@ export class RoadmapGenerationService {
     };
   }
 
+
+  async regenerateRoadmap(roadmap: Roadmap, user: TUser): Promise<Roadmap> {
+    // check if14 days passed since  last update.
+    const updateAt = new Date(roadmap.updatedAt);
+    const now = new Date();
+    const diffInDays = Math.floor(
+      (now.getTime() - updateAt.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (diffInDays > 14 && user.aspirationalLinkedinUrl) {
+
+      
+        const regeneratedRoadmap = await this.buildRoadmap(user, user.aspirationalLinkedinUrl);
+        regeneratedRoadmap.roadmap.userId = user._id;
+        console.log('regenerating', regeneratedRoadmap.roadmap);
+        
+        const savedRoadmap = await this.roadmapService.insertRoadmap(regeneratedRoadmap.roadmap as TRoadmap);
+
+        const initialMilestones = savedRoadmap.milestones.slice(0, 3);
+        await firstValueFrom(
+          this.httpService.post('/initialGenerate', initialMilestones)
+        );
+        return savedRoadmap;
+     
+    }
+    
+    throw new Error("cannot generate roadmap before 14 daysafter last ")
+  }
   async buildRoadmap(
     user: TUser,
     targetUrl: string
@@ -170,19 +202,17 @@ export class RoadmapGenerationService {
       .join('; ');
 
     const prompt = `
-  The user is currently working as "${
-    userVector.headline
-  }" and aims to transition to "${targetVector.headline}".
-  They are based in ${user.location} and have the following background: "${
-      user.bio
-    }".
+  The user is currently working as "${userVector.headline
+      }" and aims to transition to "${targetVector.headline}".
+  They are based in ${user.location} and have the following background: "${user.bio
+      }".
   Their career goal is: "${user.goalJob}".
   
   Currently, they possess these skills: ${userVector.skills.join(', ')}.
   Their unique skills compared to the target: ${gap.unique_skills.join(', ')}.
   However, they are missing the following skills to achieve their target: ${gap.missing_skills.join(
-    ', '
-  )}.
+        ', '
+      )}.
   
   The user has the following education: ${userEducationText} ${user.education}.
   The target profile has the following education: ${targetEducationText}.
@@ -234,6 +264,7 @@ export class RoadmapGenerationService {
       motivationLine: motivation_line,
     };
   }
+
 
   //   async generateSummarizedRoadmap(userId: string): Promise<TRoadmap> {
   //     const user = await this.usersRepository.findById(userId);

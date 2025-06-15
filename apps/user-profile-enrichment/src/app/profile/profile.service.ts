@@ -61,7 +61,10 @@ export class ProfileService {
       );
     }
   }
-  updateEnrichUserProfile(userId: string, data: EnrichUserProfileUpdateDto) {
+  async updateEnrichUserProfile(userId: string, data: EnrichUserProfileUpdateDto) {
     return this.usersRepository.update(userId, data);
   }
 }
+
+
+

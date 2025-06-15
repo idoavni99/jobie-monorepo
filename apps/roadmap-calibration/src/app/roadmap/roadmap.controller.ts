@@ -15,7 +15,7 @@ export class RoadmapController {
     private readonly roadmapService: RoadmapService,
     private readonly usersRepository: UsersRepository,
     private readonly httpService: HttpService
-  ) {}
+  ) { }
 
   @Post('suggest-aspirations')
   async suggest(
@@ -56,6 +56,7 @@ export class RoadmapController {
   ): Promise<{ roadmap: Partial<Roadmap>; motivationLine?: string }> {
     return this.roadmapGenerationService.buildRoadmap(user, targetUrl);
   }
+
 
   @Post('select')
   async select(
@@ -98,5 +99,23 @@ export class RoadmapController {
       this.logger.error('[GET /roadmap] Error:', error);
       throw error;
     }
+  }
+
+  @Post('regenerate')
+  async regenerateRoadmap(@AuthUser() user: TUser,): Promise<Roadmap | null> {
+    try {
+      const roadmap = await this.roadmapService.getRoadmapByUserId(user._id);
+      if (!roadmap) {
+        throw new Error("Roadmap not found for user");
+      }
+      const regeneratedRoadmap = await this.roadmapGenerationService.regenerateRoadmap(roadmap, user);
+      return regeneratedRoadmap;
+
+    } catch (error) {
+      this.logger.error('[GET /roadmap] Error:', error);
+      throw error;
+    }
+
+
   }
 }

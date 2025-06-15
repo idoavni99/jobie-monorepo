@@ -56,6 +56,9 @@ export const useAuthStore = create<AuthState>()(
       },
       updateProfile: async (updateData: EnrichedProfileUpdateData) => {
         const response = await profileEnrichmentApi.put<TUser>("/", updateData);
+        // TODO call roadmap-callibration / regenerate
+        // retrieve the user since TUser is like ansi-c union
+        await roadmapCalibrationApi.post('/regenerate', updateData);
         const updatedData = response.data;
        set({user:updatedData})
 

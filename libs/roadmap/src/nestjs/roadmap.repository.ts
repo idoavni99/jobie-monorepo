@@ -26,6 +26,12 @@ export class RoadmapRepository {
       .exec();
     return updatedRoadmap?.toObject();
   }
+ async insert(roadmap: TRoadmap): Promise<Roadmap> {
+  console.log('roadmap',roadmap);
+  
+    const createdRoadmap = await this.roadmapModel.create({roadmap, _id:randomUUID(), userId: roadmap.userId });
+    return createdRoadmap?.toObject();
+  }
 
   async findByUserId(userId: string): Promise<Roadmap | null> {
     return this.roadmapModel.findOne({ userId }).exec();
