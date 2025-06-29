@@ -55,6 +55,15 @@ export const useAuthStore = create<AuthState>()(
 
       },
       updateProfile: async (updateData: EnrichedProfileUpdateData) => {
+        const previousProfile = useAuthStore.getState().user;
+        if (!previousProfile) {
+          throw new Error('User profile not found');
+        }
+        if(previousProfile.goalJob !== updateData.goalJob ) {
+          updateData.goalJob = ""
+        }
+
+
         const response = await profileEnrichmentApi.put<TUser>("/", updateData);
         // TODO call roadmap-callibration / regenerate
         // retrieve the user since TUser is like ansi-c union
