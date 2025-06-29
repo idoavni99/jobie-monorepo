@@ -84,7 +84,7 @@ export class RoadmapController {
 
   @Post('regenerate')
   async regenerateRoadmap(@AuthUser() user: TUser,): Promise<Roadmap | null> {
-    try {
+    try { // Req. 5.1
       const roadmap = await this.roadmapService.getRoadmapByUserId(user._id);
       if (!roadmap) {
         throw new Error("Roadmap not found for user");

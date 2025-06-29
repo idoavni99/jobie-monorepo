@@ -147,9 +147,9 @@ export class RoadmapGenerationService {
     const diffInDays = Math.floor(
       (now.getTime() - updateAt.getTime()) / (1000 * 60 * 60 * 24)
     );
-    if (diffInDays > 14 && user.aspirationalLinkedinUrl) {
+    if (diffInDays > 14 && user.aspirationalLinkedinUrl) {  // Req. 2
 
-      
+      // Req. 5.2 generate new roadmap with existing roadmap.milestones using add-google-integrations
         const regeneratedRoadmap = await this.buildRoadmap(user, user.aspirationalLinkedinUrl);
         regeneratedRoadmap.roadmap.userId = user._id;
         console.log('regenerating', regeneratedRoadmap.roadmap);
