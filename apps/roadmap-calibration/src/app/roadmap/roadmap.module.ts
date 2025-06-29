@@ -1,4 +1,4 @@
-import { LinkedinModule } from '@jobie/linkedin';
+import { LinkedinModule } from '@jobie/linkedin/index';
 import { OpenAIModule } from '@jobie/openai';
 import { RoadmapModule } from '@jobie/roadmap/nestjs';
 import { HttpModule } from '@nestjs/axios';
@@ -22,4 +22,4 @@ import { RoadmapController } from './roadmap.controller';
   controllers: [RoadmapController],
   providers: [RoadmapGenerationService],
 })
-export class RoadmapCalibrationModule { }
+export class RoadmapCalibrationModule {}

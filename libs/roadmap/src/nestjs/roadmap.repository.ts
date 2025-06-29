@@ -13,13 +13,12 @@ export class RoadmapRepository {
   ) {}
 
   async create(roadmap: TRoadmap): Promise<Roadmap> {
-    const createdRoadmap = await this.roadmapModel.findOneAndUpdate(
-      { userId: roadmap.userId },
-      { $set: Object.assign(roadmap, { _id: randomUUID() }) },
-      { upsert: true, new: true }
+    const createdRoadmap = await this.roadmapModel.create(
+      Object.assign(roadmap, { _id: randomUUID() })
     );
     return createdRoadmap?.toObject();
   }
+
   async save(roadmap: Roadmap): Promise<Roadmap | undefined> {
     const updatedRoadmap = await this.roadmapModel
       .findOneAndUpdate({ userId: roadmap.userId }, roadmap, { new: true })

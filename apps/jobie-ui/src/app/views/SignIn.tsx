@@ -1,14 +1,9 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Button, CircularProgress, Stack, Typography } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../auth/store/auth.store';
 import { GlassCard } from '../components/GlassCard';
+import { GoogleAuthButton } from '../components/google/GoogleAuthButton';
 import { TransparentTextField } from '../components/TransparentTextField';
 import { RoutesPaths } from '../enums/routes.enum';
 export const SignIn = () => {
@@ -77,7 +72,12 @@ export const SignIn = () => {
           )}
         />
 
-        <Box width="62%">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          height={56}
+          gap={3}
+        >
           <Button
             type="submit"
             fullWidth
@@ -89,7 +89,8 @@ export const SignIn = () => {
           >
             {formState.isLoading ? <CircularProgress size={20} /> : 'Sign In'}
           </Button>
-        </Box>
+          <GoogleAuthButton />
+        </Stack>
 
         <Stack
           direction="row"

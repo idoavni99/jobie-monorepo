@@ -1,10 +1,10 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { LinkedInProfile } from './types';
+import { firstValueFrom } from 'rxjs';
+import { LinkedInProfile, SimilarProfile } from './types';
 
 @Injectable()
 export class LinkedinRepository {
-  private profileCache = new Map<string, LinkedInProfile>();
   private logger = new Logger(LinkedinRepository.constructor.name);
 
   constructor(private readonly httpService: HttpService) {
@@ -31,12 +31,6 @@ export class LinkedinRepository {
   async getUserProfile(
     url: string
   ): Promise<LinkedInProfile & { profilePicture: string }> {
-    if (this.profileCache.has(url)) {
-      return this.profileCache.get(url) as LinkedInProfile & {
-        profilePicture: string;
-      };
-    }
-
     const response = await this.httpService.axiosRef.get<LinkedInProfile>(
       '/get-profile-data-by-url',
       { params: { url } }
@@ -50,27 +44,84 @@ export class LinkedinRepository {
       profilePicture,
     };
 
-    this.profileCache.set(url, result);
     return result;
   }
 
-  async getSimilarProfiles(linkedinUrl: string, max = 4) {
+  async getSimilarProfiles(
+    goalJob: string,
+    location: string,
+    linkedinUrl?: string,
+    max = 4
+  ) {
+    const items = linkedinUrl
+      ? await this.getSimilarProfilesByUrl(linkedinUrl)
+      : await this.getSimilarProfilesByGoalJob(goalJob, location);
+
+    if (!items) throw new NotFoundException('Data not found');
+
+    return items.slice(0, max).map((it) => ({
+      fullName:
+        'fullName' in it
+          ? it.fullName
+          : `${it.firstName ?? ''} ${it.lastName ?? ''}`.trim(),
+      headline: it.headline,
+      profileURL:
+        'profileURL' in it
+          ? it.profileURL
+          : `https://www.linkedin.com/in/${it.username ?? ''}`,
+      profilePicture:
+        'profilePicture' in it
+          ? it.profilePicture
+          : this.pickMedium(it.profilePictures),
+    }));
+  }
+
+  private async getSimilarProfilesByUrl(url: string) {
     const {
       data: {
         data: { items },
       },
     } = await this.httpService.axiosRef.get<{
-      data: { items: any[] };
-    }>('/similar-profiles', { params: { url: linkedinUrl } });
+      data: {
+        items: (Pick<SimilarProfile, 'headline'> & {
+          username: string;
+          firstName: string;
+          lastName: string;
+          profilePictures: { url: string; width: number; height: number }[];
+        })[];
+      };
+    }>('/similar-profiles', { params: { url } });
 
-    if (!items) throw new NotFoundException('Data not found');
+    return items;
+  }
 
-    return items.slice(0, max).map((it) => ({
-      fullName: `${it.firstName ?? ''} ${it.lastName ?? ''}`.trim(),
-      username: it.username ?? '',
-      headline: it.headline ?? '',
-      profileURL: `https://www.linkedin.com/in/${it.username ?? ''}`,
-      profilePicture: this.pickMedium(it.profilePictures),
-    }));
+  private async getSimilarProfilesByGoalJob(goalJob: string, location: string) {
+    const geoId = await this.getGeoIdByLocation(location);
+    const { data } = await this.httpService.axiosRef.get<{
+      data: { items: SimilarProfile[] };
+    }>('/search-people', {
+      params: { keywords: goalJob, geo: geoId, start: 0 },
+    });
+
+    const results = data.data.items;
+    if (results.length < 5) {
+      const extraSuggestions = await this.getSimilarProfilesByUrl(
+        results[0].profileURL
+      );
+      return [...results, ...extraSuggestions.slice(0, 5 - results.length)];
+    }
+
+    return results;
+  }
+
+  private async getGeoIdByLocation(location: string) {
+    const { data } = await firstValueFrom(
+      this.httpService.get<{ data: { items: { id: string }[] } }>(
+        '/search-locations',
+        { params: { keyword: location } }
+      )
+    );
+
+    return data.data.items?.map(({ id }) => id.split(':').pop())?.join(',');
   }
 }

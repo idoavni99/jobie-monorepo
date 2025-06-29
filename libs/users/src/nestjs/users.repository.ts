@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DeleteResult, Model } from 'mongoose';
+import { DeleteResult, Model, ProjectionType } from 'mongoose';
 import { randomUUID } from 'node:crypto';
-import { CreateUserDto, User } from './users.schema';
+import { CreateUserDto, User, UserEntity } from './users.schema';
 
 @Injectable()
 export class UsersRepository {
@@ -14,7 +14,7 @@ export class UsersRepository {
 
   async findById(
     id: string,
-    projection: Record<string, any> = {}
+    projection?: ProjectionType<UserEntity>
   ): Promise<User | undefined> {
     const user = await this.model.findById(id, projection).exec();
     return user?.toObject();

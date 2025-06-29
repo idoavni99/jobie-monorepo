@@ -35,8 +35,7 @@ export class User implements UserEntity {
           this.education &&
           this.location &&
           this.bio &&
-          this.linkedinProfileUrl &&
-          this.aspirationalLinkedinUrl
+          this.linkedinProfileUrl
       );
     },
   })

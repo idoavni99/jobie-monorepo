@@ -4,7 +4,6 @@ import { UsersRepository } from '@jobie/users/nestjs';
 import { TUser } from '@jobie/users/types';
 import { HttpService } from '@nestjs/axios';
 import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
-import { firstValueFrom } from 'rxjs';
 import { SuggestAspirationsDto } from './dto';
 import { RoadmapGenerationService } from './roadmap-generation.service';
 @Controller()
@@ -20,31 +19,17 @@ export class RoadmapController {
   @Post('suggest-aspirations')
   async suggest(
     @AuthUser() user: TUser,
-    @Body() { targetUrl, maxResults = 4 }: SuggestAspirationsDto
+    @Body() { maxResults = 4 }: SuggestAspirationsDto
   ) {
-    // fallback to DB if targetUrl is not in request
-    const finalUrl =
-      targetUrl?.trim() ||
-      (await this.roadmapGenerationService.getAspirationalUrlFromUser(
-        user._id
-      ));
-
-    if (!finalUrl) {
-      this.logger.warn(
-        '[POST /suggest-aspirations] No targetUrl in body or DB'
-      );
-      throw new Error('targetUrl is required');
-    }
-
     try {
       const suggestions =
         await this.roadmapGenerationService.suggestSimilarProfiles(
-          finalUrl,
+          user._id,
           maxResults
         );
       return suggestions;
     } catch (error) {
-      this.logger.error('[POST /suggest-aspirations] Error:', error);
+      this.logger.error(error);
       throw error;
     }
   }
@@ -72,11 +57,7 @@ export class RoadmapController {
         isApproved: true,
       });
 
-      //Generate milestones after saving the roadmap
-      const initialMilestones = savedRoadmap.milestones.slice(0, 3);
-      await firstValueFrom(
-        this.httpService.post('/initialGenerate', initialMilestones)
-      );
+      this.roadmapGenerationService.clearUserCache(user._id);
 
       await this.usersRepository.update(user._id, {
         aspirationalLinkedinUrl: body.aspirationalLinkedinUrl,
