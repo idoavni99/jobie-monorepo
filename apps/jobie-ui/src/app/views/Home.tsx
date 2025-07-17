@@ -1,5 +1,4 @@
 import { Button, Stack, Typography } from '@mui/material';
-import { use } from 'react';
 import { useAuthStore } from '../auth/store/auth.store';
 import { useNavigate } from 'react-router-dom';
 import { RoutesPaths } from '../enums/routes.enum';
