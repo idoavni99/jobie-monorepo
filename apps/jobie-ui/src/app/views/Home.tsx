@@ -41,6 +41,9 @@ export const HomeScreen = () => {
       <Button variant="contained" onClick={onDeleteUser}>
         Delete account
       </Button>
+      <Button variant="contained" onClick={() => navigate(RoutesPaths.ASPIRATIONS)}>
+         aspiration
+      </Button>
     </Stack>
   );
 };

@@ -39,7 +39,12 @@ export const EditProfile = () => {
     }
 
     await updateProfile(data);
-    navigate(RoutesPaths.HOME);
+    const state = useAuthStore.getState();
+    if(state.success){
+      navigate(RoutesPaths.ASPIRATIONS);
+    }else{
+      alert(state.message);
+    }
   }
   const navigateHome = () => {
     navigate(RoutesPaths.HOME);

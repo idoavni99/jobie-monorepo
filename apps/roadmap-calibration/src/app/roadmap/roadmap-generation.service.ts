@@ -7,8 +7,8 @@ import { OpenAIRepository } from '@jobie/openai';
 import { CareerVector, RoadmapMilestone, TRoadmap } from '@jobie/roadmap/types';
 import { Roadmap, RoadmapService } from '@jobie/roadmap/nestjs';
 import { User, UsersRepository } from '@jobie/users/nestjs';
-import { TUser } from '@jobie/users/types';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { EnrichedProfileUpdateData, TUser } from '@jobie/users/types';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import fuzzball from 'fuzzball';
 import { firstValueFrom } from 'rxjs';
 import { randomUUID } from 'node:crypto';
@@ -140,32 +140,86 @@ export class RoadmapGenerationService {
   }
 
 
-  async regenerateRoadmap(roadmap: Roadmap, user: TUser): Promise<Roadmap> {
+  async regenerateRoadmap(roadmap: Roadmap, user: TUser, enrichedProfile: EnrichedProfileUpdateData): Promise<{roadmap:Roadmap, completedSkills:string[]}> {
     // check if14 days passed since  last update.
     const updateAt = new Date(roadmap.updatedAt);
+    //await this.usersRepository.findById
     const now = new Date();
+    console.log('enrichedProfile', enrichedProfile);
     const diffInDays = Math.floor(
       (now.getTime() - updateAt.getTime()) / (1000 * 60 * 60 * 24)
     );
-    if (diffInDays > 14 && user.aspirationalLinkedinUrl) {  // Req. 2
+    if (diffInDays > 14 ) {  // Req. 2
 
       // Req. 5.2 generate new roadmap with existing roadmap.milestones using add-google-integrations
-        const regeneratedRoadmap = await this.buildRoadmap(user, user.aspirationalLinkedinUrl);
+      if(!enrichedProfile.aspirationalLinkedinUrl){
+        console.log('roadmap.enrichedProfile', enrichedProfile);
+        throw new BadRequestException("missing aspiration linikedin profile");
+      }
+        const regeneratedRoadmap = await this.buildRoadmapNoAI(user, enrichedProfile.aspirationalLinkedinUrl, roadmap);
         regeneratedRoadmap.roadmap.userId = user._id;
         console.log('regenerating', regeneratedRoadmap.roadmap);
         
+        await this.roadmapService.deleteUserRoadmap(user._id);
         const savedRoadmap = await this.roadmapService.insertRoadmap(regeneratedRoadmap.roadmap as TRoadmap);
 
         const initialMilestones = savedRoadmap.milestones.slice(0, 3);
-        await firstValueFrom(
-          this.httpService.post('/initialGenerate', initialMilestones)
-        );
-        return savedRoadmap;
+        // await firstValueFrom(
+        //   this.httpService.post('/initialGenerate', initialMilestones)
+        // );
+
+        const completedSkills:string[] = []
+        const completedMilestones = roadmap.milestones.filter(milestones => milestones.status === 'completed');
+    
+        if(!user.skills){
+          user.skills = []
+        }
+        for(const milestone of completedMilestones) {
+          for(const skill of milestone.skills){
+            user.skills?.push(skill);
+          }
+        };
+        user.isRoadmapGenerated = false;
+        await this.usersRepository.update(user._id, user) ;       
+        return {roadmap:savedRoadmap, completedSkills};
      
     }
     
-    throw new Error("cannot generate roadmap before 14 daysafter last ")
+    
+    throw new BadRequestException("cannot generate roadmap before 14 daysafter last ")
   }
+
+
+  // create roadmap without AI
+async buildRoadmapNoAI(
+    user: TUser,
+    targetUrl: string,
+    oldRoadmap: Roadmap
+  ): Promise<SuggestedRoadmap> {
+
+
+    // deep copy
+    const milestones: RoadmapMilestone[] = oldRoadmap.milestones.map( milestone =>{
+      return {
+        ...milestone, skills:[...milestone.skills]
+      }
+    })
+    console.log('copying milestones', milestones);
+    
+    const completeRoadmap = {
+      roadmap: {
+        userId: user._id,
+        goalJob: user.goalJob ?? '',
+        milestones,
+        isApproved: false,
+      },
+      motivationLine: ' your motivation ',  //TODO how to create motivationLine without AI
+    };
+    this.roadmapsByUserAndUrl.set(`${user._id}-${targetUrl}`, completeRoadmap);
+    return completeRoadmap;
+  }  
+
+
   async buildRoadmap(
     user: TUser,
     targetUrl: string
