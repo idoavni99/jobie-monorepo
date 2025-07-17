@@ -154,7 +154,7 @@ export class RoadmapGenerationService {
       // Req. 5.2 generate new roadmap with existing roadmap.milestones using add-google-integrations
       if(!enrichedProfile.aspirationalLinkedinUrl){
         console.log('roadmap.enrichedProfile', enrichedProfile);
-        throw new BadRequestException("missing aspiration linikedin profile");
+        throw new BadRequestException("missing aspiration linkedin profile");
       }
         const regeneratedRoadmap = await this.buildRoadmapNoAI(user, enrichedProfile.aspirationalLinkedinUrl, roadmap);
         regeneratedRoadmap.roadmap.userId = user._id;
