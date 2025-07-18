@@ -1,7 +1,7 @@
 import { AuthUser } from '@jobie/auth-core';
 import { Roadmap, RoadmapService } from '@jobie/roadmap/nestjs';
 import { UsersRepository } from '@jobie/users/nestjs';
-import { TUser } from '@jobie/users/types';
+import { EnrichedProfileUpdateData, TUser } from '@jobie/users/types';
 import { HttpService } from '@nestjs/axios';
 import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
 import { SuggestAspirationsDto } from './dto';
@@ -14,7 +14,7 @@ export class RoadmapController {
     private readonly roadmapService: RoadmapService,
     private readonly usersRepository: UsersRepository,
     private readonly httpService: HttpService
-  ) {}
+  ) { }
 
   @Post('suggest-aspirations')
   async suggest(
@@ -41,6 +41,7 @@ export class RoadmapController {
   ): Promise<{ roadmap: Partial<Roadmap>; motivationLine?: string }> {
     return this.roadmapGenerationService.buildRoadmap(user, targetUrl);
   }
+
 
   @Post('select')
   async select(
@@ -69,6 +70,7 @@ export class RoadmapController {
       throw error;
     }
   }
+  
 
   @Get()
   async get(@AuthUser() user: TUser): Promise<Roadmap | null> {
@@ -79,5 +81,26 @@ export class RoadmapController {
       this.logger.error('[GET /roadmap] Error:', error);
       throw error;
     }
+  }
+
+  @Post('regenerate')
+  async regenerateRoadmap(@AuthUser() user: TUser,@Body() body:{enrichedProfile: EnrichedProfileUpdateData}): Promise<{roadmap:Roadmap, completedSkills:string[]} | null> {
+    try { // Req. 5.1
+      const roadmap = await this.roadmapService.getRoadmapByUserId(user._id);
+      if (!roadmap) {
+        throw new Error("Roadmap not found for user");
+      }
+      console.log('body.enrichedProfile', body)
+      const regeneratedRoadmap = await this.roadmapGenerationService.regenerateRoadmap(roadmap, user,body.enrichedProfile );
+      return regeneratedRoadmap;
+
+    } catch (error) {
+      this.logger.error('[POST /regenerate] Error:', error);
+      console.log('14error', error);
+      
+      throw error;
+    }
+
+
   }
 }

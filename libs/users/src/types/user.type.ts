@@ -25,6 +25,17 @@ export type EnrichedProfileData = {
     endDate: string;
   }[];
 };
+export type EnrichedProfileUpdateData = {
+  goalJob?: string;
+  location?: string;
+  education?: string;
+  bio?: string;
+  linkedinProfileUrl?: string;
+  aspirationalLinkedinUrl?: string;
+  skills?: string[];
+  experienceSummary?: { title: string; companyName: string }[];
+  linkedinHeadline?: string;
+};
 export type UserData = {
   _id: string;
   password: string;
