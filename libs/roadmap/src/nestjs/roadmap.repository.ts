@@ -26,9 +26,8 @@ export class RoadmapRepository {
     return updatedRoadmap?.toObject();
   }
  async insert(roadmap: TRoadmap): Promise<Roadmap> {
-  console.log('roadmap',roadmap);
   
-    const createdRoadmap = await this.roadmapModel.create({roadmap, _id:randomUUID(), userId: roadmap.userId });
+    const createdRoadmap = await this.roadmapModel.create({roadmap, _id: randomUUID(), userId: roadmap.userId });
     return createdRoadmap?.toObject();
   }
 

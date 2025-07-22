@@ -83,8 +83,8 @@ export const useAuthStore = create<AuthState>()(
         // TODO call roadmap-callibration / regenerate
         // retrieve the user since TUser is like ansi-c union
         try{
-          const regenerationResponse:RoadmapRegenrationResponse|null = await roadmapCalibrationApi.post('/regenerate', {enrichedProfile:updateData});
-          console.log(regenerationResponse)
+          // extract skills to user and delete roadmap
+          await roadmapCalibrationApi.post('/regenerate', {enrichedProfile:updateData});
           set({success:true, message:""})
         }catch(error){
             const axiosError = error as {response:{data:{message:string}}}

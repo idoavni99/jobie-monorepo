@@ -73,7 +73,6 @@ export const App = () => {
                 <Route path={RoutesPaths.MILESTONE} element={<Milestone />} />
                 <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
                 <Route path={RoutesPaths.EDIT_PROFILE} element={<EditProfile />}/>
-                <Route path={RoutesPaths.ASPIRATIONS} element={<AspirationsPage />}/>
               </Route>
             </Route>
 

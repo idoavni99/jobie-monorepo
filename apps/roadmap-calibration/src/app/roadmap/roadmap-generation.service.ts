@@ -141,34 +141,21 @@ export class RoadmapGenerationService {
 
 
   async regenerateRoadmap(roadmap: Roadmap, user: TUser, enrichedProfile: EnrichedProfileUpdateData) {
-    // check if14 days passed since  last update.
     const updateAt = new Date(roadmap.updatedAt);
-    //await this.usersRepository.findById
     const now = new Date();
     console.log('enrichedProfile', enrichedProfile);
     const diffInDays = Math.floor(
       (now.getTime() - updateAt.getTime()) / (1000 * 60 * 60 * 24)
     );
-    if (diffInDays > 14 ) {  // Req. 2
-
-      // Req. 5.2 generate new roadmap with existing roadmap.milestones using add-google-integrations
+    if (diffInDays > 14 ) { 
       if(!enrichedProfile.aspirationalLinkedinUrl){
         console.log('roadmap.enrichedProfile', enrichedProfile);
         throw new BadRequestException("missing aspiration linkedin profile");
       }
         const regeneratedRoadmap = await this.buildRoadmapNoAI(user, enrichedProfile.aspirationalLinkedinUrl, roadmap);
         regeneratedRoadmap.roadmap.userId = user._id;
-        console.log('regenerating', regeneratedRoadmap.roadmap);
         
         await this.roadmapService.deleteUserRoadmap(user._id);
-        //const savedRoadmap = await this.roadmapService.insertRoadmap(regeneratedRoadmap.roadmap as TRoadmap);
-
-        //const initialMilestones = savedRoadmap.milestones.slice(0, 3);
-        // await firstValueFrom(
-        //   this.httpService.post('/initialGenerate', initialMilestones)
-        // );
-
-        const completedSkills:string[] = []
         const completedMilestones = roadmap.milestones.filter(milestones => milestones.status === 'completed');
     
         if(!user.skills){
@@ -183,9 +170,8 @@ export class RoadmapGenerationService {
         await this.usersRepository.update(user._id, user) ;       
      
     }
-    
-    
-    throw new BadRequestException("cannot generate roadmap before 14 daysafter last ")
+        
+    throw new BadRequestException("cannot generate roadmap before 14 days after last ")
   }
 
 

@@ -83,6 +83,18 @@ export class RoadmapController {
     }
   }
 
+  /**
+   * Regenerates the user's roadmap based on their enriched profile data.
+   * 
+   * This method retrieves the existing roadmap for the user, validates its existence,
+   * and regenerates it using the provided enriched profile data. The regenerated roadmap
+   * includes updated milestones and completed skills.
+   * 
+   * @param user - The authenticated user requesting the regeneration.
+   * @param body - The request body containing the enriched profile data.
+   
+   * @throws An error if the roadmap is not found or if the regeneration process fails.
+   */
   @Post('regenerate')
   async regenerateRoadmap(@AuthUser() user: TUser,@Body() body:{enrichedProfile: EnrichedProfileUpdateData}) {
     try { // Req. 5.1
@@ -90,13 +102,12 @@ export class RoadmapController {
       if (!roadmap) {
         throw new Error("Roadmap not found for user");
       }
-      console.log('body.enrichedProfile', body)
+    
       await this.roadmapGenerationService.regenerateRoadmap(roadmap, user,body.enrichedProfile );
       
 
     } catch (error) {
       this.logger.error('[POST /regenerate] Error:', error);
-      console.log('14error', error);
       
       throw error;
     }

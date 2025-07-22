@@ -14,27 +14,28 @@ export const EditProfile = () => {
 
   const navigate = useNavigate();
 
-  const onSubmit = async (values: Record<string, any>) => {
+  const onSubmit = async (values: EnrichedProfileUpdateData) => {
     const data: EnrichedProfileUpdateData = {}
-    if (values.bio?.length > 0) {
+    
+    if (values.bio && values.bio?.length > 0) {
       data.bio = values.bio;
     }
-    if (values.education?.length > 0) {
+    if (values.education && values.education?.length > 0) {
       data.education = values.education;
     }
-    if (values.location?.length > 0) {
+    if (values.location && values.location?.length > 0) {
       data.location = values.location;
     }
-    if (values.goalJob?.length > 0) {
+    if (values.goalJob && values.goalJob?.length > 0) {
       data.goalJob = values.goalJob;
     }
-    if (values.linkedinProfileUrl?.length > 0) {
+    if (values.linkedinProfileUrl && values.linkedinProfileUrl?.length > 0) {
       data.linkedinProfileUrl = values.linkedinProfileUrl;
     }
-    if (values.aspirationalLinkedinUrl?.length > 0) {
+    if (values.aspirationalLinkedinUrl && values.aspirationalLinkedinUrl?.length > 0) {
       data.aspirationalLinkedinUrl = values.aspirationalLinkedinUrl;
     }
-    if (values.linkedinHeadline?.length > 0) {
+    if (values.linkedinHeadline && values.linkedinHeadline?.length > 0) {
       data.linkedinHeadline = values.linkedinHeadline;
     }
 
