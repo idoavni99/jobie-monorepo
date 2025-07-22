@@ -84,15 +84,15 @@ export class RoadmapController {
   }
 
   @Post('regenerate')
-  async regenerateRoadmap(@AuthUser() user: TUser,@Body() body:{enrichedProfile: EnrichedProfileUpdateData}): Promise<{roadmap:Roadmap, completedSkills:string[]} | null> {
+  async regenerateRoadmap(@AuthUser() user: TUser,@Body() body:{enrichedProfile: EnrichedProfileUpdateData}) {
     try { // Req. 5.1
       const roadmap = await this.roadmapService.getRoadmapByUserId(user._id);
       if (!roadmap) {
         throw new Error("Roadmap not found for user");
       }
       console.log('body.enrichedProfile', body)
-      const regeneratedRoadmap = await this.roadmapGenerationService.regenerateRoadmap(roadmap, user,body.enrichedProfile );
-      return regeneratedRoadmap;
+      await this.roadmapGenerationService.regenerateRoadmap(roadmap, user,body.enrichedProfile );
+      
 
     } catch (error) {
       this.logger.error('[POST /regenerate] Error:', error);

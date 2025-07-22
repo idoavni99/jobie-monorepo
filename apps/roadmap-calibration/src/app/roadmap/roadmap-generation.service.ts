@@ -140,7 +140,7 @@ export class RoadmapGenerationService {
   }
 
 
-  async regenerateRoadmap(roadmap: Roadmap, user: TUser, enrichedProfile: EnrichedProfileUpdateData): Promise<{roadmap:Roadmap, completedSkills:string[]}> {
+  async regenerateRoadmap(roadmap: Roadmap, user: TUser, enrichedProfile: EnrichedProfileUpdateData) {
     // check if14 days passed since  last update.
     const updateAt = new Date(roadmap.updatedAt);
     //await this.usersRepository.findById
@@ -161,9 +161,9 @@ export class RoadmapGenerationService {
         console.log('regenerating', regeneratedRoadmap.roadmap);
         
         await this.roadmapService.deleteUserRoadmap(user._id);
-        const savedRoadmap = await this.roadmapService.insertRoadmap(regeneratedRoadmap.roadmap as TRoadmap);
+        //const savedRoadmap = await this.roadmapService.insertRoadmap(regeneratedRoadmap.roadmap as TRoadmap);
 
-        const initialMilestones = savedRoadmap.milestones.slice(0, 3);
+        //const initialMilestones = savedRoadmap.milestones.slice(0, 3);
         // await firstValueFrom(
         //   this.httpService.post('/initialGenerate', initialMilestones)
         // );
@@ -181,7 +181,6 @@ export class RoadmapGenerationService {
         };
         user.isRoadmapGenerated = false;
         await this.usersRepository.update(user._id, user) ;       
-        return {roadmap:savedRoadmap, completedSkills};
      
     }
     
