@@ -16,7 +16,7 @@ type AuthState = {
   login: (userCredentials: Pick<TUser, 'email' | 'password'>) => Promise<void>;
   logout: () => Promise<void>;
   deleteUser: (userId: string) => Promise<void>;
-  updateProfile: (updateData: EnrichedProfileUpdateData) => Promise<void>;
+  updateProfile: (updateData: EnrichedProfileUpdateData) => Promise<{success:boolean, message:string}>;
   register: (
     registrationData: Pick<TUser, 'email' | 'password'> & { fullName: string }
   ) => Promise<void>;
@@ -68,33 +68,21 @@ export const useAuthStore = create<AuthState>()(
         if (!previousProfile) {
           throw new Error('User profile not found');
         }
-        console.log('updateData', updateData);
         
         if(previousProfile.goalJob !== updateData.goalJob ) {
           //updateData.goalJob = ""
           previousProfile.isRoadmapGenerated = false;
-          // 4
-           // await this.usersRepository.update(user._id, {aspirationalLinkedinUrl: body.aspirationalLinkedinUrl,isRoadmapGenerated: true,});
         }
-        //updateData.aspirationalLinkedinUrl = ""; cannot delete asiration since it is needed for roadmap regeneration
-        // if aspirationalLinkedinUrl was changed, do we need to regenerate (even if 14 days did not pass)
 
         const response = await profileEnrichmentApi.put<TUser>("/", updateData);
-        // TODO call roadmap-callibration / regenerate
-        // retrieve the user since TUser is like ansi-c union
         try{
           // extract skills to user and delete roadmap
           await roadmapCalibrationApi.post('/regenerate', {enrichedProfile:updateData});
-          set({success:true, message:""})
+          return {success:true, message:""}
         }catch(error){
             const axiosError = error as {response:{data:{message:string}}}
-            console.log(axiosError.response.data.message);
-            set({success:false, message:axiosError.response.data.message})
+            return {success:false, message:axiosError.response.data.message}
         }
-        
-        
-        const updatedData = response.data;
-       set({user:updatedData})
 
       },
 

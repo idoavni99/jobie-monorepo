@@ -149,11 +149,8 @@ export class RoadmapGenerationService {
     );
     if (diffInDays > 14 ) { 
       if(!enrichedProfile.aspirationalLinkedinUrl){
-        console.log('roadmap.enrichedProfile', enrichedProfile);
         throw new BadRequestException("missing aspiration linkedin profile");
       }
-        const regeneratedRoadmap = await this.buildRoadmapNoAI(user, enrichedProfile.aspirationalLinkedinUrl, roadmap);
-        regeneratedRoadmap.roadmap.userId = user._id;
         
         await this.roadmapService.deleteUserRoadmap(user._id);
         const completedMilestones = roadmap.milestones.filter(milestones => milestones.status === 'completed');
@@ -173,37 +170,6 @@ export class RoadmapGenerationService {
         
     throw new BadRequestException("cannot generate roadmap before 14 days after last ")
   }
-
-
-  // create roadmap without AI
-async buildRoadmapNoAI(
-    user: TUser,
-    targetUrl: string,
-    oldRoadmap: Roadmap
-  ): Promise<SuggestedRoadmap> {
-
-
-    // deep copy
-    const milestones: RoadmapMilestone[] = oldRoadmap.milestones.map( milestone =>{
-      return {
-        ...milestone, skills:[...milestone.skills]
-      }
-    })
-    console.log('copying milestones', milestones);
-    
-    const completeRoadmap = {
-      roadmap: {
-        userId: user._id,
-        goalJob: user.goalJob ?? '',
-        milestones,
-        isApproved: false,
-      },
-      motivationLine: ' your motivation ',  //TODO how to create motivationLine without AI
-    };
-    this.roadmapsByUserAndUrl.set(`${user._id}-${targetUrl}`, completeRoadmap);
-    return completeRoadmap;
-  }  
-
 
   async buildRoadmap(
     user: TUser,

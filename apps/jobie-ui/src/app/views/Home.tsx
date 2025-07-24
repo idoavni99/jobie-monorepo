@@ -9,8 +9,7 @@ export const HomeScreen = () => {
   const { user, refreshUserData, deleteUser, logout } = useAuthStore();
   const onDeleteUser = async () => {
     if(user?._id){
-      const ok = globalThis.confirm("Are you sure you wan to delete the profile?")
-      console.log(ok);
+      const ok = globalThis.confirm("Are you sure you want to delete the profile?")
       
       if(!ok){
         return;
@@ -39,9 +38,6 @@ export const HomeScreen = () => {
       </Button>
       <Button variant="contained" onClick={onDeleteUser}>
         Delete account
-      </Button>
-      <Button variant="contained" onClick={() => navigate(RoutesPaths.ASPIRATIONS)}>
-         aspiration
       </Button>
     </Stack>
   );

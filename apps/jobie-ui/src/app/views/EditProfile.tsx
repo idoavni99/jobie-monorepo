@@ -1,5 +1,5 @@
 import { EnrichedProfileUpdateData } from '@jobie/users/types';
-import { Button, CircularProgress, Stack, Typography } from '@mui/material';
+import { Button, CircularProgress, Snackbar, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { RoutesPaths } from '../enums/routes.enum';
 import { FormEvent, use } from 'react';
@@ -8,9 +8,12 @@ import { Controller, useForm } from 'react-hook-form';
 import { useAuthStore } from '../auth/store/auth.store'
 import { GlassCard } from '../components/GlassCard';
 import { TransparentTextField } from '../components/TransparentTextField';
+import {useState} from 'react'
 
 export const EditProfile = () => {
   const {updateProfile , user } = useAuthStore();
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [message, setMessage] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -39,12 +42,13 @@ export const EditProfile = () => {
       data.linkedinHeadline = values.linkedinHeadline;
     }
 
-    await updateProfile(data);
-    const state = useAuthStore.getState();
-    if(state.success){
+    const result:{success:boolean, message:string} = await updateProfile(data);
+  
+    if(result.success){
       navigate(RoutesPaths.ASPIRATIONS);
     }else{
-      alert(state.message);
+      setMessage(result.message)
+      setShowSnackbar(true);
     }
   }
   const navigateHome = () => {
@@ -230,6 +234,16 @@ export const EditProfile = () => {
           </Button>
         </Stack>
       </GlassCard>
+            <Snackbar
+              open={showSnackbar}
+              message={message}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              autoHideDuration={2000}
+              onClose={() => {
+                navigate(-1);
+                setShowSnackbar(false);
+              }}
+            />
     </Stack>
   );
 };
