@@ -70,7 +70,6 @@ export const useAuthStore = create<AuthState>()(
         }
         
         if(previousProfile.goalJob !== updateData.goalJob ) {
-          //updateData.goalJob = ""
           previousProfile.isRoadmapGenerated = false;
         }
 

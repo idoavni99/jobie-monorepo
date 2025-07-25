@@ -148,9 +148,6 @@ export class RoadmapGenerationService {
       (now.getTime() - updateAt.getTime()) / (1000 * 60 * 60 * 24)
     );
     if (diffInDays > 14 ) { 
-      if(!enrichedProfile.aspirationalLinkedinUrl){
-        throw new BadRequestException("missing aspiration linkedin profile");
-      }
         
         await this.roadmapService.deleteUserRoadmap(user._id);
         const completedMilestones = roadmap.milestones.filter(milestones => milestones.status === 'completed');
