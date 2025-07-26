@@ -10,6 +10,9 @@ export class RoadmapService {
   async createRoadmap(roadmap: TRoadmap): Promise<Roadmap> {
     return this.roadmapRepository.create(roadmap);
   }
+  async insertRoadmap(roadmap: TRoadmap): Promise<Roadmap> {
+    return this.roadmapRepository.insert(roadmap);
+  }
 
   async getRoadmapByUserId(userId: string): Promise<Roadmap | null> {
     return this.roadmapRepository.findByUserId(userId);
