@@ -6,6 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { milestoneMangementApi } from '../../../api/milestone-management.api';
 import { roadmapCalibrationApi } from '../../../api/roadmap-calibration.api';
 import { useDataFetch } from '../../../hooks/use-data-fetch';
+import {
+  NAV_DRAWER_PADDING,
+  NAV_DRAWER_WIDTH,
+} from '../../components/navigation/AppNavDrawer';
 import { useIsMobile } from '../../hooks/use-is-mobile';
 import { MilestonesList } from './roadmapMilestones/MilestoneList';
 
@@ -61,8 +65,12 @@ export const Roadmap = () => {
     }
   }, [loading, milestones, navigate]);
 
+  const webContainerWidth = globalThis.outerWidth - NAV_DRAWER_WIDTH;
   return (
-    <Box p={4} width={isMobile ? '100%' : '100vw'}>
+    <Box
+      p={4}
+      width={isMobile ? '100%' : webContainerWidth - NAV_DRAWER_PADDING}
+    >
       <Typography variant="h4" mb={4} fontWeight="bold" textAlign="center">
         Your Career Roadmap
       </Typography>
@@ -72,22 +80,13 @@ export const Roadmap = () => {
           <CircularProgress />
         </Stack>
       ) : (
-        milestones && <MilestonesList milestones={milestones} />
+        milestones && (
+          <MilestonesList
+            milestones={milestones}
+            containerWidth={webContainerWidth}
+          />
+        )
       )}
-
-      <Stack alignItems="center" mt={2}>
-        {/* <Button
-          variant="outlined"
-          onClick={regenerate}
-          size="large"
-          sx={{
-            color: '#fff',
-            borderColor: '#fff',
-          }}
-        >
-          Regenerate Roadmap
-        </Button> */}
-      </Stack>
     </Box>
   );
 };

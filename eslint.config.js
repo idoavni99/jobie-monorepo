@@ -1,7 +1,7 @@
-const nx = require('@nx/eslint-plugin');
-const unicorn = require('eslint-plugin-unicorn');
+import nx from '@nx/eslint-plugin';
+import unicorn from 'eslint-plugin-unicorn';
 
-module.exports = [
+export default [
   unicorn.configs['flat/recommended'],
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],

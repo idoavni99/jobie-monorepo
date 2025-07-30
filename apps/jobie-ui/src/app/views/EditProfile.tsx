@@ -1,25 +1,30 @@
 import { EnrichedProfileUpdateData } from '@jobie/users/types';
-import { Button, CircularProgress, Snackbar, Stack, Typography } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  Snackbar,
+  Stack,
+  Typography,
+} from '@mui/material';
+import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { RoutesPaths } from '../enums/routes.enum';
-import { FormEvent, use } from 'react';
-import { Controller, useForm } from 'react-hook-form';
 //import { AuthContext } from '../auth/providers/AuthProvider';
-import { useAuthStore } from '../auth/store/auth.store'
+import { useState } from 'react';
+import { useAuthStore } from '../auth/store/auth.store';
 import { GlassCard } from '../components/GlassCard';
 import { TransparentTextField } from '../components/TransparentTextField';
-import {useState} from 'react'
 
 export const EditProfile = () => {
-  const {updateProfile , user } = useAuthStore();
+  const { updateProfile, user } = useAuthStore();
   const [showSnackbar, setShowSnackbar] = useState(false);
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<string>('');
 
   const navigate = useNavigate();
 
   const onSubmit = async (values: EnrichedProfileUpdateData) => {
-    const data: EnrichedProfileUpdateData = {}
-    
+    const data: EnrichedProfileUpdateData = {};
+
     if (values.bio && values.bio?.length > 0) {
       data.bio = values.bio;
     }
@@ -35,25 +40,27 @@ export const EditProfile = () => {
     if (values.linkedinProfileUrl && values.linkedinProfileUrl?.length > 0) {
       data.linkedinProfileUrl = values.linkedinProfileUrl;
     }
-    if (values.aspirationalLinkedinUrl && values.aspirationalLinkedinUrl?.length > 0) {
+    if (
+      values.aspirationalLinkedinUrl &&
+      values.aspirationalLinkedinUrl?.length > 0
+    ) {
       data.aspirationalLinkedinUrl = values.aspirationalLinkedinUrl;
     }
     if (values.linkedinHeadline && values.linkedinHeadline?.length > 0) {
       data.linkedinHeadline = values.linkedinHeadline;
     }
 
-    const result:{success:boolean, message:string} = await updateProfile(data);
-  
-    if(result.success){
+    const result: { success: boolean; message: string } = await updateProfile(
+      data
+    );
+
+    if (result.success) {
       navigate(RoutesPaths.ASPIRATIONS);
-    }else{
-      setMessage(result.message)
+    } else {
+      setMessage(result.message);
       setShowSnackbar(true);
     }
-  }
-  const navigateHome = () => {
-    navigate(RoutesPaths.HOME);
-  }
+  };
 
   const {
     control,
@@ -68,10 +75,9 @@ export const EditProfile = () => {
       linkedinProfileUrl: user?.linkedinProfileUrl,
       aspirationalLinkedinUrl: user?.aspirationalLinkedinUrl,
     },
-
   });
   // TODO Read existing profile data and update GUI
-  
+
   return (
     <Stack justifyContent="center" alignItems="center" height="100vh" px={3}>
       <GlassCard>
@@ -225,25 +231,18 @@ export const EditProfile = () => {
               'Save'
             )}
           </Button>
-          <Button variant="contained" type="button" onClick={navigateHome} sx={{
-            mt: 2,
-            px: 4,
-            py: 1.5,
-          }}>
-            Cancel
-          </Button>
         </Stack>
       </GlassCard>
-            <Snackbar
-              open={showSnackbar}
-              message={message}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-              autoHideDuration={2000}
-              onClose={() => {
-                navigate(-1);
-                setShowSnackbar(false);
-              }}
-            />
+      <Snackbar
+        open={showSnackbar}
+        message={message}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        autoHideDuration={2000}
+        onClose={() => {
+          navigate(-1);
+          setShowSnackbar(false);
+        }}
+      />
     </Stack>
   );
 };
