@@ -5,20 +5,11 @@ import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 export class EnrichUserProfileUpdateDto
   implements
     Omit<
-    EnrichedProfileUpdateData,
+      EnrichedProfileUpdateData,
       'skills' | 'experienceSummary' | 'linkedinHeadline'
     >
 {
   linkedinHeadline: string;
-  @ApiProperty({
-    name: 'goalJob',
-    type: String,
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  goalJob?: string;
 
   @ApiProperty({
     name: 'location',
@@ -61,15 +52,4 @@ export class EnrichUserProfileUpdateDto
   @IsUrl()
   @MaxLength(150)
   linkedinProfileUrl?: string;
-
-  @ApiProperty({
-    name: 'aspirationalLinkedinUrl',
-    type: String,
-    required: false,
-  })
-  @Expose()
-  @IsOptional()
-  @IsUrl()
-  @MaxLength(150)
-  aspirationalLinkedinUrl?: string;
 }
