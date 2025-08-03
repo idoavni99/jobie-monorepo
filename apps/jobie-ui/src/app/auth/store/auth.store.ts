@@ -6,6 +6,7 @@ import {
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { gatewayApi } from '../../../api/gateway.api';
+import { milestoneMangementApi } from '../../../api/milestone-management.api';
 import { profileEnrichmentApi } from '../../../api/profile-enrichment.api';
 import { roadmapCalibrationApi } from '../../../api/roadmap-calibration.api';
 
@@ -59,8 +60,15 @@ export const useAuthStore = create<AuthState>()(
         set({ user: undefined, isLoadingUserAuth: false });
       },
       deleteUser: async (userId: string) => {
-        await roadmapCalibrationApi.delete<TUser>('/'); // TODO: Uncomment when the API is ready
-        await profileEnrichmentApi.delete('/');
+        await Promise.all([
+          roadmapCalibrationApi.delete('/'),
+          milestoneMangementApi.delete('/'),
+          profileEnrichmentApi.delete('/'),
+        ]);
+
+        await gatewayApi.post('/logout');
+
+        set({ user: undefined, isLoadingUserAuth: false });
       },
       updateProfile: async (updateData: EnrichedProfileUpdateData) => {
         const { data: updatedProfile } = await profileEnrichmentApi.put<TUser>(

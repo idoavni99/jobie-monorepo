@@ -1,6 +1,6 @@
 import { AuthUser } from '@jobie/auth-core';
 import { TUser } from '@jobie/users/types';
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Post, Put } from '@nestjs/common';
 import { EnrichUserProfileUpdateDto } from '../dto/enrich-user-profile-update.dto';
 import { EnrichUserProfileDto } from '../dto/enrich-user-profile.dto';
 import { ProfileService } from './profile.service';
@@ -23,5 +23,10 @@ export class ProfileController {
     @Body() data: EnrichUserProfileUpdateDto
   ) {
     return this.profileService.updateEnrichUserProfile(user._id, data);
+  }
+
+  @Delete()
+  deleteUser(@AuthUser() user: TUser) {
+    return this.profileService.deleteUser(user._id);
   }
 }

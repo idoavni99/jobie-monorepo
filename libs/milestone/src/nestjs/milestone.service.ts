@@ -29,6 +29,10 @@ export class MilestoneService {
     return this.milestoneRepository.findByIds(milestoneIds);
   }
 
+  async deleteByUserId(userId: string) {
+    return this.milestoneRepository.deleteByUserId(userId);
+  }
+
   async toggleStep(
     milestoneId: string,
     stepId: string,
