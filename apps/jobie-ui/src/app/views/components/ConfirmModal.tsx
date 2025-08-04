@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  type ButtonProps,
   CircularProgress,
   Modal,
   Stack,
@@ -12,6 +13,7 @@ type ConfirmModalProperties = {
   open: boolean;
   actionText: string;
   confirmText: string;
+  confirmButtonColor?: ButtonProps['color'];
   onClose: () => void;
   onConfirm: () => Promise<void>;
 };
@@ -20,6 +22,7 @@ export const ConfirmModal = ({
   open,
   actionText,
   confirmText,
+  confirmButtonColor = 'primary',
   onClose,
   onConfirm,
 }: ConfirmModalProperties) => {
@@ -63,6 +66,7 @@ export const ConfirmModal = ({
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"
+            color={confirmButtonColor}
             sx={{ borderRadius: 999, minWidth: 140 }}
             onClick={handleConfirm}
             disabled={loading}
