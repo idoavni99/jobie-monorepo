@@ -150,6 +150,9 @@ export const AspirationsPage = () => {
 
       <ConfirmModal
         open={confirmModalOpen}
+        confirmText="Yes, Select this roadmap"
+        actionText="
+          Once you pick this roadmap, you cannot change it later."
         onClose={() => setConfirmModalOpen(false)}
         onConfirm={handleConfirmSelection}
       />

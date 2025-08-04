@@ -10,12 +10,16 @@ import { useState } from 'react';
 
 type ConfirmModalProperties = {
   open: boolean;
+  actionText: string;
+  confirmText: string;
   onClose: () => void;
   onConfirm: () => Promise<void>;
 };
 
 export const ConfirmModal = ({
   open,
+  actionText,
+  confirmText,
   onClose,
   onConfirm,
 }: ConfirmModalProperties) => {
@@ -53,7 +57,7 @@ export const ConfirmModal = ({
         </Typography>
 
         <Typography fontSize="0.9rem" textAlign="center" mb={4}>
-          Once you pick this roadmap, you cannot change it later.
+          {actionText}
         </Typography>
 
         <Stack direction="row" spacing={2}>
@@ -66,7 +70,7 @@ export const ConfirmModal = ({
             {loading ? (
               <CircularProgress size={20} color="inherit" />
             ) : (
-              'Yes, Select'
+              confirmText
             )}
           </Button>
           <Button
