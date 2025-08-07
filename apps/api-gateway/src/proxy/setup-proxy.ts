@@ -14,7 +14,7 @@ export const setupProxyToService = async (
     ).then((response) => response.json());
     const modifiedPaths = Object.fromEntries(
       Object.entries(swaggerJson.paths).map(([currentPathPrefix, path]) => [
-        `/${serviceName}${currentPathPrefix}`,
+        `/api-gateway/${serviceName}${currentPathPrefix}`,
         path,
       ])
     );

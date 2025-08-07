@@ -11,14 +11,12 @@ import { profileEnrichmentApi } from '../../../api/profile-enrichment.api';
 import { roadmapCalibrationApi } from '../../../api/roadmap-calibration.api';
 
 type AuthState = {
-  success: boolean;
-  message: string;
   user?: TUser;
   isLoadingUserAuth: boolean;
   refreshUserData: () => Promise<void>;
   login: (userCredentials: Pick<TUser, 'email' | 'password'>) => Promise<void>;
   logout: () => Promise<void>;
-  deleteUser: (userId: string) => Promise<void>;
+  deleteUser: () => Promise<void>;
   updateProfile: (
     updateData: EnrichedProfileUpdateData
   ) => Promise<{ isRoadmapGenerated: boolean; message: string }>;
@@ -31,8 +29,6 @@ type AuthState = {
 export const useAuthStore = create<AuthState>()(
   devtools(
     (set, get) => ({
-      success: true,
-      message: '',
       user: undefined,
       isLoadingUserAuth: true,
       refreshUserData: async () => {
@@ -59,7 +55,7 @@ export const useAuthStore = create<AuthState>()(
         await gatewayApi.post('/logout');
         set({ user: undefined, isLoadingUserAuth: false });
       },
-      deleteUser: async (userId: string) => {
+      deleteUser: async () => {
         await Promise.all([
           roadmapCalibrationApi.delete('/'),
           milestoneMangementApi.delete('/'),

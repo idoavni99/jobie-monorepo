@@ -10,14 +10,6 @@ export const HomeScreen = () => {
   const { user, deleteUser, logout } = useAuthStore();
   const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
 
-  const onDeleteUser = async () => {
-    if (user?._id) {
-      await deleteUser(user?._id);
-      logout();
-      navigate('/');
-    }
-  };
-
   return (
     <Stack gap={4}>
       <Typography variant="h3">
@@ -46,7 +38,7 @@ export const HomeScreen = () => {
         actionText="
                 Once you delete your account, all of your data will be permanently deleted."
         onClose={() => setDeleteUserModalOpen(false)}
-        onConfirm={onDeleteUser}
+        onConfirm={deleteUser}
       />
     </Stack>
   );
