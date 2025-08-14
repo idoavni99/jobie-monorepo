@@ -9,12 +9,12 @@ export const AppToolbar = () => {
     <AppBar
       position="fixed"
       sx={
-        !isMobile
-          ? {
+        isMobile
+          ? {}
+          : {
               width: `calc(100% - ${NAV_DRAWER_WIDTH}px)`,
               ml: `${NAV_DRAWER_WIDTH}px`,
             }
-          : {}
       }
     >
       <Toolbar>
