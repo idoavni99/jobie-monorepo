@@ -31,9 +31,6 @@ export const EditProfile = () => {
   const [message, setMessage] = useState<string>('');
 
   const navigate = useNavigate();
-  const navigateHome = () => {
-    navigate(RoutesPaths.HOME);
-  };
 
   const {
     control,
