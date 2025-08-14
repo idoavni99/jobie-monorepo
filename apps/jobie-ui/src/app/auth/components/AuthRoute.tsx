@@ -4,11 +4,12 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { RoutesPaths } from '../../enums/routes.enum';
 import { useAuthStore } from '../store/auth.store';
 
-const getRoutePathByUserState = (userState: TUser | undefined) => {
+const getRoutePathByUserState = (
+  userState: Pick<TUser, 'isProfileSetUp' | 'isRoadmapGenerated'> | undefined
+) => {
   if (!userState) return RoutesPaths.LOGIN;
 
   const { isProfileSetUp, isRoadmapGenerated } = userState;
-  console.log({ isProfileSetUp, isRoadmapGenerated });
   if (!isProfileSetUp && !isRoadmapGenerated) {
     return RoutesPaths.SETUP_PROFILE;
   }
@@ -25,6 +26,7 @@ export const AuthRoute = () => {
 
 export const ProtectedRoute = () => {
   const { user, isLoadingUserAuth } = useAuthStore();
+
   return isLoadingUserAuth ? (
     <CircularProgress />
   ) : user?.isProfileSetUp && user.isRoadmapGenerated ? (
