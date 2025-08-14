@@ -4,15 +4,19 @@ import {
   SimilarProfile,
 } from '@jobie/linkedin/index';
 import { OpenAIRepository } from '@jobie/openai';
-import { CareerVector, RoadmapMilestone, TRoadmap } from '@jobie/roadmap/types';
 import { Roadmap, RoadmapService } from '@jobie/roadmap/nestjs';
+import { CareerVector, RoadmapMilestone } from '@jobie/roadmap/types';
 import { User, UsersRepository } from '@jobie/users/nestjs';
-import { EnrichedProfileUpdateData, TUser } from '@jobie/users/types';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { TUser } from '@jobie/users/types';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import fuzzball from 'fuzzball';
-import { firstValueFrom } from 'rxjs';
 import { randomUUID } from 'node:crypto';
-import { HttpService } from '@nestjs/axios';
+import { APP_CONFIG_KEY, AppConfigType } from '../config/app.config';
 import { SuggestedRoadmap } from './types/suggested-roadmap.type';
 
 @Injectable()
@@ -25,8 +29,8 @@ export class RoadmapGenerationService {
     private readonly usersRepository: UsersRepository,
     private readonly linkedinRepository: LinkedinRepository,
     private readonly roadmapService: RoadmapService,
-    private readonly httpService: HttpService
-  ) { }
+    @Inject(APP_CONFIG_KEY) private readonly appConfig: AppConfigType
+  ) {}
 
   private buildCareerVector(profile: LinkedInProfile): CareerVector {
     return {
@@ -139,33 +143,42 @@ export class RoadmapGenerationService {
     }
   }
 
-
-  async regenerateRoadmap(roadmap: Roadmap, user: TUser, enrichedProfile: EnrichedProfileUpdateData) {
+  async regenerateRoadmap(roadmap: Roadmap, user: TUser) {
     const updateAt = new Date(roadmap.updatedAt);
     const now = new Date();
-    console.log('enrichedProfile', enrichedProfile);
     const diffInDays = Math.floor(
       (now.getTime() - updateAt.getTime()) / (1000 * 60 * 60 * 24)
     );
-    if (diffInDays > 14 ) { 
-        
-        await this.roadmapService.deleteUserRoadmap(user._id);
-        const completedMilestones = roadmap.milestones.filter(milestones => milestones.status === 'completed');
-    
-        if(!user.skills){
-          user.skills = []
+
+    if (diffInDays > this.appConfig.roadmapRegenerationTtlDays) {
+      const userData = await this.usersRepository.findById(user._id, {
+        skills: 1,
+        isRoadmapGenerated: 1,
+      });
+      const updatePayload: Partial<User> = {
+        skills: userData?.skills ?? [],
+        isRoadmapGenerated: false,
+        goalJob: user.goalJob,
+        aspirationalLinkedinUrl: user.aspirationalLinkedinUrl,
+      };
+
+      await this.roadmapService.deleteUserRoadmap(user._id);
+      const completedMilestones = roadmap.milestones.filter(
+        (milestones) => milestones.status === 'completed'
+      );
+
+      for (const milestone of completedMilestones) {
+        for (const skill of milestone.skills) {
+          updatePayload.skills?.push(skill);
         }
-        for(const milestone of completedMilestones) {
-          for(const skill of milestone.skills){
-            user.skills?.push(skill);
-          }
-        };
-        user.isRoadmapGenerated = false;
-        await this.usersRepository.update(user._id, user) ;       
-     
+      }
+      updatePayload.skills = [...new Set(updatePayload.skills)];
+      await this.usersRepository.update(user._id, updatePayload);
     }
-        
-    throw new BadRequestException("cannot generate roadmap before 14 days after last ")
+
+    throw new BadRequestException(
+      'cannot generate roadmap before 14 have passed.'
+    );
   }
 
   async buildRoadmap(
@@ -240,7 +253,7 @@ export class RoadmapGenerationService {
     return completeRoadmap;
   }
 
-private buildUserDataSection(user: TUser) {
+  private buildUserDataSection(user: TUser) {
     return `.
   They are based in ${user.location} and Their career goal is: "${user.goalJob}".
   
@@ -277,7 +290,7 @@ private buildUserDataSection(user: TUser) {
   The target profile has held these positions: ${targetPositionsText}.`;
   }
 
-private createInstructionSection() {
+  private createInstructionSection() {
     return `
     1. Generate a summarized career roadmap to help them transition.
   Each milestone should have a short name (3–5 words max) and include a small list of skills
@@ -318,5 +331,5 @@ private createInstructionSection() {
           )} – ${ed.endDate?.slice(0, 10)})`
       )
       .join('; ');
-  }  
+  }
 }

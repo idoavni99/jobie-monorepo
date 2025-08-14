@@ -15,58 +15,31 @@ import { useAuthStore } from '../auth/store/auth.store';
 import { GlassCard } from '../components/GlassCard';
 import { TransparentTextField } from '../components/TransparentTextField';
 
+type ProfileUpdatePayload = Pick<
+  EnrichedProfileUpdateData,
+  | 'goalJob'
+  | 'linkedinProfileUrl'
+  | 'aspirationalLinkedinUrl'
+  | 'location'
+  | 'education'
+  | 'bio'
+>;
+
 export const EditProfile = () => {
   const { updateProfile, user } = useAuthStore();
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [message, setMessage] = useState<string>('');
 
   const navigate = useNavigate();
-
-  const onSubmit = async (values: EnrichedProfileUpdateData) => {
-    const data: EnrichedProfileUpdateData = {};
-
-    if (values.bio && values.bio?.length > 0) {
-      data.bio = values.bio;
-    }
-    if (values.education && values.education?.length > 0) {
-      data.education = values.education;
-    }
-    if (values.location && values.location?.length > 0) {
-      data.location = values.location;
-    }
-    if (values.goalJob && values.goalJob?.length > 0) {
-      data.goalJob = values.goalJob;
-    }
-    if (values.linkedinProfileUrl && values.linkedinProfileUrl?.length > 0) {
-      data.linkedinProfileUrl = values.linkedinProfileUrl;
-    }
-    if (
-      values.aspirationalLinkedinUrl &&
-      values.aspirationalLinkedinUrl?.length > 0
-    ) {
-      data.aspirationalLinkedinUrl = values.aspirationalLinkedinUrl;
-    }
-    if (values.linkedinHeadline && values.linkedinHeadline?.length > 0) {
-      data.linkedinHeadline = values.linkedinHeadline;
-    }
-
-    const result: { success: boolean; message: string } = await updateProfile(
-      data
-    );
-
-    if (result.success) {
-      navigate(RoutesPaths.ASPIRATIONS);
-    } else {
-      setMessage(result.message);
-      setShowSnackbar(true);
-    }
+  const navigateHome = () => {
+    navigate(RoutesPaths.HOME);
   };
 
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting },
-  } = useForm<EnrichedProfileUpdateData>({
+    formState: { isSubmitting, dirtyFields },
+  } = useForm<ProfileUpdatePayload>({
     defaultValues: {
       bio: user?.bio,
       education: user?.education,
@@ -76,10 +49,31 @@ export const EditProfile = () => {
       aspirationalLinkedinUrl: user?.aspirationalLinkedinUrl,
     },
   });
-  // TODO Read existing profile data and update GUI
+
+  const onSubmit = async (values: ProfileUpdatePayload) => {
+    const data: EnrichedProfileUpdateData = {};
+    for (const key of Object.keys(dirtyFields)) {
+      const propertyKey = key as keyof ProfileUpdatePayload;
+      const propertyValue = values[propertyKey];
+      if (propertyValue) {
+        data[propertyKey] = propertyValue;
+      }
+    }
+
+    const result = await updateProfile(data);
+
+    if (result.isRoadmapGenerated) {
+      navigate(RoutesPaths.ASPIRATIONS);
+    } else if (result.message) {
+      setMessage(result.message);
+      setShowSnackbar(true);
+    } else {
+      navigate(RoutesPaths.HOME);
+    }
+  };
 
   return (
-    <Stack justifyContent="center" alignItems="center" height="100vh" px={3}>
+    <Stack justifyContent="center" alignItems="center" height="85vh" px={3}>
       <GlassCard>
         <Stack
           component="form"
@@ -230,6 +224,18 @@ export const EditProfile = () => {
             ) : (
               'Save'
             )}
+          </Button>
+          <Button
+            variant="contained"
+            type="button"
+            onClick={navigateHome}
+            sx={{
+              mt: 2,
+              px: 4,
+              py: 1.5,
+            }}
+          >
+            Cancel
           </Button>
         </Stack>
       </GlassCard>
