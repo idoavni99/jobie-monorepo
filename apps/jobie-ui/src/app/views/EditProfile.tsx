@@ -225,18 +225,6 @@ export const EditProfile = () => {
               'Save'
             )}
           </Button>
-          <Button
-            variant="contained"
-            type="button"
-            onClick={navigateHome}
-            sx={{
-              mt: 2,
-              px: 4,
-              py: 1.5,
-            }}
-          >
-            Cancel
-          </Button>
         </Stack>
       </GlassCard>
       <Snackbar
