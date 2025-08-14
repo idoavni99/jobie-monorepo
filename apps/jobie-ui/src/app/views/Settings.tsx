@@ -1,12 +1,10 @@
 import { Button, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../auth/store/auth.store';
-import { RoutesPaths } from '../enums/routes.enum';
 
-export const HomeScreen = () => {
+export const Settings = () => {
   const navigate = useNavigate();
   const { user, deleteUser, logout } = useAuthStore();
-
   const onDeleteUser = async () => {
     if (user?._id) {
       const ok = globalThis.confirm(
@@ -27,19 +25,10 @@ export const HomeScreen = () => {
       <Typography variant="h3">
         Hello {user?.firstName} {user?.lastName}
       </Typography>
-      <Button variant="contained" onClick={() => navigate('/roadmap')}>
-        See your roadmap
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => navigate(RoutesPaths.EDIT_PROFILE)}
-      >
-        Edit your profile
-      </Button>
       <Button variant="contained" onClick={logout}>
         Sign Out
       </Button>
-      <Button variant="contained" onClick={onDeleteUser}>
+      <Button variant="contained" color="error" onClick={onDeleteUser}>
         Delete account
       </Button>
     </Stack>

@@ -73,7 +73,7 @@ export const EditProfile = () => {
   };
 
   return (
-    <Stack justifyContent="center" alignItems="center" height="100vh" px={3}>
+    <Stack justifyContent="center" alignItems="center" height="85vh" px={3}>
       <GlassCard>
         <Stack
           component="form"
