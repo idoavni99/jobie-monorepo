@@ -1,6 +1,7 @@
 import { TMilestone } from '@jobie/milestone/types';
 import { TRoadmap } from '@jobie/roadmap/types';
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
+import { useWindowSize } from '@uidotdev/usehooks';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { milestoneMangementApi } from '../../../api/milestone-management.api';
@@ -65,11 +66,15 @@ export const Roadmap = () => {
     }
   }, [loading, milestones, navigate]);
 
-  const webContainerWidth = globalThis.outerWidth - NAV_DRAWER_WIDTH;
+  const webContainerWidth = useWindowSize().width ?? globalThis.outerWidth;
   return (
     <Box
       p={4}
-      width={isMobile ? '100%' : webContainerWidth - NAV_DRAWER_PADDING}
+      width={
+        isMobile
+          ? '100%'
+          : webContainerWidth - (NAV_DRAWER_WIDTH + NAV_DRAWER_PADDING)
+      }
     >
       <Typography variant="h4" mb={4} fontWeight="bold" textAlign="center">
         Your Career Roadmap

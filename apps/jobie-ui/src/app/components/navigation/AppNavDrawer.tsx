@@ -5,7 +5,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  useTheme,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { navBarItems } from './NavItems';
@@ -19,7 +18,6 @@ export const NAV_DRAWER_PADDING = 180;
 
 export const AppNavDrawer = ({ onClose }: Properties) => {
   const navigate = useNavigate();
-  const { palette } = useTheme();
   return (
     <Drawer
       variant="permanent"
