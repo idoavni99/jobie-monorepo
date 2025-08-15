@@ -8,12 +8,12 @@ export const useNavDrawerSpacing = () => {
   const webContainerWidth = useWindowSize().width ?? globalThis.outerWidth;
   const isMobile = useIsMobile();
 
-  const spaceFromWindow = !isMobile
-    ? webContainerWidth - (NAV_DRAWER_WIDTH + NAV_DRAWER_PADDING)
-    : '100%';
-  const spaceFromContainer = !isMobile
-    ? `calc(100% - ${NAV_DRAWER_PADDING + NAV_DRAWER_WIDTH}px)`
-    : '100%';
+  const spaceFromWindow = isMobile
+    ? '100%'
+    : webContainerWidth - (NAV_DRAWER_WIDTH + NAV_DRAWER_PADDING);
+  const spaceFromContainer = isMobile
+    ? '100%'
+    : `calc(100% - ${NAV_DRAWER_PADDING + NAV_DRAWER_WIDTH}px)`;
   const containerPadding = isMobile
     ? { paddingInline: `${NAV_DRAWER_PADDING / 2}px` }
     : { paddingInlineStart: `${NAV_DRAWER_PADDING}px` };
