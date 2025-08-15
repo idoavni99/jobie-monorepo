@@ -1,7 +1,8 @@
 import { AppBar, Toolbar } from '@mui/material';
+import { NAV_DRAWER_WIDTH } from '../../../hooks/use-nav-drawer-spacing';
 import { useIsMobile } from '../../hooks/use-is-mobile';
 import { AppHeader } from '../AppHeader';
-import { AppNavDrawer, NAV_DRAWER_WIDTH } from '../navigation/AppNavDrawer';
+import { AppNavDrawer } from '../navigation/AppNavDrawer';
 
 export const AppToolbar = () => {
   const isMobile = useIsMobile();

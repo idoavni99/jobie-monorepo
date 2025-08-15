@@ -9,13 +9,15 @@ import { roadmapCalibrationApi } from '../../../api/roadmap-calibration.api';
 import { useDataFetch } from '../../../hooks/use-data-fetch';
 import {
   NAV_DRAWER_PADDING,
-  NAV_DRAWER_WIDTH,
-} from '../../components/navigation/AppNavDrawer';
+  useNavDrawerSpacing,
+} from '../../../hooks/use-nav-drawer-spacing';
 import { useIsMobile } from '../../hooks/use-is-mobile';
 import { MilestonesList } from './roadmapMilestones/MilestoneList';
 
 export const Roadmap = () => {
   const isMobile = useIsMobile();
+  const webContainerWidth = useWindowSize().width ?? globalThis.outerWidth;
+  const { spaceFromWindow } = useNavDrawerSpacing();
   const navigate = useNavigate();
   const {
     loading,
@@ -66,16 +68,8 @@ export const Roadmap = () => {
     }
   }, [loading, milestones, navigate]);
 
-  const webContainerWidth = useWindowSize().width ?? globalThis.outerWidth;
   return (
-    <Box
-      p={4}
-      width={
-        isMobile
-          ? '100%'
-          : webContainerWidth - (NAV_DRAWER_WIDTH + NAV_DRAWER_PADDING)
-      }
-    >
+    <Box p={4} width={isMobile ? '100%' : spaceFromWindow}>
       <Typography variant="h4" mb={4} fontWeight="bold" textAlign="center">
         Your Career Roadmap
       </Typography>
@@ -88,7 +82,7 @@ export const Roadmap = () => {
         milestones && (
           <MilestonesList
             milestones={milestones}
-            containerWidth={webContainerWidth}
+            containerWidth={webContainerWidth - NAV_DRAWER_PADDING}
           />
         )
       )}

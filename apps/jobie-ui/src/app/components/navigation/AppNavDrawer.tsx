@@ -7,14 +7,12 @@ import {
   ListItemText,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { NAV_DRAWER_WIDTH } from '../../../hooks/use-nav-drawer-spacing';
 import { navBarItems } from './NavItems';
 
 type Properties = {
   onClose?: () => void;
 };
-
-export const NAV_DRAWER_WIDTH = 240;
-export const NAV_DRAWER_PADDING = 180;
 
 export const AppNavDrawer = ({ onClose }: Properties) => {
   const navigate = useNavigate();
