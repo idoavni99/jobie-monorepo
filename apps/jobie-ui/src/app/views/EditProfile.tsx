@@ -31,9 +31,6 @@ export const EditProfile = () => {
   const [message, setMessage] = useState<string>('');
 
   const navigate = useNavigate();
-  const navigateHome = () => {
-    navigate(RoutesPaths.HOME);
-  };
 
   const {
     control,
@@ -73,7 +70,7 @@ export const EditProfile = () => {
   };
 
   return (
-    <Stack justifyContent="center" alignItems="center" height="100vh" px={3}>
+    <Stack justifyContent="center" alignItems="center" height="85vh" px={3}>
       <GlassCard>
         <Stack
           component="form"
@@ -224,18 +221,6 @@ export const EditProfile = () => {
             ) : (
               'Save'
             )}
-          </Button>
-          <Button
-            variant="contained"
-            type="button"
-            onClick={navigateHome}
-            sx={{
-              mt: 2,
-              px: 4,
-              py: 1.5,
-            }}
-          >
-            Cancel
           </Button>
         </Stack>
       </GlassCard>

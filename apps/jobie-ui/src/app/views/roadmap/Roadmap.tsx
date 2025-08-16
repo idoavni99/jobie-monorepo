@@ -1,16 +1,23 @@
 import { TMilestone } from '@jobie/milestone/types';
 import { TRoadmap } from '@jobie/roadmap/types';
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
+import { useWindowSize } from '@uidotdev/usehooks';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { milestoneMangementApi } from '../../../api/milestone-management.api';
 import { roadmapCalibrationApi } from '../../../api/roadmap-calibration.api';
 import { useDataFetch } from '../../../hooks/use-data-fetch';
+import {
+  NAV_DRAWER_PADDING,
+  useNavDrawerSpacing,
+} from '../../../hooks/use-nav-drawer-spacing';
 import { useIsMobile } from '../../hooks/use-is-mobile';
 import { MilestonesList } from './roadmapMilestones/MilestoneList';
 
 export const Roadmap = () => {
   const isMobile = useIsMobile();
+  const webContainerWidth = useWindowSize().width ?? globalThis.outerWidth;
+  const { spaceFromWindow } = useNavDrawerSpacing();
   const navigate = useNavigate();
   const {
     loading,
@@ -62,7 +69,7 @@ export const Roadmap = () => {
   }, [loading, milestones, navigate]);
 
   return (
-    <Box p={4} width={isMobile ? '100%' : '100vw'}>
+    <Box p={4} width={isMobile ? '100%' : spaceFromWindow}>
       <Typography variant="h4" mb={4} fontWeight="bold" textAlign="center">
         Your Career Roadmap
       </Typography>
@@ -72,22 +79,13 @@ export const Roadmap = () => {
           <CircularProgress />
         </Stack>
       ) : (
-        milestones && <MilestonesList milestones={milestones} />
+        milestones && (
+          <MilestonesList
+            milestones={milestones}
+            containerWidth={webContainerWidth - NAV_DRAWER_PADDING}
+          />
+        )
       )}
-
-      <Stack alignItems="center" mt={2}>
-        {/* <Button
-          variant="outlined"
-          onClick={regenerate}
-          size="large"
-          sx={{
-            color: '#fff',
-            borderColor: '#fff',
-          }}
-        >
-          Regenerate Roadmap
-        </Button> */}
-      </Stack>
     </Box>
   );
 };

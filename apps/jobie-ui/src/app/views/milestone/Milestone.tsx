@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useIsMobile } from '../../hooks/use-is-mobile';
+import { useNavDrawerSpacing } from '../../../hooks/use-nav-drawer-spacing';
 import { MilestoneSkillsList } from './details/MilestoneSkillsList';
 import { MilestoneStepsList } from './details/MilestoneStepsList';
 import { useMilestoneStore } from './store/milestone-store';
@@ -26,7 +26,6 @@ const fadeInUp = keyframes`
 
 export const Milestone = () => {
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [isLoadingMilestone, setIsLoadingMilestone] = useState(true);
   const { milestoneId } = useParams<{ milestoneId: string }>() as {
@@ -37,6 +36,8 @@ export const Milestone = () => {
     useMilestoneStore();
 
   const milestone = milestones[milestoneId];
+
+  const { spaceFromWindow, containerPadding } = useNavDrawerSpacing();
 
   useEffect(() => {
     if (!milestone) {
@@ -50,7 +51,7 @@ export const Milestone = () => {
   };
 
   return (
-    <Box width="100%" maxHeight="80dvh">
+    <Stack width={spaceFromWindow} {...containerPadding}>
       <Typography variant="h4" mb={4} fontWeight="bold" textAlign="center">
         Milestone Details
       </Typography>
@@ -58,7 +59,6 @@ export const Milestone = () => {
       {milestone ? (
         <Box
           sx={{
-            maxWidth: isMobile ? 300 : 700,
             overflow: 'auto',
             maxHeight: '80dvh',
             animation: `${fadeInUp} 0.6s ease-out`,
@@ -119,6 +119,6 @@ export const Milestone = () => {
           setShowSnackbar(false);
         }}
       />
-    </Box>
+    </Stack>
   );
 };

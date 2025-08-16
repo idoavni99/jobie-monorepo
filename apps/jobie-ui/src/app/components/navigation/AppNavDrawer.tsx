@@ -1,23 +1,14 @@
-import MergeIcon from '@mui/icons-material/Merge';
 import {
+  Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Stack,
-  useTheme,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { RoutesPaths } from '../../enums/routes.enum';
-
-const navBarItems = [
-  {
-    name: 'Roadmap',
-    route: RoutesPaths.ROADMAP,
-    icon: <MergeIcon />,
-  },
-];
+import { NAV_DRAWER_WIDTH } from '../../../hooks/use-nav-drawer-spacing';
+import { navBarItems } from './NavItems';
 
 type Properties = {
   onClose?: () => void;
@@ -25,9 +16,18 @@ type Properties = {
 
 export const AppNavDrawer = ({ onClose }: Properties) => {
   const navigate = useNavigate();
-  const { palette } = useTheme();
   return (
-    <Stack height="100%" sx={{ background: palette.background.paper }}>
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: NAV_DRAWER_WIDTH,
+        flexShrink: 0,
+        [`& .MuiDrawer-paper`]: {
+          width: NAV_DRAWER_WIDTH,
+          boxSizing: 'border-box',
+        },
+      }}
+    >
       <List>
         {navBarItems.map(({ name, route, icon }) => (
           <ListItem key={name} disablePadding>
@@ -43,6 +43,6 @@ export const AppNavDrawer = ({ onClose }: Properties) => {
           </ListItem>
         ))}
       </List>
-    </Stack>
+    </Drawer>
   );
 };

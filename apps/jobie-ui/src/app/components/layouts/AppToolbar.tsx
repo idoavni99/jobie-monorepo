@@ -1,30 +1,26 @@
-import ArrowBack from '@mui/icons-material/ArrowBack';
-import { AppBar, IconButton, Toolbar } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { RoutesPaths } from '../../enums/routes.enum';
+import { AppBar, Toolbar } from '@mui/material';
+import { NAV_DRAWER_WIDTH } from '../../../hooks/use-nav-drawer-spacing';
+import { useIsMobile } from '../../hooks/use-is-mobile';
 import { AppHeader } from '../AppHeader';
+import { AppNavDrawer } from '../navigation/AppNavDrawer';
 
 export const AppToolbar = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const isOutsideHomepage = location.pathname !== RoutesPaths.HOME;
+  const isMobile = useIsMobile();
   return (
-    <AppBar>
-      <Toolbar>
-        {isOutsideHomepage && (
-          <IconButton
-            sx={{ justifySelf: 'start' }}
-            onClick={() =>
-              location.key === 'default'
-                ? navigate(RoutesPaths.HOME)
-                : navigate(-1)
+    <AppBar
+      position="fixed"
+      sx={
+        isMobile
+          ? {}
+          : {
+              width: `calc(100% - ${NAV_DRAWER_WIDTH}px)`,
+              ml: `${NAV_DRAWER_WIDTH}px`,
             }
-          >
-            <ArrowBack />
-          </IconButton>
-        )}
+      }
+    >
+      <Toolbar>
         <AppHeader titleProps={{ sx: { justifySelf: 'center' } }} />
+        {!isMobile && <AppNavDrawer />}
       </Toolbar>
     </AppBar>
   );

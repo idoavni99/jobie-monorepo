@@ -18,13 +18,13 @@ import { AppLayout } from './components/layouts/AppLayout';
 import { SetupLayout } from './components/layouts/SetupLayout';
 import { RoutesPaths } from './enums/routes.enum';
 import { AspirationsPage } from './views/AspirationsPage';
-import { HomeScreen } from './views/Home';
+import { EditProfile } from './views/EditProfile';
 import { Milestone } from './views/milestone/Milestone';
 import { NotFound } from './views/NotFound';
 import { Register } from './views/Register';
 import { Roadmap } from './views/roadmap/Roadmap';
+import { Settings } from './views/Settings';
 import { SetupProfile } from './views/SetupProfile';
-import { EditProfile } from './views/EditProfile';
 import { SignIn } from './views/SignIn';
 
 export const App = () => {
@@ -46,19 +46,17 @@ export const App = () => {
               </Route>
             </Route>
 
-              <Route element={<SetupRoute />}>
-                <Route element={<SetupLayout />}>
-                  <Route
-                    path={RoutesPaths.SETUP_PROFILE}
-                    element={<SetupProfile />}
-                  />
-
-                </Route>
-              </Route>  
+            <Route element={<SetupRoute />}>
+              <Route element={<SetupLayout />}>
+                <Route
+                  path={RoutesPaths.SETUP_PROFILE}
+                  element={<SetupProfile />}
+                />
+              </Route>
+            </Route>
             {/* Setup step if user logged in but not finished setup */}
             <Route element={<SetupRoute />}>
               <Route element={<SetupLayout />}>
-
                 <Route
                   path={RoutesPaths.ASPIRATIONS}
                   element={<AspirationsPage />}
@@ -69,10 +67,13 @@ export const App = () => {
             {/* Protected routes after full auth and profile setup */}
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
-                <Route path={RoutesPaths.ROADMAP} element={<Roadmap />} />
+                <Route path={RoutesPaths.HOME} element={<Roadmap />} />
                 <Route path={RoutesPaths.MILESTONE} element={<Milestone />} />
-                <Route path={RoutesPaths.HOME} element={<HomeScreen />} />
-                <Route path={RoutesPaths.EDIT_PROFILE} element={<EditProfile />}/>
+                <Route path={RoutesPaths.SETTINGS} element={<Settings />} />
+                <Route
+                  path={RoutesPaths.EDIT_PROFILE}
+                  element={<EditProfile />}
+                />
               </Route>
             </Route>
 

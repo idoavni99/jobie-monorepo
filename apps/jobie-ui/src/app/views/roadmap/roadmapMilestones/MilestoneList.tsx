@@ -7,6 +7,7 @@ import { MilestoneListItem } from './MilestoneListItem';
 
 type Properties = {
   milestones: (RoadmapMilestone & { progress: number })[];
+  containerWidth: number;
 };
 
 const List: React.FC<ListProps & { ref?: Ref<HTMLDivElement> }> = ({
@@ -31,13 +32,16 @@ const List: React.FC<ListProps & { ref?: Ref<HTMLDivElement> }> = ({
   );
 };
 
-export const MilestonesList = ({ milestones }: Properties) => {
+export const MilestonesList = ({
+  milestones,
+  containerWidth = globalThis.outerWidth,
+}: Properties) => {
   const isMobile = useIsMobile();
   return (
     <Virtuoso
       style={{
         height: isMobile ? '80dvh' : '360px',
-        width: isMobile ? '100%' : globalThis.outerWidth,
+        width: isMobile ? '100%' : containerWidth,
       }}
       components={{ List }}
       data={milestones}
