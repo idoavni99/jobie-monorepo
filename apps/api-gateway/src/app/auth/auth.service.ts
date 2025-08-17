@@ -118,6 +118,10 @@ export class AuthService {
     return this.register(externalUser);
   }
 
+  async deleteUser(id: string) {
+    return this.usersRepository.delete(id);
+  }
+
   private async signAccessToken(user: UserEntity) {
     const accessToken = await this.jwtService.signAsync(user, {
       secret: this.commonConfig.accessTokenSecret,

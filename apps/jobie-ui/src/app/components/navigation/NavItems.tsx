@@ -1,4 +1,3 @@
-import TrashIcon from '@mui/icons-material/Delete';
 import PencilIcon from '@mui/icons-material/Edit';
 import MergeIcon from '@mui/icons-material/Merge';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -22,13 +21,10 @@ export const navBarItems = [
   },
 ];
 
-export const bottomNavItems = [
-  {
-    name: 'Delete Account',
-    icon: <TrashIcon />,
-  },
-  {
-    name: 'Sign Out',
-    icon: <MergeIcon />,
-  },
-];
+export const getCurrentNavItemByPathname = (pathname: string) => {
+  if (pathname.startsWith('/milestone') || pathname === '/') {
+    return RoutesPaths.HOME;
+  }
+
+  return pathname;
+};

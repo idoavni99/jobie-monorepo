@@ -6,9 +6,9 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { NAV_DRAWER_WIDTH } from '../../../hooks/use-nav-drawer-spacing';
-import { navBarItems } from './NavItems';
+import { getCurrentNavItemByPathname, navBarItems } from './NavItems';
 
 type Properties = {
   onClose?: () => void;
@@ -16,6 +16,10 @@ type Properties = {
 
 export const AppNavDrawer = ({ onClose }: Properties) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentLocation = getCurrentNavItemByPathname(location.pathname);
+
+  console.log(currentLocation, navBarItems);
   return (
     <Drawer
       variant="permanent"
@@ -32,13 +36,31 @@ export const AppNavDrawer = ({ onClose }: Properties) => {
         {navBarItems.map(({ name, route, icon }) => (
           <ListItem key={name} disablePadding>
             <ListItemButton
+              selected={currentLocation === route}
               onClick={() => {
                 navigate(route);
                 onClose?.();
               }}
             >
-              <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
-              <ListItemText sx={{ color: 'white' }} primary={name} />
+              <ListItemIcon
+                sx={(theme) => ({
+                  color:
+                    currentLocation === route
+                      ? theme.palette.primary.main
+                      : 'inherit',
+                })}
+              >
+                {icon}
+              </ListItemIcon>
+              <ListItemText
+                sx={(theme) => ({
+                  color:
+                    currentLocation === route
+                      ? theme.palette.primary.main
+                      : 'inherit',
+                })}
+                primary={name}
+              />
             </ListItemButton>
           </ListItem>
         ))}
