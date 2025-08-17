@@ -29,8 +29,7 @@ export const Settings = () => {
         open={isDeleteUserModalOpen}
         confirmText="Yes, Delete my account"
         confirmButtonColor="error"
-        actionText="
-                      Once you delete your account, all of your data will be permanently deleted."
+        actionText="Once you delete your account, all of your data will be permanently deleted."
         onClose={() => setDeleteUserModalOpen(false)}
         onConfirm={deleteUser}
       />
