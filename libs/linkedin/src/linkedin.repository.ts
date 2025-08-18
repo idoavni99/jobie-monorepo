@@ -100,11 +100,11 @@ export class LinkedinRepository {
     const { data } = await this.httpService.axiosRef.get<{
       data: { items: SimilarProfile[] };
     }>('/search-people', {
-      params: { keywords: goalJob, geo: geoId, start: 0 },
+      params: { keywordTitle: goalJob, geo: geoId, keywords: goalJob },
     });
 
     const results = data.data.items;
-    if (results.length < 5) {
+    if (results?.length < 5) {
       const extraSuggestions = await this.getSimilarProfilesByUrl(
         results[0].profileURL
       );
@@ -122,6 +122,6 @@ export class LinkedinRepository {
       )
     );
 
-    return data.data.items?.map(({ id }) => id.split(':').pop())?.join(',');
+    return data.data.items?.[0]?.id?.split(':')?.pop();
   }
 }

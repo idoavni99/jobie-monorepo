@@ -59,10 +59,9 @@ export const useAuthStore = create<AuthState>()(
         await Promise.all([
           roadmapCalibrationApi.delete('/'),
           milestoneMangementApi.delete('/'),
-          profileEnrichmentApi.delete('/'),
         ]);
 
-        await gatewayApi.post('/logout');
+        await gatewayApi.delete('/me');
 
         set({ user: undefined, isLoadingUserAuth: false });
       },
