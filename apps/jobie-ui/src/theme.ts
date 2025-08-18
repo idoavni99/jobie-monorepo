@@ -19,7 +19,7 @@ export const theme = createTheme({
     },
     background: {
       default: '#657BF2',
-      paper: '#7D63F5',
+      paper: '#657BF2',
     },
   },
   shape: {

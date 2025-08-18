@@ -3,6 +3,7 @@ import { CreateUserDto } from '@jobie/users/nestjs';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Inject,
@@ -107,6 +108,16 @@ export class AuthController {
       await this.authService.register(user);
     this.setTokenCookies(response, accessToken, refreshToken);
     return createdUser;
+  }
+
+  @Delete('/me')
+  async deleteUser(@Req() request: Request, @Res() response: Response) {
+    const identity = await this.isLoggedIn(request, response);
+    if (identity) {
+      await this.authService.deleteUser(identity._id);
+      this.clearTokenCookies(response);
+      response.sendStatus(HttpStatus.OK);
+    }
   }
 
   private setTokenCookies(

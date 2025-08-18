@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  type ButtonProps,
   CircularProgress,
   Modal,
   Stack,
@@ -10,12 +11,18 @@ import { useState } from 'react';
 
 type ConfirmModalProperties = {
   open: boolean;
+  actionText: string;
+  confirmText: string;
+  confirmButtonColor?: ButtonProps['color'];
   onClose: () => void;
   onConfirm: () => Promise<void>;
 };
 
 export const ConfirmModal = ({
   open,
+  actionText,
+  confirmText,
+  confirmButtonColor = 'primary',
   onClose,
   onConfirm,
 }: ConfirmModalProperties) => {
@@ -53,12 +60,13 @@ export const ConfirmModal = ({
         </Typography>
 
         <Typography fontSize="0.9rem" textAlign="center" mb={4}>
-          Once you pick this roadmap, you cannot change it later.
+          {actionText}
         </Typography>
 
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"
+            color={confirmButtonColor}
             sx={{ borderRadius: 999, minWidth: 140 }}
             onClick={handleConfirm}
             disabled={loading}
@@ -66,7 +74,7 @@ export const ConfirmModal = ({
             {loading ? (
               <CircularProgress size={20} color="inherit" />
             ) : (
-              'Yes, Select'
+              confirmText
             )}
           </Button>
           <Button

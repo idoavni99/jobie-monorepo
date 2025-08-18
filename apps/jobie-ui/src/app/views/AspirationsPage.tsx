@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { milestoneMangementApi } from '../../api/milestone-management.api';
 import { roadmapCalibrationApi } from '../../api/roadmap-calibration.api';
 import { useAuthStore } from '../auth/store/auth.store';
+import { RoutesPaths } from '../enums/routes.enum';
 import { useIsMobile } from '../hooks/use-is-mobile';
 import { ConfirmModal } from './components/ConfirmModal';
 import { RoadmapModal } from './components/RoadmapModal';
@@ -98,7 +99,7 @@ export const AspirationsPage = () => {
 
       await refreshUserData();
 
-      navigate('/roadmap');
+      navigate(RoutesPaths.HOME);
     } catch (error) {
       console.error('Failed to confirm and save roadmap', error);
     }
@@ -150,6 +151,9 @@ export const AspirationsPage = () => {
 
       <ConfirmModal
         open={confirmModalOpen}
+        confirmText="Yes, Select this roadmap"
+        actionText="
+          Once you pick this roadmap, you cannot change it later."
         onClose={() => setConfirmModalOpen(false)}
         onConfirm={handleConfirmSelection}
       />

@@ -3,7 +3,7 @@ import { Roadmap, RoadmapService } from '@jobie/roadmap/nestjs';
 import { UsersRepository } from '@jobie/users/nestjs';
 import { TUser } from '@jobie/users/types';
 import { HttpService } from '@nestjs/axios';
-import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Post } from '@nestjs/common';
 import { SuggestAspirationsDto } from './dto';
 import { RoadmapRegenerationDto } from './dto/roadmap-regeneration.dto';
 import { RoadmapGenerationService } from './roadmap-generation.service';
@@ -72,7 +72,7 @@ export class RoadmapController {
   }
 
   @Get()
-  async get(@AuthUser() user: TUser): Promise<Roadmap | null> {
+  async getRoadmapByUserId(@AuthUser() user: TUser): Promise<Roadmap | null> {
     try {
       const roadmap = await this.roadmapService.getRoadmapByUserId(user._id);
       return roadmap;
@@ -82,18 +82,16 @@ export class RoadmapController {
     }
   }
 
-  /**
-   * Regenerates the user's roadmap based on their enriched profile data.
-   * 
-   * This method retrieves the existing roadmap for the user, validates its existence,
-   * and regenerates it using the provided enriched profile data. The regenerated roadmap
-   * includes updated milestones and completed skills.
-   * 
-   * @param user - The authenticated user requesting the regeneration.
-   * @param body - The request body containing the enriched profile data.
-   
-   * @throws An error if the roadmap is not found or if the regeneration process fails.
-   */
+  @Delete()
+  async deleteUserRoadmap(@AuthUser() user: TUser) {
+    try {
+      await this.roadmapService.deleteUserRoadmap(user._id);
+      return true;
+    } catch {
+      return true;
+    }
+  }
+
   @Post('regenerate')
   async regenerateRoadmap(
     @AuthUser() user: TUser,

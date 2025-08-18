@@ -10,6 +10,10 @@ export class ProfileService {
     private readonly linkedinRepository: LinkedinRepository
   ) {}
 
+  async deleteUser(userId: string) {
+    return this.usersRepository.delete(userId);
+  }
+
   async enrichUserProfile(userId: string, data: EnrichUserProfileDto) {
     try {
       const linkedinProfile = await this.linkedinRepository.getUserProfile(

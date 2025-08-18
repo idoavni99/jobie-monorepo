@@ -6,6 +6,7 @@ import {
   Body,
   ConflictException,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Patch,
@@ -43,6 +44,11 @@ export class MilestoneController {
   ): Promise<Milestone | undefined> {
     const milestone = await this.milestoneService.getMilestoneById(milestoneId);
     return milestone;
+  }
+
+  @Delete('')
+  async deleteAll(@AuthUser() { _id }: TUser) {
+    await this.milestoneService.deleteByUserId(_id);
   }
 
   @Get('batch')
