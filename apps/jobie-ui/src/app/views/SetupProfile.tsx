@@ -152,14 +152,14 @@ export const SetupProfile = () => {
           control={control}
           name="aspirationalLinkedinUrl"
           rules={{
-            required: false,
+            required: true,
             pattern:
               /^https?:\/\/(www\.)?linkedin\.com\/(in|pub)\/[a-zA-Z0-9-_%]+\/?$/,
           }}
           render={({ field, fieldState }) => (
             <TransparentTextField
               {...field}
-              label="Aspirational LinkedIn Profile"
+              label="Aspirational LinkedIn Profile (*)"
               placeholder="Paste your role model’s LinkedIn URL"
               error={fieldState.invalid}
               helperText={
