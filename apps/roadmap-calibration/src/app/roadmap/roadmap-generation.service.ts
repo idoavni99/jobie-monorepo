@@ -150,35 +150,35 @@ export class RoadmapGenerationService {
       (now.getTime() - updateAt.getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    if (diffInDays > this.appConfig.roadmapRegenerationTtlDays) {
-      const userData = await this.usersRepository.findById(user._id, {
-        skills: 1,
-        isRoadmapGenerated: 1,
-      });
-      const updatePayload: Partial<User> = {
-        skills: userData?.skills ?? [],
-        isRoadmapGenerated: false,
-        goalJob: user.goalJob,
-        aspirationalLinkedinUrl: user.aspirationalLinkedinUrl,
-      };
-
-      await this.roadmapService.deleteUserRoadmap(user._id);
-      const completedMilestones = roadmap.milestones.filter(
-        (milestones) => milestones.status === 'completed'
+    if (diffInDays < this.appConfig.roadmapRegenerationTtlDays) {
+      throw new BadRequestException(
+        'cannot generate roadmap before 14 have passed.'
       );
-
-      for (const milestone of completedMilestones) {
-        for (const skill of milestone.skills) {
-          updatePayload.skills?.push(skill);
-        }
-      }
-      updatePayload.skills = [...new Set(updatePayload.skills)];
-      await this.usersRepository.update(user._id, updatePayload);
     }
 
-    throw new BadRequestException(
-      'cannot generate roadmap before 14 have passed.'
+    const userData = await this.usersRepository.findById(user._id, {
+      skills: 1,
+      isRoadmapGenerated: 1,
+    });
+    const updatePayload: Partial<User> = {
+      skills: userData?.skills ?? [],
+      isRoadmapGenerated: false,
+      goalJob: user.goalJob,
+      aspirationalLinkedinUrl: user.aspirationalLinkedinUrl,
+    };
+
+    await this.roadmapService.deleteUserRoadmap(user._id);
+    const completedMilestones = roadmap.milestones.filter(
+      (milestones) => milestones.status === 'completed'
     );
+
+    for (const milestone of completedMilestones) {
+      for (const skill of milestone.skills) {
+        updatePayload.skills?.push(skill);
+      }
+    }
+    updatePayload.skills = [...new Set(updatePayload.skills)];
+    await this.usersRepository.update(user._id, updatePayload);
   }
 
   async buildRoadmap(
