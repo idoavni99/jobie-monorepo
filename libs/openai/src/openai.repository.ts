@@ -12,7 +12,7 @@ export class OpenAIRepository {
 
   async requestPrompt(initializationPrompt: string, contentPrompt: string) {
     const result = await this.openai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       contents: [
         {
           role: 'model',

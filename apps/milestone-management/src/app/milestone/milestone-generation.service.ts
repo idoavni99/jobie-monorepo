@@ -17,7 +17,7 @@ export class MilestoneGenerationService {
 
       ${this.getMilestoneGenerationInstructions()} 
       A milestone output JSON is as such: {'milestoneName': '', 'steps': [{'step': '', 'completed': false}, ...]}
-      Ensure to make the output an array in the same order as the input, and that all milestones have valid URLs in their steps.
+      Ensure to make the output an array in the same order as the input.
     `;
 
     const milestones = await this.openAiRepository.requestPromptJSON<
@@ -83,8 +83,8 @@ export class MilestoneGenerationService {
     return `
     
     Provide a structured breakdown with actionable steps to complete this milestone.
-    Each step should be approximately 60 to 80 words and no more than 5 steps in total.
-    Each step should be a single line (3 senetences), and include a real URL (guide, exercise, online course - udemy or coursera etc, or resource) that is in a new line. Ensure the URL works (not 404 and indeed works).
+    Each step should be approximately 40 to 80 words and no more than 5 steps in total.
+    Each step should be a single line (3 senetences), and include a real URL (guide, exercise, online course - udemy or coursera etc, or resource) that is in a new line. Ensure the URL is valid and working (Does not redirect you to a Not Found page, has the content it's supposed to have).
     Format the response as JSON: {"steps": [{"step": "description", "completed": false}, ...]}`;
   }
 }

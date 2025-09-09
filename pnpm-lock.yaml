@@ -15,8 +15,8 @@ importers:
         specifier: ^11.14.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@19.0.12)(react@19.0.0))(@types/react@19.0.12)(react@19.0.0)
       '@google/genai':
-        specifier: ^1.5.0
-        version: 1.5.0(@modelcontextprotocol/sdk@1.12.1)(encoding@0.1.13)
+        specifier: ^1.17.0
+        version: 1.17.0(@modelcontextprotocol/sdk@1.12.1)(encoding@0.1.13)
       '@modelcontextprotocol/sdk':
         specifier: ^1.12.1
         version: 1.12.1
@@ -1483,11 +1483,11 @@ packages:
     resolution: {integrity: sha512-lB05FkqEdUg2AA0xEbUz0SnkXT1LcCTa438W4IWTUh4hdOnVbQyOJ81OrDXsJk/LSiJHubgGEFoR5EHq1NsH1A==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@google/genai@1.5.0':
-    resolution: {integrity: sha512-N/UhGPcKwYw4tD/fERrNQMeHh3yiUDXhJ5f94HSMV7LhkU19IMFSqtXjek6nSpgM/YDJGBYw/MoHVLjfWhmdmQ==}
+  '@google/genai@1.17.0':
+    resolution: {integrity: sha512-r/OZWN9D8WvYrte3bcKPoLODrZ+2TjfxHm5OOyVHUbdFYIp1C4yJaXX4+sCS8I/+CbN9PxLjU5zm1cgmS7qz+A==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      '@modelcontextprotocol/sdk': ^1.11.0
+      '@modelcontextprotocol/sdk': ^1.11.4
     peerDependenciesMeta:
       '@modelcontextprotocol/sdk':
         optional: true
@@ -8270,6 +8270,7 @@ packages:
   source-map@0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
+    deprecated: The work that was done in this beta branch won't be included in future versions
 
   sourcemap-codec@1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
@@ -10670,12 +10671,10 @@ snapshots:
       '@eslint/core': 0.10.0
       levn: 0.4.1
 
-  '@google/genai@1.5.0(@modelcontextprotocol/sdk@1.12.1)(encoding@0.1.13)':
+  '@google/genai@1.17.0(@modelcontextprotocol/sdk@1.12.1)(encoding@0.1.13)':
     dependencies:
       google-auth-library: 9.15.1(encoding@0.1.13)
       ws: 8.18.0
-      zod: 3.24.2
-      zod-to-json-schema: 3.24.5(zod@3.24.2)
     optionalDependencies:
       '@modelcontextprotocol/sdk': 1.12.1
     transitivePeerDependencies:
